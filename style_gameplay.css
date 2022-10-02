@@ -1,0 +1,125 @@
+body
+{
+    font-family: 'montserratregular', 'Trebuchet MS', Arial, sans-serif;
+    color: #ffffff;
+    background-color: #202020;
+    line-height : 1.5;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.button {
+    background-color: #D2A058;
+    border-radius: 100px;
+    box-shadow: rgba(73,62,48, .2) 0 -25px 18px -14px inset,rgba(73,62,48, .15) 0 1px 2px,rgba(73,62,48, .15) 0 2px 4px,rgba(73,62,48, .15) 0 4px 8px,rgba(73,62,48, .15) 0 8px 16px,rgba(73,62,48, .15) 0 16px 32px;
+    color:#151515;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'montserratsemibold', 'Trebuchet MS', Arial, sans-serif;
+    padding: 7px 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 250ms;
+    padding: 10px 20px;
+    border: 0;
+    font-size: 16px;
+    margin-right: 5vw;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+#prompt
+{
+    background-color: #2260b7;
+}
+
+.button#leftButton
+{
+    background-color: #ffffff ;
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    height: auto;
+    z-index: 1;
+}
+
+.button#botButton
+{
+    background-color: #ffffff ;
+    position: absolute;
+    top: 80%;
+    left: 30%;
+    height: auto;
+    z-index: 1;
+}
+
+.button#rightButton
+{
+    background-color: #ffffff ;
+    position: absolute;
+    top: 10%;
+    left: 30%;
+    height: auto;
+    z-index: 1;
+}
+
+.button#topButton
+{
+    background-color: #ffffff ;
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    height: auto;
+    z-index: 1;
+}
+
+#container
+{
+    width: 80%;
+    margin: auto;
+    position: relative;
+	display: flex;
+	align-items: baseline;
+}
+
+#screenplay
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    height: 95vh;
+    background-color: #381d4f;
+    position: relative;
+
+}
+
+#player_zone
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40vh;
+    background-color: #4dd200;
+    position: relative;
+
+}
+
+#player_zone
+{
+    position:relative;
+    width:100%;
+    height: 20vh;
+    border:2px solid red;
+}
+#hitbox_player
+{
+    position:absolute; top:30%; left:50%;
+    width:  10vh;         
+}
