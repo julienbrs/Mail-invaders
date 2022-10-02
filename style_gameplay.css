@@ -107,7 +107,7 @@ img {
     width: 100%;
     height: 40vh;
     background-color: #4dd200;
-    position: relative;
+    position: absolute;
 
 }
 
@@ -123,3 +123,4 @@ img {
     position:absolute; top:30%; left:50%;
     width:  10vh;         
 }
+
