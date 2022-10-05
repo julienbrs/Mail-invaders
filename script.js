@@ -6,6 +6,9 @@ var panePlayer = $('#player_zone'),
     tickMovement = 10;
 
 
+const canvas = document.getElementById('screenplay');
+const context = canvas.getContext('2d');
+
 function newWidth(oldValue,key1,key2) {
     /* newPos is the new potential topleft */
     var newPos = parseInt(oldValue, 10) 
