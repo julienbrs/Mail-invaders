@@ -1,6 +1,7 @@
 const sWidth = 800;
 const sHeight = 600;
 var dataKeyPressed = {};
+// todo: gérer deux touches appuyées en même temps
 
 
 /* represents caracteristics of the game */
@@ -29,9 +30,6 @@ game.keydown = function(e) {
 window.onkeydown = game.keydown;
 
 $(window).keyup(function(e) { dataKeyPressed[e.which] = false; });  // removing key from array when released
-
-
-
 
 /* definitions of the assets */
 const imgPlayer = new Image();
@@ -71,7 +69,8 @@ class PhysicalObject {
     offScreen(dx, dy) {
         //TODO: rajouter width et heighth de l'objet pour plus de précision
         /* check if the object is off screen */
-        return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width
+        return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width ||
+            this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
     }
     
     moveLeft() {
@@ -112,7 +111,7 @@ class Shooter extends PhysicalObject {
 
     shoot() {
         /* shoot a laser */
-        const newLaser = new Laser(this.x + this.width / 2, this.y, 10, 30, "red", 5);
+        const newLaser = new Laser(this.x + this.width / 2 - 5, this.y - this.height / 2, 10, 30, "red", 5);
         this.lasers.push(newLaser);
     }
 
@@ -153,6 +152,14 @@ class Laser extends PhysicalObject {
         /* move the laser */
         this.x += dx;
         this.y += dy;
+        if (this.offScreen(0, 0)) {
+            this.delete();
+        }
+    }
+
+    delete() {
+        /* delete the laser */
+        game.player.lasers.splice(game.player.lasers.indexOf(this), 1);
     }
 
 }
