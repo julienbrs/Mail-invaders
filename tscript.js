@@ -36,6 +36,8 @@ const imgPlayer = new Image();
 imgPlayer.src = "assets/player.png";
 var imgBackground = new Image();
 imgBackground.src = "assets/background.jpg";
+const imgEnnemies = new Image();
+imgEnnemies.src = "assets/Mail.png";
 
 
 /* graphic features of the game */
@@ -44,11 +46,38 @@ game.canvas.height = sHeight;
 
 
 
-/* drawing functions */
+/* drawing functions */ //put in class ?
 function drawBackground() {
     game.ctx.drawImage(imgBackground, 0, 0, game.canvas.width, game.canvas.height);
 }
 
+function drawEnnemies(){
+    game.ennemies.forEach(function(ennemy) {
+        ennemy.draw(game.ctx);
+    });
+}
+
+
+function moveEnnemies(){
+    /* move the ennemies */
+    game.ennemies.forEach(function(ennemy) {
+        ennemy.move();
+        /* Check collision with player */
+        if (ennemy.isColliding(game.player)) {
+            console.log("collision");
+            game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+        }
+    });
+}
+
+game.spawnEnnemies = function(wave) {
+    let nbEnnemies = wave * 3;
+    for (let i = 0; i < nbEnnemies; i++) {
+        let x = Math.random() * (sWidth - 50);
+        let ennemy = new Ennemy(x, 0 , 50, 50, imgEnnemies, 2);
+        game.ennemies.push(ennemy);
+    }
+}
 
 
 /* different objects of the game */
@@ -79,7 +108,7 @@ class PhysicalObject {
             return;
         }
         /* move the object */
-        this.x -= 5;
+        this.x -= 8;
     }
 
     moveRight() {
@@ -88,7 +117,7 @@ class PhysicalObject {
             return;
         }
         /* move the object */
-        this.x += 5;
+        this.x += 8;
     }
 
     isColliding(object) {
@@ -135,6 +164,22 @@ class Player extends Shooter {
     }
 }
 
+class Ennemy extends Shooter {
+    constructor(x, y, width, height, image, speed) {
+        super(x, y, width, height, image, speed);
+    }
+
+    move() {
+        /* move the ennemy */
+        this.y += this.speed;
+        if (this.y > game.canvas.height) {
+            game.ennemies.splice(game.ennemies.indexOf(this), 1);
+            console.log("DEAD");
+        }
+
+    }
+}
+
 /* Laser class */
 class Laser extends PhysicalObject {
     constructor(x, y, width, height, color, speed) {
@@ -155,22 +200,31 @@ class Laser extends PhysicalObject {
         if (this.offScreen(0, 0)) {
             this.delete();
         }
+        for (let ennemy of game.ennemies) {
+            if (this.isColliding(ennemy)) {
+                this.delete();
+                game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+            }
+        }
     }
+
 
     delete() {
         /* delete the laser */
         game.player.lasers.splice(game.player.lasers.indexOf(this), 1);
     }
-
 }
 
 
 /* Main loop of the game */
 function updateGame() {
-    /* do all the drawings */
     drawBackground();
+    /* do all the drawings */
     game.player.draw(game.ctx);
     game.player.drawLasers();
+    drawEnnemies();
+    moveEnnemies();
+    
     // updateEnemies();
     // updateBullets();
     // updateScore();
@@ -178,13 +232,15 @@ function updateGame() {
 }
 
 
-
+game.wave = 1;
 
 /* start the game */
 game.init = function(){
     game.player = new Player();
-    console.log(game.player);
-    game.interval = setInterval(updateGame, 20);
+    game.ennemies = [];
+    game.spawnEnnemies(game.wave);
+    game.wave++;
+    game.interval = setInterval(updateGame, 30);
 }
 
 /* stop the game */

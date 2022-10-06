@@ -4,7 +4,7 @@ imgPlayer.src = "assets/player.png";
 
 
 
-export class PhysicalObject {
+class PhysicalObject {
     constructor(x, y, width, height, image) {
         this.x = x;
         this.y = y;
@@ -46,7 +46,7 @@ export class PhysicalObject {
 }
 
 /* Shooters */
-export class Shooter extends PhysicalObject {
+class Shooter extends PhysicalObject {
     constructor(x, y, width, height, image, speed) {
         super(x, y, width, height, image);
         this.speed = speed;
@@ -60,7 +60,7 @@ export class Shooter extends PhysicalObject {
     }
 }
 
-export class Player extends Shooter {
+class Player extends Shooter {
     constructor() {
         super(200, 500, 100, 100, imgPlayer, 5);
     }
@@ -71,8 +71,19 @@ export class Player extends Shooter {
     }
 }
 
+class Ennemies extends Shooter {
+    constructor(x, y, width, height, image, speed) {
+        super(x, y, width, height, image, speed);
+    }
+
+    move() {
+        /* move the ennemy */
+        this.y += this.speed;
+    }
+}
+
 /* Laser class */
-export class Laser extends PhysicalObject {
+class Laser extends PhysicalObject {
     constructor(x, y, width, height, color, speed) {
         super(x, y, width, height, color);
         this.speed = speed;
