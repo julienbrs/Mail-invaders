@@ -28,8 +28,7 @@ game.keydown = function(e) {
 }
 // Detect keydown events
 window.onkeydown = game.keydown;
-
-$(window).keyup(function(e) { dataKeyPressed[e.which] = false; });  // removing key from array when released
+// $(window).keyup(function(e) { dataKeyPressed[e.which] = false; });  // removing key from array when released
 
 /* definitions of the assets */
 const imgPlayer = new Image();
@@ -47,18 +46,20 @@ game.canvas.height = sHeight;
 
 
 /* drawing functions */ //put in class ?
-function drawBackground() {
+game.drawBackground = function() {
     game.ctx.drawImage(imgBackground, 0, 0, game.canvas.width, game.canvas.height);
 }
 
-function drawEnnemies(){
+game.drawEnnemies = function(){
     game.ennemies.forEach(function(ennemy) {
         ennemy.draw(game.ctx);
     });
 }
 
 
-function moveEnnemies(){
+/* In-game functions */
+
+game.moveEnnemies = function(){
     /* move the ennemies */
     game.ennemies.forEach(function(ennemy) {
         ennemy.move();
@@ -79,8 +80,16 @@ game.spawnEnnemies = function(wave) {
     }
 }
 
+game.checkLvlState = function() {
+    if (game.ennemies.length == 0) {
+        game.spawnEnnemies(game.wave);
+        game.wave++;
+    }
+}
+
 
 /* different objects of the game */
+
 class PhysicalObject {
     constructor(x, y, width, height, image) {
         this.x = x;
@@ -101,24 +110,6 @@ class PhysicalObject {
         return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width ||
             this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
     }
-    
-    moveLeft() {
-        /* check if the object will be off screen */
-        if (this.offScreen(-5, 0)) {
-            return;
-        }
-        /* move the object */
-        this.x -= 8;
-    }
-
-    moveRight() {
-        /* check if the object will be off screen */
-        if (this.offScreen(5, 0)) {
-            return;
-        }
-        /* move the object */
-        this.x += 8;
-    }
 
     isColliding(object) {
         /* check if the object is colliding with another object */
@@ -136,6 +127,25 @@ class Shooter extends PhysicalObject {
         super(x, y, width, height, image);
         this.speed = speed;
         this.lasers = [];
+    }
+    
+    moveLeft() {
+        /* check if the object will be off screen */
+        if (this.offScreen(this.speed, 0)) {
+            return;
+        }
+        /* move the object */
+        this.x -= this.speed;
+    }
+
+    moveRight() {
+        /* check if the object will be off screen */
+        if (this.offScreen(this.speed, 0)) {
+            this.x -= this.speed;
+            return;
+        }
+        /* move the object */
+        this.x += this.speed;
     }
 
     shoot() {
@@ -155,7 +165,7 @@ class Shooter extends PhysicalObject {
 
 class Player extends Shooter {
     constructor() {
-        super(200, 500, 30, 50, imgPlayer, 5);
+        super(200, 500, 30, 50, imgPlayer, 20);
     }
 
     draw() {
@@ -218,13 +228,15 @@ class Laser extends PhysicalObject {
 
 /* Main loop of the game */
 function updateGame() {
-    drawBackground();
     /* do all the drawings */
+    game.drawBackground();
     game.player.draw(game.ctx);
     game.player.drawLasers();
-    drawEnnemies();
-    moveEnnemies();
-    
+    game.drawEnnemies();
+
+    /* do all the in-game functions */
+    game.moveEnnemies();
+    game.checkLvlState();
     // updateEnemies();
     // updateBullets();
     // updateScore();
