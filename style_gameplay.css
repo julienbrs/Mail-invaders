@@ -76,7 +76,7 @@ img {
     height: auto;
     z-index: 1;
 } */
-
+/* 
 #container
 {
     width: 80%;
@@ -96,7 +96,7 @@ img {
     background-color: #170e1f;
     position: relative;
 
-}
+} */
 /* 
 #player_zone
 {
@@ -123,4 +123,34 @@ img {
     width:  10vh;         
 }
 
+
  */
+
+
+#screenplay
+{
+box-shadow: black 20px 10px 50px;
+}
+
+h1
+{
+    margin: 0px;
+    margin-bottom: 10px;
+    font-size: 2em;
+    font-family: 'montserratsemibold', 'Trebuchet MS', Arial, sans-serif;
+}
+
+body{
+    display: flex;
+    align-items:  center;
+    flex-direction: column;
+    padding: 0px;
+    margin: 0px;
+    height: 100vh;
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgb(164, 153, 153) 50%,
+        rgb(227, 219, 219) 100%
+    );
+}
