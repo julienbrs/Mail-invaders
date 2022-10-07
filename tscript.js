@@ -11,24 +11,31 @@ game.ctx = game.canvas.getContext("2d");
 
 /* events */
 /* keyboard events */
-game.keydown = function(e) {
-    console.log("keydown");
-    if (e.which == 32) {
-        game.player.shoot();
-    }
-    else if (e.which == 37) {
+
+/* adding key to array when pressed */
+$(window).keydown(function(e) {dataKeyPressed[e.which] = true;});
+
+/* removing key from array when released */
+$(window).keyup(function(e) { dataKeyPressed[e.which] = false; });
+
+game.doKeyboardEvents = function() {
+    if (dataKeyPressed[37]) { // left arrow
         game.player.moveLeft();
     }
-    else if (e.which == 39) {
+    if (dataKeyPressed[38]) { // up arrow
+        game.player.moveUp();
+    }
+    if (dataKeyPressed[39]) { // right arrow
         game.player.moveRight();
     }
-    else if (e.which == 32) {
+    if (dataKeyPressed[40]) { // down arrow
+        game.player.moveDown();
+    }
+    if (dataKeyPressed[32]) { // spacebar
         game.player.shoot();
     }
-}
-// Detect keydown events
-window.onkeydown = game.keydown;
-// $(window).keyup(function(e) { dataKeyPressed[e.which] = false; });  // removing key from array when released
+};
+
 
 /* definitions of the assets */
 const imgPlayer = new Image();
@@ -131,7 +138,8 @@ class Shooter extends PhysicalObject {
     
     moveLeft() {
         /* check if the object will be off screen */
-        if (this.offScreen(this.speed, 0)) {
+        if (this.offScreen(-this.speed, 0)) {
+            this.x = 0;
             return;
         }
         /* move the object */
@@ -141,12 +149,34 @@ class Shooter extends PhysicalObject {
     moveRight() {
         /* check if the object will be off screen */
         if (this.offScreen(this.speed, 0)) {
-            this.x -= this.speed;
+            this.x = game.canvas.width - this.width;
             return;
         }
         /* move the object */
         this.x += this.speed;
     }
+
+    moveUp() {
+        /* check if the object will be off screen */
+        if (this.offScreen(0, -this.speed)) {
+            this.y = 0;
+            return;
+        }
+        
+        /* move the object */
+        this.y -= this.speed;
+    }
+    
+    moveDown() {
+        /* check if the object will be off screen */
+        if (this.offScreen(0, this.speed)) {
+            this.y = game.canvas.height - this.height;
+            return;
+        }
+        /* move the object */
+        this.y += this.speed;
+    }
+
 
     shoot() {
         /* shoot a laser */
@@ -218,7 +248,6 @@ class Laser extends PhysicalObject {
         }
     }
 
-
     delete() {
         /* delete the laser */
         game.player.lasers.splice(game.player.lasers.indexOf(this), 1);
@@ -228,8 +257,13 @@ class Laser extends PhysicalObject {
 
 /* Main loop of the game */
 function updateGame() {
-    /* do all the drawings */
+    /* reset the canvas */
     game.drawBackground();
+    
+    /* manage events */
+    game.doKeyboardEvents();
+    
+    /* do all the drawings */
     game.player.draw(game.ctx);
     game.player.drawLasers();
     game.drawEnnemies();
@@ -237,6 +271,7 @@ function updateGame() {
     /* do all the in-game functions */
     game.moveEnnemies();
     game.checkLvlState();
+
     // updateEnemies();
     // updateBullets();
     // updateScore();

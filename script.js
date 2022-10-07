@@ -140,7 +140,7 @@ setInterval(function() {
     boxPlayer.css({
         left: function(i,oldValue) { return newWidth(oldValue, 37, 39); },
         top: function(i,oldValue) { return newHeight(oldValue, 38, 40); }
-    });
+    }); 
     player.draw("hitbox_player");
     updatePositionPlayer();
     if (dataKeyPressed[32]) {
