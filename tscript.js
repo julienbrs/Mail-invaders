@@ -13,10 +13,21 @@ game.ctx = game.canvas.getContext("2d");
 /* keyboard events */
 
 /* adding key to array when pressed */
-$(window).keydown(function(e) {dataKeyPressed[e.which] = true;});
+$(window).keydown(function(e) {
+    if (e.which == 32 && game.player.canShoot) { // spacebar
+        game.player.canShoot = false;
+        game.player.shoot();
+    }
+    dataKeyPressed[e.which] = true;
+});
 
 /* removing key from array when released */
-$(window).keyup(function(e) { dataKeyPressed[e.which] = false; });
+$(window).keyup(function(e) {
+    if (e.which == 32) {
+        game.player.canShoot = true;
+    }        
+    dataKeyPressed[e.which] = false;
+});
 
 game.doKeyboardEvents = function() {
     if (dataKeyPressed[37]) { // left arrow
@@ -30,9 +41,6 @@ game.doKeyboardEvents = function() {
     }
     if (dataKeyPressed[40]) { // down arrow
         game.player.moveDown();
-    }
-    if (dataKeyPressed[32]) { // spacebar
-        game.player.shoot();
     }
 };
 
@@ -196,6 +204,7 @@ class Shooter extends PhysicalObject {
 class Player extends Shooter {
     constructor() {
         super(200, 500, 30, 50, imgPlayer, 20);
+        this.canShoot = true;
     }
 
     draw() {
@@ -257,12 +266,13 @@ class Laser extends PhysicalObject {
 
 /* Main loop of the game */
 function updateGame() {
-    /* reset the canvas */
-    game.drawBackground();
     
     /* manage events */
     game.doKeyboardEvents();
     
+    /* reset the canvas */
+    game.drawBackground();
+
     /* do all the drawings */
     game.player.draw(game.ctx);
     game.player.drawLasers();
