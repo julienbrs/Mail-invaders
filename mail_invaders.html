@@ -7,13 +7,21 @@
             <link rel="stylesheet" href="style_gameplay.css">
             <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-            
         </head>
 
         <body>
-            <h1>Mail invaders</h1>
-            <canvas id="screenplay" ></canvas>
-            <script type="text/javascript" src="tscript.js"></script>
-            </body>
+            <div id = "container">
+                <div id = "planetleft"><img src="assets/planet1.png" alt="planet"></div>
+                <div id = "planetright"><img src="assets/planet2.png" alt="planet"></div>
+                <div id = "lifebar_green"><img src="assets/lifebar_green.png" alt="lifebar"></div>
+                <div id = "lifebar_red"><img src="assets/lifebar_red.png" alt="lifebar"></div>
+                <div id = "title_game"><h1>Mail invaders</h1></div>
+                <div id = "bonus_title"><h1>Bonus</h1></div>
+                <canvas id="screenplay" >
+                </canvas>
+                <canvas id = "hud" ></canvas>
+                <script type="text/javascript" src="tscript.js"></script>
+            </div>
+        </body>
 
 </html>

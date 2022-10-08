@@ -1,5 +1,6 @@
-const sWidth = 800;
-const sHeight = 600;
+/* Get width of the screeplay */
+const sWidth = document.getElementById("screenplay").offsetWidth;
+const sHeight = document.getElementById("screenplay").offsetHeight;
 var dataKeyPressed = {};
 // todo: gérer deux touches appuyées en même temps
 
@@ -52,7 +53,8 @@ var imgBackground = new Image();
 imgBackground.src = "assets/background.jpg";
 const imgEnnemies = new Image();
 imgEnnemies.src = "assets/Mail.png";
-
+const imgMissile = new Image();
+imgMissile.src = "assets/Missile.png";
 
 /* graphic features of the game */
 game.canvas.width = sWidth;
@@ -61,9 +63,9 @@ game.canvas.height = sHeight;
 
 
 /* drawing functions */ //put in class ?
-game.drawBackground = function() {
+/* game.drawBackground = function() {
     game.ctx.drawImage(imgBackground, 0, 0, game.canvas.width, game.canvas.height);
-}
+} */
 
 game.drawEnnemies = function(){
     game.ennemies.forEach(function(ennemy) {
@@ -90,7 +92,7 @@ game.spawnEnnemies = function(wave) {
     let nbEnnemies = wave * 3;
     for (let i = 0; i < nbEnnemies; i++) {
         let x = Math.random() * (sWidth - 50);
-        let ennemy = new Ennemy(x, 0 , 50, 50, imgEnnemies, 2);
+        let ennemy = new Ennemy(x, 0 , 50, 50, imgEnnemies, 1);
         game.ennemies.push(ennemy);
     }
 }
@@ -201,9 +203,10 @@ class Shooter extends PhysicalObject {
     }
 }
 
+// todo: mettre la bonne position de départ avec %
 class Player extends Shooter {
     constructor() {
-        super(200, 500, 30, 50, imgPlayer, 20);
+        super(400, 800, 30, 50, imgPlayer, 17);
         this.canShoot = true;
     }
 
@@ -238,8 +241,7 @@ class Laser extends PhysicalObject {
 
     draw() {
         /* draw the laser */
-        game.ctx.fillStyle = this.image;
-        game.ctx.fillRect(this.x, this.y, this.width, this.height);
+        game.ctx.drawImage(imgMissile, this.x, this.y , this.width, this.height);
     }
 
     move(dx, dy) {
@@ -271,7 +273,7 @@ function updateGame() {
     game.doKeyboardEvents();
     
     /* reset the canvas */
-    game.drawBackground();
+    game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
 
     /* do all the drawings */
     game.player.draw(game.ctx);
@@ -295,6 +297,7 @@ game.wave = 1;
 game.init = function(){
     game.player = new Player();
     game.ennemies = [];
+    console.log(game.player);
     game.spawnEnnemies(game.wave);
     game.wave++;
     game.interval = setInterval(updateGame, 30);
