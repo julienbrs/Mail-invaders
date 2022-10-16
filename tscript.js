@@ -5,19 +5,22 @@
 const sWidth = document.getElementById('screenplay').offsetWidth;
 const sHeight = document.getElementById('screenplay').offsetHeight;
 var dataKeyPressed = {};
-// todo: gérer deux touches appuyées en même temps
 
 
-/* represents caracteristics of the game */
+/* Represents caracteristics of the game */
 var game = {};
 game.canvas = document.getElementById('screenplay');
 game.ctx = game.canvas.getContext('2d');
+game.wave = 1;
+var list_menu = ['start_menu', 'screen_game'];
 
-/* events */
-/* keyboard events */
 
-/* adding key to array when pressed */
-$(window).keydown(function(e) {
+
+/* Events */
+/* Keyboard events */
+
+/* Adding key to array when pressed */
+$(window).keydown(function (e) {
   if (e.which == 32 && game.player.canShoot) {  // spacebar
     game.player.canShoot = false;
     game.player.shoot();
@@ -25,15 +28,16 @@ $(window).keydown(function(e) {
   dataKeyPressed[e.which] = true;
 });
 
-/* removing key from array when released */
-$(window).keyup(function(e) {
+/* Removing key from array when released */
+$(window).keyup(function (e) {
   if (e.which == 32) {
     game.player.canShoot = true;
   }
   dataKeyPressed[e.which] = false;
 });
 
-game.doKeyboardEvents = function() {
+/* Do keyboard events stored in dataKeyPressed */
+game.doKeyboardEvents = function () {
   if (dataKeyPressed[37]) {  // left arrow
     game.player.moveLeft();
   }
@@ -49,7 +53,9 @@ game.doKeyboardEvents = function() {
 };
 
 
-/* definitions of the assets */
+/* Graphics */
+
+/* Definitions of the assets */
 const imgPlayer = new Image();
 imgPlayer.src = 'assets/player.png';
 const imgEnnemies = new Image();
@@ -57,78 +63,84 @@ imgEnnemies.src = 'assets/Mail.png';
 const imgMissile = new Image();
 imgMissile.src = 'assets/Missile.png';
 
-/* graphic features of the game */
+/* Graphic features of the game */
 game.canvas.width = sWidth;
 game.canvas.height = sHeight;
 
+game.changeScreen =
+  function (menu) {
+    for (var i = 0; i < list_menu.length; i++) {
+      if (list_menu[i] != menu) {
+        document.getElementById(list_menu[i]).style.display = 'none';
+      } else {
+        document.getElementById(list_menu[i]).style.display = 'block';
+      }
+      if (menu == 'screen_game') {
+        document.body.style.backgroundImage =
+          'url("assets/background_ingame.jpg")';
+        game.init();
+      }
+    }
+  }
+
+game.manageLifeBar =
+  function () {
+    const lifebar = document.getElementById('lifebar_inner');
+    lifebar.style.width = game.player.lifebar + '%';
+    lifebar.innerHTML = game.player.lifebar + '%';
+  }
+
+game.drawEnnemies =
+  function () {
+    game.ennemies.forEach(function (ennemy) {
+      ennemy.draw(game.ctx);
+    });
+  }
 
 
-/* drawing functions */  // put in class ?
-/* game.drawBackground = function() {
-    game.ctx.drawImage(imgBackground, 0, 0, game.canvas.width,
-game.canvas.height);
-} */
+/* In-game functions */
+
+game.moveEnnemies =
+  function () {
+    /* move the ennemies */
+    game.ennemies.forEach(function (ennemy) {
+      ennemy.move();
+      /* Check collision with player */
+      if (ennemy.isColliding(game.player)) {
+        game.player.lifebar -= 50;
+        if (game.player.lifebar <= 0) {
+          game.player.life--;
+          game.player.lifebar = 100;
+        }
+        game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+      }
+    });
+  }
 
 game.checkGameOver =
-    function() {
-  if (game.player.life <= 0) {
-    // game.gameOver();
-  }
-}
-
-    game.manageLifeBar =
-        function() {
-  const lifebar = document.getElementById('lifebar_inner');
-  lifebar.style.width = game.player.lifebar + '%';
-  lifebar.innerHTML = game.player.lifebar + '%';
-}
-
-
-        game.drawEnnemies =
-            function() {
-  game.ennemies.forEach(function(ennemy) {
-    ennemy.draw(game.ctx);
-  });
-}
-
-
-            /* In-game functions */
-
-            game.moveEnnemies =
-                function() {
-  /* move the ennemies */
-  game.ennemies.forEach(function(ennemy) {
-    ennemy.move();
-    /* Check collision with player */
-    if (ennemy.isColliding(game.player)) {
-      game.player.lifebar -= 50;
-      if (game.player.lifebar <= 0) {
-        game.player.life--;
-        game.player.lifebar = 100;
-      }
-      game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+  function () {
+    if (game.player.life <= 0) {
+      // game.gameOver();
     }
-  });
-}
-
-                game.spawnEnnemies =
-                    function(wave) {
-  return;
-  let nbEnnemies = wave * 3;
-  for (let i = 0; i < nbEnnemies; i++) {
-    let x = Math.random() * (sWidth - 50);
-    let ennemy = new Ennemy(x, 0, 50, 50, imgEnnemies, 1);
-    game.ennemies.push(ennemy);
   }
-}
 
-                    game.checkLvlState =
-                        function() {
-  if (game.ennemies.length == 0) {
-    game.spawnEnnemies(game.wave);
-    game.wave++;
+game.spawnEnnemies =
+  function (wave) {
+    let nbEnnemies = wave * 3;
+    for (let i = 0; i < nbEnnemies; i++) {
+      let x = Math.random() * (sWidth - 50);
+      let ennemy = new Ennemy(x, 0, 50, 50, imgEnnemies, 1);
+      game.ennemies.push(ennemy);
+    }
   }
-}
+
+game.checkLvlState =
+  function () {
+    if (game.ennemies.length == 0) {
+      game.spawnEnnemies(game.wave);
+      game.wave++;
+    }
+  }
 
 
 /* different objects of the game */
@@ -151,13 +163,13 @@ class PhysicalObject {
     // TODO: rajouter width et heighth de l'objet pour plus de précision
     /* check if the object is off screen */
     return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width ||
-        this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
+      this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
   }
 
   isColliding(object) {
     /* check if the object is colliding with another object */
     return this.x < object.x + object.width && this.x + this.width > object.x &&
-        this.y < object.y + object.height && this.y + this.height > object.y;
+      this.y < object.y + object.height && this.y + this.height > object.y;
   }
 }
 
@@ -214,8 +226,8 @@ class Shooter extends PhysicalObject {
   shoot() {
     /* shoot a laser */
     const newLaser = new Laser(
-        this.x + this.width / 2 - 5, this.y - this.height / 2, 10, 30, 'red',
-        5);
+      this.x + this.width / 2 - 5, this.y - this.height / 2, 10, 30, 'red',
+      5);
     this.lasers.push(newLaser);
   }
 
@@ -230,7 +242,7 @@ class Shooter extends PhysicalObject {
 
 class Player extends Shooter {
   constructor() {
-    super(400, 800, 30, 50, imgPlayer, 17);
+    super(400, 800, 30, 50, imgPlayer, 12);
     this.canShoot = true;
     this.lifebar = 100;
     this.life = 3;
@@ -293,7 +305,6 @@ class Laser extends PhysicalObject {
 
 /* Main loop of the game */
 function updateGame() {
-  console.log('update');
   /* manage events */
   game.doKeyboardEvents();
 
@@ -311,57 +322,35 @@ function updateGame() {
   game.checkGameOver();
   game.manageLifeBar();
 
-
   // updateEnemies();
   // updateBullets();
   // updateScore();
   // updateLives();
 }
 
-
-game.wave = 1;
-
-/* start the game */
-game.init =
-    function() {
-  game.player = new Player();
-  game.player.x = game.canvas.width / 2 - game.player.width / 2;
-  game.player.y = game.canvas.height - game.player.height;
-  game.ennemies = [];
-  game.spawnEnnemies(game.wave);
-  game.wave++;
-  game.interval = setInterval(updateGame, 30);
-}
-
-    /* stop the game */
-    game.stop =
-        function() {
-  clearInterval(game.interval);
-}
-
-/* hide everything except start_menu, todo put it in function take 1 arg
-   and display it only */
-var list_menu = ['start_menu', 'screen_game'];
-game.changeScreen =
-    function(menu) {
-  for (var i = 0; i < list_menu.length; i++) {
-    if (list_menu[i] != menu) {
-      document.getElementById(list_menu[i]).style.display = 'none';
-    } else {
-      document.getElementById(list_menu[i]).style.display = 'block';
-    }
-    if (menu == 'screen_game') {
-      document.body.style.backgroundImage =
-          'url("assets/background_ingame.jpg")';
-      game.init();
-    }
-  }
-}
-
-    game.changeScreen('start_menu');
-
 /* Manage buttons */
-
-document.getElementById('start_button').onclick = function() {
+document.getElementById('start_button').onclick = function () {
   game.changeScreen('screen_game');
 }
+
+/* Start the game */
+game.init =
+  function () {
+    game.player = new Player();
+    game.player.x = game.canvas.width / 2 - game.player.width / 2;
+    game.player.y = game.canvas.height - game.player.height;
+    game.ennemies = [];
+    game.spawnEnnemies(game.wave);
+    game.wave++;
+    game.interval = setInterval(updateGame, 40);
+  }
+
+/* Stop the game */
+game.stop =
+  function () {
+    clearInterval(game.interval);
+  }
+
+
+game.changeScreen('start_menu');
+
