@@ -12,8 +12,10 @@ var game = {};
 game.canvas = document.getElementById('screenplay');
 game.ctx = game.canvas.getContext('2d');
 game.wave = 1;
-var list_menu = ['start_menu', 'screen_game'];
-
+game.initialized = false;
+game.change_pause = false; // todo utiliser plutot classe avec display or not du menu pause et s'assurer qu'on est ingame
+var list_menu = ['start_menu', 'screen_game', "pause_menu"];
+var can_presspause = true; // todo a virer
 
 
 /* Events */
@@ -35,6 +37,30 @@ $(window).keyup(function (e) {
   }
   dataKeyPressed[e.which] = false;
 });
+
+
+
+$(window).keydown(function (e) {
+  if (e.which == 27 && can_presspause) {  // spacebar
+    game.can_presspause = false;
+    game.change_pause = !game.change_pause;
+    if (game.change_pause) {
+      game.changeScreen('pause_menu');
+    } else {
+      game.changeScreen('screen_game');
+    }
+  }
+  dataKeyPressed[e.which] = true;
+});
+
+$(window).keyup(function (e) {
+  if (e.which == 27) {
+    game.player.change_pause = true;
+  }
+  dataKeyPressed[e.which] = false;
+});
+
+
 
 /* Do keyboard events stored in dataKeyPressed */
 game.doKeyboardEvents = function () {
@@ -69,19 +95,30 @@ game.canvas.height = sHeight;
 
 game.changeScreen =
   function (menu) {
-    for (var i = 0; i < list_menu.length; i++) {
-      if (list_menu[i] != menu) {
-        document.getElementById(list_menu[i]).style.display = 'none';
-      } else {
-        document.getElementById(list_menu[i]).style.display = 'block';
-      }
-      if (menu == 'screen_game') {
-        document.body.style.backgroundImage =
-          'url("assets/background_ingame.jpg")';
-        game.init();
+    if (menu == 'pause_menu') {
+      document.getElementById('pause_menu').style.display = 'block';
+    } else {
+
+      for (var i = 0; i < list_menu.length; i++) {
+        if (list_menu[i] != menu) {
+          document.getElementById(list_menu[i]).style.display = 'none';
+        } else {
+          document.getElementById(list_menu[i]).style.display = 'block';
+        }
+        if (menu == 'screen_game') {
+          document.body.style.backgroundImage =
+            'url("assets/background_ingame.jpg")';
+          game.init();
+        }
+        if (menu == 'start_menu') {
+          document.body.style.backgroundImage =
+            'url("assets/background_startmenu.jpg")';
+        }
       }
     }
   }
+
+
 
 game.manageLifeBar =
   function () {
@@ -260,7 +297,6 @@ class Ennemy extends Shooter {
   }
 
   move() {
-    console.log(game.ennemies);
     /* move the ennemy */
     this.y += this.speed;
     if (this.y > game.canvas.height) {
@@ -307,21 +343,21 @@ class Laser extends PhysicalObject {
 function updateGame() {
   /* manage events */
   game.doKeyboardEvents();
+  if (game.change_pause == false) {
+    /* reset the canvas */
+    game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
 
-  /* reset the canvas */
-  game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
+    /* do all the drawings */
+    game.player.draw(game.ctx);
+    game.player.drawLasers();
+    game.drawEnnemies();
 
-  /* do all the drawings */
-  game.player.draw(game.ctx);
-  game.player.drawLasers();
-  game.drawEnnemies();
-
-  /* do all the in-game functions */
-  game.moveEnnemies();
-  game.checkLvlState();
-  game.checkGameOver();
-  game.manageLifeBar();
-
+    /* do all the in-game functions */
+    game.moveEnnemies();
+    game.checkLvlState();
+    game.checkGameOver();
+    game.manageLifeBar();
+  }
   // updateEnemies();
   // updateBullets();
   // updateScore();
@@ -333,19 +369,40 @@ document.getElementById('start_button').onclick = function () {
   game.changeScreen('screen_game');
 }
 
+document.getElementById("logo_home").onclick = function () {
+  game.changeScreen('start_menu');
+}
+
 /* Start the game */
 game.init =
   function () {
-    game.player = new Player();
-    game.player.x = game.canvas.width / 2 - game.player.width / 2;
-    game.player.y = game.canvas.height - game.player.height;
-    game.ennemies = [];
-    game.spawnEnnemies(game.wave);
-    game.wave++;
-    game.interval = setInterval(updateGame, 40);
+    if (game.initialized === false) {
+      game.initialized = true;
+      game.player = new Player();
+      game.player.x = game.canvas.width / 2 - game.player.width / 2;
+      game.player.y = game.canvas.height - game.player.height;
+      game.ennemies = [];
+      game.spawnEnnemies(game.wave);
+      game.wave++;
+      game.interval = setInterval(updateGame, 30);
+    }
   }
 
-/* Stop the game */
+/* Pause the game */
+// game.pause =
+//   function () {
+//     clearInterval(game.interval);
+//   }
+
+// /* Resume the game */
+// game.resume =
+//   function () {
+//     game.interval 
+
+//   }
+
+
+/* Stop the game todo the gameover stuff here */
 game.stop =
   function () {
     clearInterval(game.interval);
