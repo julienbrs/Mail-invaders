@@ -52,8 +52,6 @@ game.doKeyboardEvents = function() {
 /* definitions of the assets */
 const imgPlayer = new Image();
 imgPlayer.src = 'assets/player.png';
-var imgBackground = new Image();
-imgBackground.src = 'assets/background.jpg';
 const imgEnnemies = new Image();
 imgEnnemies.src = 'assets/Mail.png';
 const imgMissile = new Image();
@@ -115,6 +113,7 @@ game.checkGameOver =
 
                 game.spawnEnnemies =
                     function(wave) {
+  return;
   let nbEnnemies = wave * 3;
   for (let i = 0; i < nbEnnemies; i++) {
     let x = Math.random() * (sWidth - 50);
@@ -249,11 +248,11 @@ class Ennemy extends Shooter {
   }
 
   move() {
+    console.log(game.ennemies);
     /* move the ennemy */
     this.y += this.speed;
     if (this.y > game.canvas.height) {
       game.ennemies.splice(game.ennemies.indexOf(this), 1);
-      console.log('DEAD');
     }
   }
 }
@@ -294,6 +293,7 @@ class Laser extends PhysicalObject {
 
 /* Main loop of the game */
 function updateGame() {
+  console.log('update');
   /* manage events */
   game.doKeyboardEvents();
 
@@ -304,7 +304,6 @@ function updateGame() {
   game.player.draw(game.ctx);
   game.player.drawLasers();
   game.drawEnnemies();
-  console.log(game.player);
 
   /* do all the in-game functions */
   game.moveEnnemies();
@@ -340,6 +339,29 @@ game.init =
   clearInterval(game.interval);
 }
 
+/* hide everything except start_menu, todo put it in function take 1 arg
+   and display it only */
+var list_menu = ['start_menu', 'screen_game'];
+game.changeScreen =
+    function(menu) {
+  for (var i = 0; i < list_menu.length; i++) {
+    if (list_menu[i] != menu) {
+      document.getElementById(list_menu[i]).style.display = 'none';
+    } else {
+      document.getElementById(list_menu[i]).style.display = 'block';
+    }
+    if (menu == 'screen_game') {
+      document.body.style.backgroundImage =
+          'url("assets/background_ingame.jpg")';
+      game.init();
+    }
+  }
+}
 
-        /* main */
-        game.init();
+    game.changeScreen('start_menu');
+
+/* Manage buttons */
+
+document.getElementById('start_button').onclick = function() {
+  game.changeScreen('screen_game');
+}

@@ -10,20 +10,38 @@
         </head>
 
         <body>
-            <div id = "container">
-                <div id = "planetleft"><img src="assets/planet1.png" alt="planet"></div>
-                <div id = "planetright"><img src="assets/planet2.png" alt="planet"></div>
-                <div id="lifebar_wrapper">
-                    <div id="lifebar_inner">50</div>
+            <div id = "main_container">
+
+                <div id="start_menu">
+
+                    <div id = "start_menu_title">
+                        <h1>Mail Invaders</h1>
+                    </div>
+
+                    <div id = "start_menu_buttons">
+                        <button id = "start_button">Start</button>
+                        <button id = "difficulty_button">Difficulty</button>
+                        <button id = "help_button">Help</button>
+                    </div>
+
                 </div>
                 
-                <div id = "title_game"><h1>Mail invaders</h1></div>
-                <div id = "bonus_title"><h1>Bonus</h1></div>
-                <canvas id="screenplay" >
-                </canvas>
-                <canvas id = "hud" ></canvas>
-                <script type="text/javascript" src="tscript.js"></script>
+                <div id = "screen_game">
+                    <div id = "planetleft"><img src="assets/planet1.png" alt="planet"></div>
+                    <div id = "planetright"><img src="assets/planet2.png" alt="planet"></div>
+                    <div id="lifebar_wrapper">
+                        <div id="lifebar_inner">50</div>
+                    </div>
+                    
+                    <div id = "title_game"><h1>Mail invaders</h1></div>
+                    <div id = "bonus_title"><h1>Bonus</h1></div>
+                    <canvas id="screenplay" >
+                    </canvas>
+                    <canvas id = "hud" ></canvas>
+                </div>
+
             </div>
+            <script type="text/javascript" src="tscript.js"></script>
         </body>
 
 </html>
