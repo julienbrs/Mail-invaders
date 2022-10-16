@@ -1,3 +1,7 @@
+/*todo fixer mail invaders * easy */
+/* musique, chrono */
+/* bonus à faire */
+
 @font-face {
     font-family: 'nulshockbold';
     src: url('assets/nulshock_bd-webfont.woff2') format('woff2'),
@@ -174,7 +178,7 @@ button:hover{
     left: 10.5vw;
     width: 56.25vw;
     height: 80.8vh;
-    background-color: rgba(236, 215, 229, 0.29);
+    background-color: rgba(54,1,86, 0.6);
     border-radius: 44px;
     border-color: #C8FF00;
     border-width: 3px;
@@ -189,7 +193,7 @@ button:hover{
     left: 68.4vw;
     width: 26.5vw;
     height: 80.8vh;
-    background-color: rgba(236, 215, 229, 0.29);
+    background-color: rgba(54,1,86, 0.6);
     border-radius: 44px;
     border-color: #C8FF00;
     border-width: 3px;
