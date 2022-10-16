@@ -37,8 +37,16 @@
                     <div id = "star_img"><img src="assets/starlight.png" alt="star"></div>
                     <div id = "difficulty_title_ingame"><h1>Easy</h1></div>
                     <div id = "bonus_title"><h1>Bonus</h1></div>
+                    <!-- <div id = "hud_score_wrapper">
+                        <div id = "hud_score">
+                            <h1>Score :</h1>
+                            <h1 id = "pause_menu_score_value" class = "score_value" >0</h1>
+                        </div>
+                    </div> -->
+                    
                     <div id = "logo_home"><input type="image" src="assets/logo_home.png" alt="home"></div>
                     <div id = "logo_sound"><input type="image" src="assets/logo_sound.png" alt="sound"></div>
+
                     <canvas id="screenplay" >
                     </canvas>
                     <canvas id = "hud" ></canvas>
@@ -47,12 +55,27 @@
                         <div id = "pause_menu_title">
                             <h1>Pause</h1>
                         </div>
+                        <div id = "pause_menu_score_wrapper">
+                            <div id = "pause_menu_score">
+                                <h1>Score :</h1>
+                                <h1 id = "pause_menu_score_value" class = "score_value" >0</h1>
+                            </div>
+                        </div>
                         <div id = "pause_menu_buttons">
                             <button class = "button_pause_menu" id = "resume_button">Resume</button>
                             <button class = "button_pause_menu" id = "restart_button">Restart</button>
                             <button class = "button_pause_menu" id = "home_button">Home</button>
-                            <button class = "button_pause_menu" id = "help_button">help</button>
+                            <button class = "button_pause_menu" id = "help_button_pause_menu">Help</button>
                         </div>
+                    </div>
+
+                    <div id = "help_menu">
+                        <div id = "help_menu_title"><h1>Help</h1> </div>
+                        <div id = "move_left_help_menu"><input type="image" src="assets/button_move_left.png" alt="left arrow"></div>
+                        <div id = "move_right_help_menu"><input type="image" src="assets/button_move_right.png" alt="right arrow"></div>
+                        <div id = "shoot_help_menu"><input type="image" src="assets/button_spacebar.png" alt="spacebar button"></div>
+                        <div id = "help_menu_move_text"><h1>Move</h1> </div>
+                        <div id = "help_menu_shoot_text"><h1>Shoot</h1> </div>
                     </div>
                 </div>
 
