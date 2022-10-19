@@ -169,7 +169,10 @@ game.drawEnnemies =
   }
 
 game.drawScore = function () {
-  document.getElementById('pause_menu_score_value').innerHTML = game.score;
+  var score = document.getElementsByClassName("score_value");
+  for (var i = 0; i < score.length; i++) {
+    score[i].innerHTML = game.score;
+  }
 }
 
 /* In-game functions */
