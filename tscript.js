@@ -62,16 +62,29 @@ $(window).keydown(function (e) {
   else if (e.which == 27 && can_presspause && cond_pause_screen) {
     game.switch_pause();
   }
+  else if (e.which == 37 && cond_help_screen) {
+    document.getElementById('move_left_help_menu').classList.add('button_help_hover');
+  }
+  else if (e.which == 39 && cond_help_screen) {
+    document.getElementById('move_right_help_menu').classList.add('button_help_hover');
+  }
   dataKeyPressed[e.which] = true;
 });
 
 $(window).keyup(function (e) {
   let cond_pause_screen = document.getElementById('screen_game').style.display == 'block';
+  let cond_help_screen = document.getElementById('help_menu').style.display == 'block';
   if (e.which == 27 && cond_pause_screen) {
     game.player.on_pause = true;
   }
   else if (e.which == 27 && cond_help_screen) {
     game.player.on_pause = true;
+  }
+  else if (e.which == 37 && cond_help_screen) {
+    document.getElementById('move_left_help_menu').classList.remove('button_help_hover');
+  }
+  else if (e.which == 39 && cond_help_screen) {
+    document.getElementById('move_right_help_menu').classList.remove('button_help_hover');
   }
   dataKeyPressed[e.which] = false;
 });
