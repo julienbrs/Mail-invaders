@@ -123,7 +123,7 @@ button:hover{
 #sound_button{
     position: absolute;
     top: 3vh;
-    left: 93vw;
+    left: 93.7vw;
     width: 4vw;
     height: 4vh;
     z-index: 4;
@@ -304,13 +304,20 @@ button:hover{
     align-content: stretch;
 }
 
-#lifebar_wrapper{
+.bar_wrapper{
+    display: none;
+    justify-content: center;
     width: 70%;
     height: auto;
     z-index: 4;
     background-color: #e17055;
     color: white;
     border-radius: 15px;
+}
+
+
+#bar_wrapper_life {
+    display: flex;
 }
 
 #lifebar_inner {
@@ -452,3 +459,8 @@ button:hover{
 .button_help_hover{
     box-shadow: #ffffff 10px 10px 10px 2px;
 }
+
+.class hidden{
+    display: none;
+}
+

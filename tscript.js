@@ -19,7 +19,16 @@ game.on_pause = false; // todo utiliser plutot classe avec display or not du men
 var list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu"];
 var can_presspause = true; // todo a virer
 game.score = 0;
+game.bonusOnMap = [];
+game.inventory = {
+  'shield': 0,
+  'trap': 0,
+  'turbo': 0,
+  'supershoot': 0
+};
 
+/* en secondes */
+const maxShieldTimer = 10 * 3.33 * 10;
 
 /* Events */
 /* Keyboard events */
@@ -86,6 +95,12 @@ $(window).keyup(function (e) {
   else if (e.which == 39 && cond_help_screen) {
     document.getElementById('move_right_help_menu').classList.remove('button_help_hover');
   }
+  else if (e.which == 81 && game.inventory['shield'] > 0) {
+    game.player.shieldTimer = maxShieldTimer;
+    game.inventory['shield'] -= 1;
+    document.getElementById("bonus_description_shield").style.display = "none";
+    document.getElementById("bar_wrapper_shield").style.display = "flex";
+  }
   dataKeyPressed[e.which] = false;
 });
 
@@ -113,6 +128,10 @@ game.doKeyboardEvents = function () {
 /* Definitions of the assets */
 const imgPlayer = new Image();
 imgPlayer.src = 'assets/player.png';
+const imgShield = new Image();
+imgShield.src = 'assets/shield.png';
+const imgShieldInGame = new Image();
+imgShieldInGame.src = 'assets/shield_ingame.png';
 const imgEnnemies = new Image();
 imgEnnemies.src = 'assets/Mail.png';
 const imgMissile = new Image();
@@ -183,17 +202,26 @@ game.moveEnnemies =
     game.ennemies.forEach(function (ennemy) {
       ennemy.move();
       /* Check collision with player */
-      if (ennemy.isColliding(game.player)) {
-        game.player.lifebar -= 30;
-        if (game.player.lifebar <= 0) {
-          game.player.life--;
-          game.player.lifebar = 100;
-          game.player.x = game.canvas.width / 2 - game.player.width / 2;
-          game.player.y = game.canvas.height - game.player.height;
+      if (game.player.shieldTimer != 0) {
+        if (ennemy.isColliding(game.player)) {
+          game.player.shieldTimer = 1;
+          game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
         }
-        game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
       }
-    });
+      else {
+        if (ennemy.isColliding(game.player)) {
+          game.player.lifebar -= 30;
+          game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+        }
+      }
+      if (game.player.lifebar <= 0) {
+        game.player.life--;
+        game.player.lifebar = 100;
+        game.player.x = game.canvas.width / 2 - game.player.width / 2;
+        game.player.y = game.canvas.height - game.player.height;
+      }
+    }
+    );
   }
 
 game.checkGameOver =
@@ -222,6 +250,33 @@ game.checkLvlState =
     }
   }
 
+game.checkCollisionBonus =
+  function () {
+    game.bonusOnMap.forEach(function (bonus) {
+      if (bonus.isColliding(game.player)) {
+        if (bonus.type == 'shield') {
+          game.inventory['shield']++;
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          showBonus('shield');
+        }
+      }
+    })
+  }
+
+game.spawnBonus =
+  function () {
+    let x = Math.random() * (sWidth - 59);
+    let bonus = new Bonus(x, 50, 45, 52, imgShield, 'shield');
+    console.log(game.bonusOnMap);
+    game.bonusOnMap.push(bonus);
+  }
+
+game.drawBonus =
+  function () {
+    game.bonusOnMap.forEach(function (bonus) {
+      bonus.draw(game.ctx);
+    });
+  }
 
 /* different objects of the game */
 
@@ -250,6 +305,13 @@ class PhysicalObject {
     /* check if the object is colliding with another object */
     return this.x < object.x + object.width && this.x + this.width > object.x &&
       this.y < object.y + object.height && this.y + this.height > object.y;
+  }
+}
+
+class Bonus extends PhysicalObject {
+  constructor(x, y, width, height, imgLogo, type) {
+    super(x, y, width, height, imgLogo);
+    this.type = type;
   }
 }
 
@@ -322,15 +384,28 @@ class Shooter extends PhysicalObject {
 
 class Player extends Shooter {
   constructor() {
-    super(400, 800, 30, 50, imgPlayer, 10);
+    super(400, 800, 30, 50, imgPlayer, 13);
     this.canShoot = true;
     this.lifebar = 100;
     this.life = 3;
+    this.shieldTimer = 0;
   }
 
   draw() {
     /* draw the player */
     game.ctx.drawImage(imgPlayer, this.x, this.y, this.width, this.height);
+    if (this.shieldTimer > 0) {
+      game.ctx.drawImage(imgShieldInGame, this.x - this.height / 2.1, this.y - this.height / 3.5, this.height * 1.5, this.height * 1.5);
+      this.shieldTimer--;
+      const barTimer = document.getElementById('bar_wrapper_shield');
+      let countBar = Math.round(this.shieldTimer / maxShieldTimer * 100);
+      let barWidth = Math.round(countBar * 0.6);
+      barTimer.style.width = barWidth + '%';
+      barTimer.innerHTML = countBar / 10 + 's';
+      if (this.shieldTimer == 0) {
+        document.getElementById('bonus_shield_wrapper').style.display = 'none';
+      }
+    }
   }
 }
 
@@ -381,7 +456,7 @@ class Laser extends PhysicalObject {
   }
 }
 
-
+game.spawnBonus();
 /* Main loop of the game */
 function updateGame() {
   /* manage events */
@@ -402,6 +477,8 @@ function updateGame() {
     game.manageLifeBar();
     game.score += 10;
     game.drawScore();
+    game.drawBonus();
+    game.checkCollisionBonus();
   }
   // updateEnemies();
   // updateBullets();
@@ -442,12 +519,23 @@ document.getElementById("help_button_pause_menu").onclick = function () {
 }
 
 
+function hideAllBonus() {
+  let div_bonus = document.getElementsByClassName("bonus_wrapper");
+  for (let i = 0; i < div_bonus.length; i++) {
+    div_bonus[i].style.display = "none";
+  }
+}
 
+function showBonus(bonus) {
+  console.log("bonus_" + bonus + "_wrapperbonus");
+  document.getElementById("bonus_" + bonus + "_wrapper").style.display = "flex";
+}
 
 /* Start the game */
 game.init =
   function () {
     if (game.initialized == false) {
+      hideAllBonus();
       game.wave = 1;
       game.initialized = true;
       game.on_pause = false;
