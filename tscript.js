@@ -27,8 +27,10 @@ game.inventory = {
   'supershoot': 0
 };
 
+game.trapOnMap = {};
 /* en secondes */
 const maxShieldTimer = 10 * 3.33 * 10;
+const maxTrapGrabbed = 3;
 
 /* Events */
 /* Keyboard events */
@@ -101,6 +103,12 @@ $(window).keyup(function (e) {
     document.getElementById("bonus_description_shield").style.display = "none";
     document.getElementById("bar_wrapper_shield").style.display = "flex";
   }
+  else if (e.which == 87 && game.inventory['trap'] > 0) {
+    game.player.trapGrabbed = maxTrapGrabbed;
+    game.inventory['trap'] -= 1;
+    document.getElementById("bonus_description_trap").style.display = "none";
+    putTrap();
+  }
   dataKeyPressed[e.which] = false;
 });
 
@@ -132,6 +140,12 @@ const imgShield = new Image();
 imgShield.src = 'assets/shield.png';
 const imgShieldInGame = new Image();
 imgShieldInGame.src = 'assets/shield_ingame.png';
+
+const imgTrap = new Image();
+imgTrap.src = 'assets/trap.png';
+const imgTrapInGame = new Image();
+imgTrapInGame.src = 'assets/trap_ingame.png';
+
 const imgEnnemies = new Image();
 imgEnnemies.src = 'assets/Mail.png';
 const imgMissile = new Image();
@@ -259,6 +273,11 @@ game.checkCollisionBonus =
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('shield');
         }
+        else if (bonus.type == 'trap') {
+          game.inventory['trap']++;
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          showBonus('trap');
+        }
       }
     })
   }
@@ -266,7 +285,7 @@ game.checkCollisionBonus =
 game.spawnBonus =
   function () {
     let x = Math.random() * (sWidth - 59);
-    let bonus = new Bonus(x, 50, 45, 52, imgShield, 'shield');
+    let bonus = new Bonus(x, 50, 45, 52, imgTrap, 'trap');
     console.log(game.bonusOnMap);
     game.bonusOnMap.push(bonus);
   }
@@ -277,6 +296,12 @@ game.drawBonus =
       bonus.draw(game.ctx);
     });
   }
+
+function putTrap() {
+  /* draw the ingame_trap at the place of the player */
+
+  game.ctx.drawImage(imgTrapInGame, game.player.x, game.player.y, 58, 43);
+}
 
 /* different objects of the game */
 
@@ -401,7 +426,7 @@ class Player extends Shooter {
       let countBar = Math.round(this.shieldTimer / maxShieldTimer * 100);
       let barWidth = Math.round(countBar * 0.6);
       barTimer.style.width = barWidth + '%';
-      barTimer.innerHTML = countBar / 10 + 's';
+      barTimer.innerHTML = countBar / 10 + ' s';
       if (this.shieldTimer == 0) {
         document.getElementById('bonus_shield_wrapper').style.display = 'none';
       }
