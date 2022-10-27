@@ -2,7 +2,7 @@
 // todo: coeur de vie a afficher
 //todo: reset de la lvlwave quand restart a faire
 //todo quand en pause on peut log des events, ou bien à fin de pause on enleve tous les evnets de datakeypressed
-
+//todo score need to be restart at restart
 /* Get width of the screeplay */
 const sWidth = document.getElementById('screenplay').offsetWidth;
 const sHeight = document.getElementById('screenplay').offsetHeight;
@@ -24,7 +24,8 @@ game.inventory = {
   'shield': 0,
   'trap': 0,
   'turbo': 0,
-  'supershoot': 0
+  'supershoot': 0,
+  'trap_placed': 0
 };
 
 game.trapOnMap = {};
@@ -104,10 +105,11 @@ $(window).keyup(function (e) {
     document.getElementById("bar_wrapper_shield").style.display = "flex";
   }
   else if (e.which == 87 && game.inventory['trap'] > 0) {
-    game.player.trapGrabbed = maxTrapGrabbed;
     game.inventory['trap'] -= 1;
-    document.getElementById("bonus_description_trap").style.display = "none";
-    putTrap();
+    let bonus_trap = new TrapPlaced();
+    document.getElementById("bonus_trap_wrapper").style.display = "none";
+    game.bonusOnMap.push(bonus_trap);
+    // putTrap();
   }
   dataKeyPressed[e.which] = false;
 });
@@ -224,15 +226,9 @@ game.moveEnnemies =
       }
       else {
         if (ennemy.isColliding(game.player)) {
-          game.player.lifebar -= 30;
+          game.player.lifebar -= 20;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
         }
-      }
-      if (game.player.lifebar <= 0) {
-        game.player.life--;
-        game.player.lifebar = 100;
-        game.player.x = game.canvas.width / 2 - game.player.width / 2;
-        game.player.y = game.canvas.height - game.player.height;
       }
     }
     );
@@ -240,9 +236,8 @@ game.moveEnnemies =
 
 game.checkGameOver =
   function () {
-    if (game.player.life <= 0) {
-
-      // game.gameOver();
+    if (game.player.lifebar <= 0) {
+      game.gameOver();
     }
   }
 
@@ -267,13 +262,30 @@ game.checkLvlState =
 game.checkCollisionBonus =
   function () {
     game.bonusOnMap.forEach(function (bonus) {
-      if (bonus.isColliding(game.player)) {
-        if (bonus.type == 'shield') {
+      if (bonus.type == 'trap_placed') {
+        /* Check collision with ennemies */
+        game.ennemies.forEach(function (ennemy) {
+          if (ennemy.isColliding(bonus)) {
+            game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+            bonus.canStillGrabAmount--;
+            if (bonus.canStillGrabAmount == 0) {
+              game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+            }
+          }
+        }
+        );
+
+      }
+      else if (bonus.type == 'shield') {
+        if (bonus.isColliding(game.player)) {
+
           game.inventory['shield']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('shield');
         }
-        else if (bonus.type == 'trap') {
+      }
+      else if (bonus.type == 'trap') {
+        if (bonus.isColliding(game.player)) {
           game.inventory['trap']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('trap');
@@ -285,8 +297,7 @@ game.checkCollisionBonus =
 game.spawnBonus =
   function () {
     let x = Math.random() * (sWidth - 59);
-    let bonus = new Bonus(x, 50, 45, 52, imgTrap, 'trap');
-    console.log(game.bonusOnMap);
+    let bonus = new Bonus(x, 50, 45, 52, imgShield, 'shield');
     game.bonusOnMap.push(bonus);
   }
 
@@ -299,7 +310,6 @@ game.drawBonus =
 
 function putTrap() {
   /* draw the ingame_trap at the place of the player */
-
   game.ctx.drawImage(imgTrapInGame, game.player.x, game.player.y, 58, 43);
 }
 
@@ -339,6 +349,15 @@ class Bonus extends PhysicalObject {
     this.type = type;
   }
 }
+
+class TrapPlaced extends Bonus {
+  constructor() {
+    super(game.player.x, game.player.y, 48, 76, imgTrapInGame, "trap_placed");
+    this.canStillGrabAmount = maxTrapGrabbed;
+  }
+
+}
+
 
 /* Shooters */
 class Shooter extends PhysicalObject {
@@ -412,13 +431,13 @@ class Player extends Shooter {
     super(400, 800, 30, 50, imgPlayer, 13);
     this.canShoot = true;
     this.lifebar = 100;
-    this.life = 3;
     this.shieldTimer = 0;
   }
 
   draw() {
-    /* draw the player */
-    game.ctx.drawImage(imgPlayer, this.x, this.y, this.width, this.height);
+    game.ctx.globalCompositeOperation = 'source-over';
+    super.draw();
+    game.ctx.globalCompositeOperation = 'destination-over';
     if (this.shieldTimer > 0) {
       game.ctx.drawImage(imgShieldInGame, this.x - this.height / 2.1, this.y - this.height / 3.5, this.height * 1.5, this.height * 1.5);
       this.shieldTimer--;
@@ -552,7 +571,6 @@ function hideAllBonus() {
 }
 
 function showBonus(bonus) {
-  console.log("bonus_" + bonus + "_wrapperbonus");
   document.getElementById("bonus_" + bonus + "_wrapper").style.display = "flex";
 }
 
@@ -563,6 +581,7 @@ game.init =
       hideAllBonus();
       game.wave = 1;
       game.initialized = true;
+      game.score = 0;
       game.on_pause = false;
       game.can_presspause = true;
       game.player = new Player();
@@ -585,6 +604,13 @@ game.stop =
   function () {
     clearInterval(game.interval);
   }
+
+game.gameOver =
+  function () {
+    game.stop();
+    game.changeScreen('start_menu');
+  }
+
 
 game.changeScreen('start_menu');
 
