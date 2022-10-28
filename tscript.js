@@ -3,6 +3,12 @@
 //todo: reset de la lvlwave quand restart a faire
 //todo quand en pause on peut log des events, ou bien à fin de pause on enleve tous les evnets de datakeypressed
 //todo score need to be restart at restart
+//todo hitbox avec shield
+// todo gameover window
+// mettre autre temps pour les bonus 
+//score at pause need to be done better
+//todo supermissile passent de rouge à jaune quand timer passe à 0 => solve ça
+
 /* Get width of the screeplay */
 const sWidth = document.getElementById('screenplay').offsetWidth;
 const sHeight = document.getElementById('screenplay').offsetHeight;
@@ -24,14 +30,17 @@ game.inventory = {
   'shield': 0,
   'trap': 0,
   'turbo': 0,
-  'supershoot': 0,
+  'super_shoot': 0,
   'trap_placed': 0
 };
 
 game.trapOnMap = {};
 /* en secondes */
 const maxShieldTimer = 10 * 3.33 * 10;
+const maxTurboTimer = 10 * 3.33 * 10;
+const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
+const speedPlayer = 13;
 
 /* Events */
 /* Keyboard events */
@@ -111,6 +120,21 @@ $(window).keyup(function (e) {
     game.bonusOnMap.push(bonus_trap);
     // putTrap();
   }
+  else if (e.which == 69 && game.inventory['turbo'] > 0) {
+    game.player.turboTimer = maxTurboTimer;
+    game.inventory['turbo'] -= 1;
+    game.player.speed = 20;
+    document.getElementById("bonus_description_turbo").style.display = "none";
+    document.getElementById("bar_wrapper_turbo").style.display = "flex";
+  }
+  else if (e.which == 82 && game.inventory['super_shoot'] > 0) {
+    console.log("super_shoot");
+    game.player.superShootTimer = maxSuperShootTimer;
+    game.inventory['super_shoot'] -= 1;
+    document.getElementById("bonus_description_super_shoot").style.display = "none";
+    document.getElementById("bar_wrapper_super_shoot").style.display = "flex";
+  }
+
   dataKeyPressed[e.which] = false;
 });
 
@@ -148,10 +172,19 @@ imgTrap.src = 'assets/trap.png';
 const imgTrapInGame = new Image();
 imgTrapInGame.src = 'assets/trap_ingame.png';
 
+const imgTurbo = new Image();
+imgTurbo.src = 'assets/turbo.png';
+
+const imgSuperShoot = new Image();
+imgSuperShoot.src = 'assets/star.png';
+
 const imgEnnemies = new Image();
 imgEnnemies.src = 'assets/Mail.png';
 const imgMissile = new Image();
 imgMissile.src = 'assets/Missile.png';
+
+const imgSuperMissile = new Image();
+imgSuperMissile.src = 'assets/supershoot_missile.png';
 
 /* Graphic features of the game */
 game.canvas.width = sWidth;
@@ -291,13 +324,27 @@ game.checkCollisionBonus =
           showBonus('trap');
         }
       }
+      else if (bonus.type == 'turbo') {
+        if (bonus.isColliding(game.player)) {
+          game.inventory['turbo']++;
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          showBonus('turbo');
+        }
+      }
+      else if (bonus.type == 'super_shoot') {
+        if (bonus.isColliding(game.player)) {
+          game.inventory['super_shoot']++;
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          showBonus('super_shoot');
+        }
+      }
     })
   }
 
 game.spawnBonus =
   function () {
     let x = Math.random() * (sWidth - 59);
-    let bonus = new Bonus(x, 50, 45, 52, imgShield, 'shield');
+    let bonus = new SuperShoot(x, 150);
     game.bonusOnMap.push(bonus);
   }
 
@@ -307,6 +354,16 @@ game.drawBonus =
       bonus.draw(game.ctx);
     });
   }
+
+
+game.manageBonus =
+  function () {
+    game.checkCollisionBonus();
+    /* manage turbo */
+
+
+  }
+
 
 function putTrap() {
   /* draw the ingame_trap at the place of the player */
@@ -347,6 +404,18 @@ class Bonus extends PhysicalObject {
   constructor(x, y, width, height, imgLogo, type) {
     super(x, y, width, height, imgLogo);
     this.type = type;
+  }
+}
+
+class Turbo extends Bonus {
+  constructor(x, y) {
+    super(x, y, 48, 52, imgTurbo, 'turbo');
+  }
+}
+
+class SuperShoot extends Bonus {
+  constructor(x, y) {
+    super(x, y, 48, 52, imgSuperShoot, 'super_shoot');
   }
 }
 
@@ -411,10 +480,16 @@ class Shooter extends PhysicalObject {
 
   shoot() {
     /* shoot a laser */
-    const newLaser = new Laser(
-      this.x + this.width / 2 - 5, this.y - this.height / 2, 10, 30, 'red',
-      5);
-    this.lasers.push(newLaser);
+    if (this == game.player) {
+      let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile, 10);
+      this.lasers.push(laser);
+    }
+    else {
+      const newLaser = new Laser(
+        this.x + this.width / 2 - 5, this.y - this.height / 2, 14, 57,
+        5);
+      this.lasers.push(newLaser);
+    }
   }
 
   drawLasers() {
@@ -428,13 +503,34 @@ class Shooter extends PhysicalObject {
 
 class Player extends Shooter {
   constructor() {
-    super(400, 800, 30, 50, imgPlayer, 13);
+    super(400, 800, 27, 64.5, imgPlayer, speedPlayer);
     this.canShoot = true;
     this.lifebar = 100;
     this.shieldTimer = 0;
+    this.turboTimer = 0;
+    this.superShootTimer = 0;
   }
 
+  shoot() {
+    /* shoot a laser */
+    if (this.superShootTimer > 0) {
+      const newLaser = new LaserPlayer(
+        this.x + this.width / 2 - 15, this.y - this.height / 2, 10, 30,
+        5);
+      const newLaser2 = new LaserPlayer(
+        this.x + this.width / 2 + 10, this.y - this.height / 2, 10, 30,
+        5);
+      this.lasers.push(newLaser);
+      this.lasers.push(newLaser2);
+    }
+    else {
+      super.shoot();
+    }
+  }
+
+
   draw() {
+
     game.ctx.globalCompositeOperation = 'source-over';
     super.draw();
     game.ctx.globalCompositeOperation = 'destination-over';
@@ -448,6 +544,29 @@ class Player extends Shooter {
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.shieldTimer == 0) {
         document.getElementById('bonus_shield_wrapper').style.display = 'none';
+      }
+    }
+    if (this.turboTimer > 0) {
+      this.turboTimer--;
+      const barTimer = document.getElementById('bar_wrapper_turbo');
+      let countBar = Math.round(this.turboTimer / maxTurboTimer * 100);
+      let barWidth = Math.round(countBar * 0.6);
+      barTimer.style.width = barWidth + '%';
+      barTimer.innerHTML = countBar / 10 + ' s';
+      if (this.turboTimer == 0) {
+        document.getElementById('bonus_turbo_wrapper').style.display = 'none';
+        this.speed = speedPlayer;
+      }
+    }
+    if (this.superShootTimer > 0) {
+      this.superShootTimer--;
+      const barTimer = document.getElementById('bar_wrapper_super_shoot');
+      let countBar = Math.round(this.superShootTimer / maxSuperShootTimer * 100);
+      let barWidth = Math.round(countBar * 0.6);
+      barTimer.style.width = barWidth + '%';
+      barTimer.innerHTML = countBar / 10 + ' s';
+      if (this.superShootTimer == 0) {
+        document.getElementById('bonus_super_shoot_wrapper').style.display = 'none';
       }
     }
   }
@@ -469,8 +588,8 @@ class Ennemy extends Shooter {
 
 /* Laser class */
 class Laser extends PhysicalObject {
-  constructor(x, y, width, height, color, speed) {
-    super(x, y, width, height, color);
+  constructor(x, y, width, height, speed) {
+    super(x, y, width, height);
     this.speed = speed;
   }
 
@@ -500,6 +619,24 @@ class Laser extends PhysicalObject {
   }
 }
 
+class LaserPlayer extends Laser {
+  constructor(x, y) {
+    super(x, y, 14, 57, 14);
+  }
+
+  draw() {
+    /* draw the laser */
+    if (game.player.superShootTimer > 0) {
+      game.ctx.drawImage(imgSuperMissile, this.x, this.y, this.width, this.height);
+    }
+    else {
+      game.ctx.drawImage(imgMissile, this.x, this.y, this.width, this.height);
+    }
+  }
+}
+
+
+
 game.spawnBonus();
 /* Main loop of the game */
 function updateGame() {
@@ -521,8 +658,8 @@ function updateGame() {
     game.manageLifeBar();
     game.score += 10;
     game.drawScore();
+    game.manageBonus();
     game.drawBonus();
-    game.checkCollisionBonus();
   }
   // updateEnemies();
   // updateBullets();
