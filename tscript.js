@@ -8,6 +8,9 @@
 // mettre autre temps pour les bonus 
 //score at pause need to be done better
 //todo supermissile passent de rouge à jaune quand timer passe à 0 => solve ça
+//todo indep FPS
+// probleme poubelle et spawn bonus
+// mettre temps pour poubelle plutot
 
 /* Get width of the screeplay */
 const sWidth = document.getElementById('screenplay').offsetWidth;
@@ -41,6 +44,8 @@ const maxTurboTimer = 10 * 3.33 * 10;
 const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
 const speedPlayer = 13;
+
+const FPS = 30;
 
 /* Events */
 /* Keyboard events */
@@ -276,16 +281,26 @@ game.checkGameOver =
 
 game.spawnEnnemies =
   function (wave) {
-    let nbEnnemies = wave * 3;
+    let nbEnnemies = wave * 10;
     for (let i = 0; i < nbEnnemies; i++) {
       let x = Math.random() * (sWidth - 59);
-      let ennemy = new Ennemy(x, 0, 58, 43, imgEnnemies, 1);
+      let y = Math.random() * (- 300 * (1 + wave * 0.3));
+      let ennemy = new Ennemy(x, y, 58, 43, imgEnnemies, 1);
       game.ennemies.push(ennemy);
     }
   }
 
 game.checkLvlState =
   function () {
+    /* check if we spawn bonus */
+    if (game.bonusOnMap.length == 0) {
+      let proba = Math.random();
+      if (proba < 1 / 600) {
+        /* spawn a random bonus */
+        game.spawnBonus();
+      }
+    }
+    /* check if we spawn ennemies */
     if (game.ennemies.length == 0) {
       game.spawnEnnemies(game.wave);
       game.wave++;
@@ -343,8 +358,42 @@ game.checkCollisionBonus =
 
 game.spawnBonus =
   function () {
-    let x = Math.random() * (sWidth - 59);
-    let bonus = new SuperShoot(x, 150);
+    let x = Math.random() * (sWidth - 65);
+    let y = Math.random() * (sHeight - 65);
+
+    let random = Math.random();
+    if (random < 0.25) {
+      if (game.inventory['shield'] > 0) {
+        game.spawnBonus();
+      }
+      else {
+        bonus = new Shield(x, y);
+      }
+    }
+    else if (random < 0.5) {
+      if (game.inventory['trap'] > 0) {
+        game.spawnBonus();
+      }
+      else {
+        bonus = new Trap(x, y);
+      }
+    }
+    else if (random < 0.75) {
+      if (game.inventory['turbo'] > 0) {
+        game.spawnBonus();
+      }
+      else {
+        bonus = new Turbo(x, y);
+      }
+    }
+    else {
+      if (game.inventory['super_shoot'] > 0) {
+        game.spawnBonus();
+      }
+      else {
+        bonus = new SuperShoot(x, y);
+      }
+    }
     game.bonusOnMap.push(bonus);
   }
 
@@ -418,6 +467,19 @@ class SuperShoot extends Bonus {
     super(x, y, 48, 52, imgSuperShoot, 'super_shoot');
   }
 }
+
+class Shield extends Bonus {
+  constructor(x, y) {
+    super(x, y, 48, 52, imgShield, 'shield');
+  }
+}
+
+class Trap extends Bonus {
+  constructor(x, y) {
+    super(x, y, 48, 52, imgTrap, 'trap');
+  }
+}
+
 
 class TrapPlaced extends Bonus {
   constructor() {
@@ -636,8 +698,6 @@ class LaserPlayer extends Laser {
 }
 
 
-
-game.spawnBonus();
 /* Main loop of the game */
 function updateGame() {
   /* manage events */
@@ -727,11 +787,11 @@ game.init =
       game.ennemies = [];
       game.spawnEnnemies(game.wave);
       if (game.interval === null) {
-        game.interval = setInterval(updateGame, 30);
+        game.interval = setInterval(updateGame, FPS);
       }
       else {
         clearInterval(game.interval);
-        game.interval = setInterval(updateGame, 30);
+        game.interval = setInterval(updateGame, FPS);
       }
     }
   }
