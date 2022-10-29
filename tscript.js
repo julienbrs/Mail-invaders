@@ -37,6 +37,9 @@ game.inventory = {
   'trap_placed': 0
 };
 
+game.timer = 60;
+game.timerTick = 0;
+
 game.trapOnMap = {};
 /* en secondes */
 const maxShieldTimer = 10 * 3.33 * 10;
@@ -44,8 +47,8 @@ const maxTurboTimer = 10 * 3.33 * 10;
 const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
 const speedPlayer = 13;
-
 const FPS = 30;
+var maxGameTimer = 60;
 
 /* Events */
 /* Keyboard events */
@@ -234,6 +237,27 @@ game.manageLifeBar =
     lifebar.innerHTML = game.player.lifebar + '%';
   }
 
+
+game.manageTimerBar =
+  function () {
+    game.timerTick++;
+    if (game.timer == 0) {
+      game.player.lifebar = 0;
+    }
+    if (game.timer > maxGameTimer) {
+      game.timer = maxGameTimer;
+    }
+    let percentageBar = game.timer / maxGameTimer * 100;
+
+    const timerbar = document.getElementById('timerbar_inner');
+    timerbar.style.width = percentageBar + '%';
+    timerbar.innerHTML = game.timer + ' s';
+    if (game.timerTick % 30 == 0) {
+      game.timer--;
+      game.timerTick = 0;
+    }
+  }
+
 game.drawEnnemies =
   function () {
     game.ennemies.forEach(function (ennemy) {
@@ -271,6 +295,8 @@ game.moveEnnemies =
     }
     );
   }
+
+
 
 game.checkGameOver =
   function () {
@@ -716,6 +742,7 @@ function updateGame() {
     game.checkLvlState();
     game.checkGameOver();
     game.manageLifeBar();
+    game.manageTimerBar();
     game.score += 10;
     game.drawScore();
     game.manageBonus();
@@ -777,6 +804,7 @@ game.init =
     if (game.initialized == false) {
       hideAllBonus();
       game.wave = 1;
+      game.spawnBonus();
       game.initialized = true;
       game.score = 0;
       game.on_pause = false;

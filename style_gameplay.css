@@ -297,7 +297,7 @@ button:hover {
 }
 
 .bar_wrapper {
-    display: none;
+    display: block;
     justify-content: center;
     width: 70%;
     height: auto;
@@ -314,6 +314,21 @@ button:hover {
 }
 
 #lifebar_inner {
+    transition-property: width;
+    transition-duration: 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #C8FF00;
+    color: #0E0C60;
+    width: 80%;
+    height: 100%;
+    text-align: center;
+    font-size: 17px;
+    border-radius: 15px;
+}
+
+#timerbar_inner {
     transition-property: width;
     transition-duration: 0.3s;
     display: flex;
