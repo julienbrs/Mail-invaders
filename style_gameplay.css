@@ -268,13 +268,14 @@ button:hover {
 
 .bonus_description {
     position: relative;
+    width: 100%;
     top: 0.12em;
     z-index: 4;
 
 }
 
 .bonus_description h1 {
-    font-size: 1.2em;
+    font-size: 1.25em;
     margin: 0;
     padding: 0;
 }

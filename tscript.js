@@ -8,9 +8,11 @@
 // mettre autre temps pour les bonus 
 //score at pause need to be done better
 //todo supermissile passent de rouge à jaune quand timer passe à 0 => solve ça
+// centrer timerbar bonus sur le logo bonus
 //todo indep FPS
 // probleme poubelle et spawn bonus
 // mettre temps pour poubelle plutot
+// mettre toutes les valeurs qu'on reset dans game init dans un seul attribut de game pour reset entierement plus facielement, genre game.instance
 
 /* Get width of the screeplay */
 const sWidth = document.getElementById('screenplay').offsetWidth;
@@ -34,7 +36,8 @@ game.inventory = {
   'trap': 0,
   'turbo': 0,
   'super_shoot': 0,
-  'trap_placed': 0
+  'trap_placed': 0,
+  'items_in_bag': 0
 };
 
 game.timer = 60;
@@ -118,11 +121,13 @@ $(window).keyup(function (e) {
   else if (e.which == 81 && game.inventory['shield'] > 0) {
     game.player.shieldTimer = maxShieldTimer;
     game.inventory['shield'] -= 1;
+    game.inventory['items_in_bag']--;
     document.getElementById("bonus_description_shield").style.display = "none";
     document.getElementById("bar_wrapper_shield").style.display = "flex";
   }
   else if (e.which == 87 && game.inventory['trap'] > 0) {
     game.inventory['trap'] -= 1;
+    game.inventory['items_in_bag']--;
     let bonus_trap = new TrapPlaced();
     document.getElementById("bonus_trap_wrapper").style.display = "none";
     game.bonusOnMap.push(bonus_trap);
@@ -131,20 +136,22 @@ $(window).keyup(function (e) {
   else if (e.which == 69 && game.inventory['turbo'] > 0) {
     game.player.turboTimer = maxTurboTimer;
     game.inventory['turbo'] -= 1;
+    game.inventory['items_in_bag']--;
     game.player.speed = 20;
     document.getElementById("bonus_description_turbo").style.display = "none";
     document.getElementById("bar_wrapper_turbo").style.display = "flex";
   }
   else if (e.which == 82 && game.inventory['super_shoot'] > 0) {
-    console.log("super_shoot");
     game.player.superShootTimer = maxSuperShootTimer;
     game.inventory['super_shoot'] -= 1;
+    game.inventory['items_in_bag']--;
     document.getElementById("bonus_description_super_shoot").style.display = "none";
     document.getElementById("bar_wrapper_super_shoot").style.display = "flex";
   }
 
   dataKeyPressed[e.which] = false;
 });
+
 
 
 
@@ -174,6 +181,9 @@ const imgShield = new Image();
 imgShield.src = 'assets/shield.png';
 const imgShieldInGame = new Image();
 imgShieldInGame.src = 'assets/shield_ingame.png';
+
+const imgTimerBonus = new Image();
+imgTimerBonus.src = 'assets/trap_ingame.png';
 
 const imgTrap = new Image();
 imgTrap.src = 'assets/trap.png';
@@ -318,24 +328,25 @@ game.spawnEnnemies =
 
 game.checkLvlState =
   function () {
-    /* check if we spawn bonus */
-    if (game.bonusOnMap.length == 0) {
-      let proba = Math.random();
-      if (proba < 1 / 600) {
-        /* spawn a random bonus */
-        game.spawnBonus();
-      }
-    }
     /* check if we spawn ennemies */
     if (game.ennemies.length == 0) {
       game.spawnEnnemies(game.wave);
       game.wave++;
+
+    }
+  }
+
+game.catchTimerBonus =
+  function () {
+    game.timer += 12;
+    if (game.timer > maxGameTimer) {
+      maxGameTimer = game.timer;
     }
   }
 
 game.checkCollisionBonus =
   function () {
-    game.bonusOnMap.forEach(function (bonus) {
+    game.bonusOnMap.forEach(async function (bonus) {
       if (bonus.type == 'trap_placed') {
         /* Check collision with ennemies */
         game.ennemies.forEach(function (ennemy) {
@@ -354,22 +365,34 @@ game.checkCollisionBonus =
         if (bonus.isColliding(game.player)) {
 
           game.inventory['shield']++;
+          game.inventory['items_in_bag']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('shield');
+
+          await new Promise(resolve => setTimeout(resolve, 20000));
+          game.spawnBonus()
         }
       }
       else if (bonus.type == 'trap') {
         if (bonus.isColliding(game.player)) {
           game.inventory['trap']++;
+          game.inventory['items_in_bag']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('trap');
+
+          await new Promise(resolve => setTimeout(resolve, 20000));
+          game.spawnBonus()
         }
       }
       else if (bonus.type == 'turbo') {
         if (bonus.isColliding(game.player)) {
           game.inventory['turbo']++;
+          game.inventory['items_in_bag']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('turbo');
+
+          await new Promise(resolve => setTimeout(resolve, 20000));
+          game.spawnBonus()
         }
       }
       else if (bonus.type == 'super_shoot') {
@@ -377,47 +400,71 @@ game.checkCollisionBonus =
           game.inventory['super_shoot']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('super_shoot');
+
+          await new Promise(resolve => setTimeout(resolve, 20000));
+          game.spawnBonus()
+        }
+      }
+      else if (bonus.type == 'timer_bonus') {
+        if (bonus.isColliding(game.player)) {
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          game.catchTimerBonus();
+          await new Promise(resolve => setTimeout(resolve, 5000));
+
+          game.spawnBonus("timer_bonus");
         }
       }
     })
   }
 
 game.spawnBonus =
-  function () {
+  function (bonus_chosen = "none") {
+    if (game.inventory['items_in_bag'] >= 4) {
+      return;
+    }
     let x = Math.random() * (sWidth - 65);
-    let y = Math.random() * (sHeight - 65);
-
-    let random = Math.random();
-    if (random < 0.25) {
-      if (game.inventory['shield'] > 0) {
-        game.spawnBonus();
-      }
-      else {
-        bonus = new Shield(x, y);
-      }
-    }
-    else if (random < 0.5) {
-      if (game.inventory['trap'] > 0) {
-        game.spawnBonus();
-      }
-      else {
-        bonus = new Trap(x, y);
-      }
-    }
-    else if (random < 0.75) {
-      if (game.inventory['turbo'] > 0) {
-        game.spawnBonus();
-      }
-      else {
-        bonus = new Turbo(x, y);
-      }
+    let y = Math.random() * (0.9 * sHeight - 65);
+    if (bonus_chosen == "timer_bonus") {
+      console.log("bonus spawn = timer_bonus");
+      bonus = new TimerBonus(x, y);
     }
     else {
-      if (game.inventory['super_shoot'] > 0) {
-        game.spawnBonus();
+      let random = Math.random();
+      if (random < 0.25) {
+        if (game.inventory['shield'] > 0) {
+          console.log("we do another bonus");
+          game.spawnBonus();
+        }
+        else {
+          bonus = new Shield(x, y);
+        }
+      }
+      else if (random < 0.5) {
+        if (game.inventory['trap'] > 0) {
+          console.log("we do another bonus");
+          game.spawnBonus();
+        }
+        else {
+          bonus = new Trap(x, y);
+        }
+      }
+      else if (random < 0.75) {
+        if (game.inventory['turbo'] > 0) {
+          console.log("we do another bonus");
+          game.spawnBonus();
+        }
+        else {
+          bonus = new Turbo(x, y);
+        }
       }
       else {
-        bonus = new SuperShoot(x, y);
+        if (game.inventory['super_shoot'] > 0) {
+          console.log("we do another bonus");
+          game.spawnBonus();
+        }
+        else {
+          bonus = new SuperShoot(x, y);
+        }
       }
     }
     game.bonusOnMap.push(bonus);
@@ -479,6 +526,12 @@ class Bonus extends PhysicalObject {
   constructor(x, y, width, height, imgLogo, type) {
     super(x, y, width, height, imgLogo);
     this.type = type;
+  }
+}
+
+class TimerBonus extends Bonus {
+  constructor(x, y) {
+    super(x, y, 48, 52, imgTimerBonus, 'timer_bonus');
   }
 }
 
@@ -628,6 +681,9 @@ class Player extends Shooter {
       const barTimer = document.getElementById('bar_wrapper_shield');
       let countBar = Math.round(this.shieldTimer / maxShieldTimer * 100);
       let barWidth = Math.round(countBar * 0.6);
+      if (barWidth < 17) {
+        barWidth = 17;
+      }
       barTimer.style.width = barWidth + '%';
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.shieldTimer == 0) {
@@ -639,6 +695,9 @@ class Player extends Shooter {
       const barTimer = document.getElementById('bar_wrapper_turbo');
       let countBar = Math.round(this.turboTimer / maxTurboTimer * 100);
       let barWidth = Math.round(countBar * 0.6);
+      if (barWidth < 17) {
+        barWidth = 17;
+      }
       barTimer.style.width = barWidth + '%';
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.turboTimer == 0) {
@@ -651,6 +710,9 @@ class Player extends Shooter {
       const barTimer = document.getElementById('bar_wrapper_super_shoot');
       let countBar = Math.round(this.superShootTimer / maxSuperShootTimer * 100);
       let barWidth = Math.round(countBar * 0.6);
+      if (barWidth < 17) {
+        barWidth = 17;
+      }
       barTimer.style.width = barWidth + '%';
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.superShootTimer == 0) {
@@ -804,11 +866,13 @@ game.init =
     if (game.initialized == false) {
       hideAllBonus();
       game.wave = 1;
+      game.bonusOnMap = [];
       game.spawnBonus();
       game.initialized = true;
       game.score = 0;
       game.on_pause = false;
       game.can_presspause = true;
+      game.spawnBonus("timer_bonus");
       game.player = new Player();
       game.player.x = game.canvas.width / 2 - game.player.width / 2;
       game.player.y = game.canvas.height - game.player.height;
