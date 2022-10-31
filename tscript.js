@@ -42,6 +42,8 @@ game.inventory = {
 
 game.timer = 60;
 game.timerTick = 0;
+game.bonusSpawnTick = 0;
+game.maxBonusSpawnTick = 3000; // todo a mettre dans game
 
 game.trapOnMap = {};
 /* en secondes */
@@ -60,6 +62,8 @@ var maxGameTimer = 60;
 $(window).keydown(function (e) {
   if (e.which == 32 && game.player.canShoot) {  // spacebar
     game.player.canShoot = false;
+    console.log("shoot");
+    console.log(game.player.superShootActivated);
     game.player.shoot();
   }
   dataKeyPressed[e.which] = true;
@@ -119,6 +123,7 @@ $(window).keyup(function (e) {
     document.getElementById('move_right_help_menu').classList.remove('button_help_hover');
   }
   else if (e.which == 81 && game.inventory['shield'] > 0) {
+    game.player.shieldActivated = true;
     game.player.shieldTimer = maxShieldTimer;
     game.inventory['shield'] -= 1;
     game.inventory['items_in_bag']--;
@@ -134,6 +139,7 @@ $(window).keyup(function (e) {
     // putTrap();
   }
   else if (e.which == 69 && game.inventory['turbo'] > 0) {
+    game.player.turboActivated = true;
     game.player.turboTimer = maxTurboTimer;
     game.inventory['turbo'] -= 1;
     game.inventory['items_in_bag']--;
@@ -142,6 +148,7 @@ $(window).keyup(function (e) {
     document.getElementById("bar_wrapper_turbo").style.display = "flex";
   }
   else if (e.which == 82 && game.inventory['super_shoot'] > 0) {
+    game.player.superShootActivated = true;
     game.player.superShootTimer = maxSuperShootTimer;
     game.inventory['super_shoot'] -= 1;
     game.inventory['items_in_bag']--;
@@ -183,7 +190,7 @@ const imgShieldInGame = new Image();
 imgShieldInGame.src = 'assets/shield_ingame.png';
 
 const imgTimerBonus = new Image();
-imgTimerBonus.src = 'assets/trap_ingame.png';
+imgTimerBonus.src = 'assets/clock.png';
 
 const imgTrap = new Image();
 imgTrap.src = 'assets/trap.png';
@@ -363,13 +370,14 @@ game.checkCollisionBonus =
       }
       else if (bonus.type == 'shield') {
         if (bonus.isColliding(game.player)) {
-
+          game.player.shieldTimer = maxShieldTimer;
           game.inventory['shield']++;
           game.inventory['items_in_bag']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('shield');
 
-          await new Promise(resolve => setTimeout(resolve, 20000));
+          console.log("we wait 3 sec after the shield is picked up");
+          await new Promise(resolve => setTimeout(resolve, 3000));
           game.spawnBonus()
         }
       }
@@ -380,28 +388,33 @@ game.checkCollisionBonus =
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('trap');
 
-          await new Promise(resolve => setTimeout(resolve, 20000));
+          console.log("we wait 3 sec after trap");
+          await new Promise(resolve => setTimeout(resolve, 3000));
           game.spawnBonus()
         }
       }
       else if (bonus.type == 'turbo') {
         if (bonus.isColliding(game.player)) {
+          game.player.turboTimer = maxTurboTimer;
           game.inventory['turbo']++;
           game.inventory['items_in_bag']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('turbo');
 
-          await new Promise(resolve => setTimeout(resolve, 20000));
+          console.log("we wait 3 sec after turbo");
+          await new Promise(resolve => setTimeout(resolve, 3000));
           game.spawnBonus()
         }
       }
       else if (bonus.type == 'super_shoot') {
         if (bonus.isColliding(game.player)) {
+          game.player.superShootTimer = maxSuperShootTimer;
           game.inventory['super_shoot']++;
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           showBonus('super_shoot');
 
-          await new Promise(resolve => setTimeout(resolve, 20000));
+          console.log("we wait 3 sec after super_shoot");
+          await new Promise(resolve => setTimeout(resolve, 3000));
           game.spawnBonus()
         }
       }
@@ -409,6 +422,7 @@ game.checkCollisionBonus =
         if (bonus.isColliding(game.player)) {
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           game.catchTimerBonus();
+          console.log("we wait 3 sec after timer bonus");
           await new Promise(resolve => setTimeout(resolve, 5000));
 
           game.spawnBonus("timer_bonus");
@@ -430,8 +444,15 @@ game.spawnBonus =
     }
     else {
       let random = Math.random();
+      console.log("\n\n\n");
+      console.log("random = " + random);
+      /* print each element of inventory */
+      for (var key in game.inventory) {
+        console.log(key + " = " + game.inventory[key]);
+      }
+
       if (random < 0.25) {
-        if (game.inventory['shield'] > 0) {
+        if (game.inventory['shield'] > 0 || game.player.shieldActivated) {
           console.log("we do another bonus");
           game.spawnBonus();
         }
@@ -449,7 +470,7 @@ game.spawnBonus =
         }
       }
       else if (random < 0.75) {
-        if (game.inventory['turbo'] > 0) {
+        if (game.inventory['turbo'] > 0 || game.player.turboActivated) {
           console.log("we do another bonus");
           game.spawnBonus();
         }
@@ -458,7 +479,7 @@ game.spawnBonus =
         }
       }
       else {
-        if (game.inventory['super_shoot'] > 0) {
+        if (game.inventory['super_shoot'] > 0 || game.player.superShootActivated) {
           console.log("we do another bonus");
           game.spawnBonus();
         }
@@ -480,8 +501,13 @@ game.drawBonus =
 
 game.manageBonus =
   function () {
+    game.bonusSpawnTick++;
+    if (game.bonusSpawnTick > game.maxBonusSpawnTick) {
+      game.bonusSpawnTick = 0;
+      game.spawnBonus();
+    }
     game.checkCollisionBonus();
-    /* manage turbo */
+
 
 
   }
@@ -621,16 +647,9 @@ class Shooter extends PhysicalObject {
 
   shoot() {
     /* shoot a laser */
-    if (this == game.player) {
-      let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile, 10);
-      this.lasers.push(laser);
-    }
-    else {
-      const newLaser = new Laser(
-        this.x + this.width / 2 - 5, this.y - this.height / 2, 14, 57,
-        5);
-      this.lasers.push(newLaser);
-    }
+    let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile, 10);
+    this.lasers.push(laser);
+
   }
 
   drawLasers() {
@@ -650,11 +669,14 @@ class Player extends Shooter {
     this.shieldTimer = 0;
     this.turboTimer = 0;
     this.superShootTimer = 0;
+    this.shieldActivated = false;
+    this.turboActivated = false;
+    this.superShootActivated = false;
   }
 
   shoot() {
     /* shoot a laser */
-    if (this.superShootTimer > 0) {
+    if (this.superShootActivated) {
       const newLaser = new LaserPlayer(
         this.x + this.width / 2 - 15, this.y - this.height / 2, 10, 30,
         5);
@@ -675,7 +697,7 @@ class Player extends Shooter {
     game.ctx.globalCompositeOperation = 'source-over';
     super.draw();
     game.ctx.globalCompositeOperation = 'destination-over';
-    if (this.shieldTimer > 0) {
+    if (this.shieldTimer > 0 && this.shieldActivated) {
       game.ctx.drawImage(imgShieldInGame, this.x - this.height / 2.1, this.y - this.height / 3.5, this.height * 1.5, this.height * 1.5);
       this.shieldTimer--;
       const barTimer = document.getElementById('bar_wrapper_shield');
@@ -687,10 +709,11 @@ class Player extends Shooter {
       barTimer.style.width = barWidth + '%';
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.shieldTimer == 0) {
+        game.player.shieldActivated = false;
         document.getElementById('bonus_shield_wrapper').style.display = 'none';
       }
     }
-    if (this.turboTimer > 0) {
+    if (this.turboTimer > 0 && this.turboActivated) {
       this.turboTimer--;
       const barTimer = document.getElementById('bar_wrapper_turbo');
       let countBar = Math.round(this.turboTimer / maxTurboTimer * 100);
@@ -701,11 +724,12 @@ class Player extends Shooter {
       barTimer.style.width = barWidth + '%';
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.turboTimer == 0) {
+        game.player.turboActivated = false;
         document.getElementById('bonus_turbo_wrapper').style.display = 'none';
         this.speed = speedPlayer;
       }
     }
-    if (this.superShootTimer > 0) {
+    if (this.superShootTimer > 0 && this.superShootActivated) {
       this.superShootTimer--;
       const barTimer = document.getElementById('bar_wrapper_super_shoot');
       let countBar = Math.round(this.superShootTimer / maxSuperShootTimer * 100);
@@ -716,6 +740,7 @@ class Player extends Shooter {
       barTimer.style.width = barWidth + '%';
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.superShootTimer == 0) {
+        game.player.superShootActivated = false;
         document.getElementById('bonus_super_shoot_wrapper').style.display = 'none';
       }
     }
@@ -858,6 +883,9 @@ function hideAllBonus() {
 
 function showBonus(bonus) {
   document.getElementById("bonus_" + bonus + "_wrapper").style.display = "flex";
+  document.getElementById("bonus_description_" + bonus).style.display = "block";
+  document.getElementById("bar_wrapper_" + bonus).style.display = "none";
+
 }
 
 /* Start the game */
@@ -865,6 +893,7 @@ game.init =
   function () {
     if (game.initialized == false) {
       hideAllBonus();
+      game.player = new Player();
       game.wave = 1;
       game.bonusOnMap = [];
       game.spawnBonus();
@@ -873,7 +902,6 @@ game.init =
       game.on_pause = false;
       game.can_presspause = true;
       game.spawnBonus("timer_bonus");
-      game.player = new Player();
       game.player.x = game.canvas.width / 2 - game.player.width / 2;
       game.player.y = game.canvas.height - game.player.height;
       game.ennemies = [];
