@@ -43,7 +43,9 @@ game.inventory = {
 game.timer = 60;
 game.timerTick = 0;
 game.bonusSpawnTick = 0;
-game.maxBonusSpawnTick = 3000; // todo a mettre dans game
+game.maxBonusSpawnTick = 100;
+game.canSpawnBonus = true;
+
 
 game.trapOnMap = {};
 /* en secondes */
@@ -55,15 +57,19 @@ const speedPlayer = 13;
 const FPS = 30;
 var maxGameTimer = 60;
 
+function isGaming() {
+  return document.getElementById('screen_game').style.display == 'block' && document.getElementById('pause_menu').style.display == 'none';
+}
+
+game.instance = {} //todo
+
 /* Events */
 /* Keyboard events */
 
 /* Adding key to array when pressed */
 $(window).keydown(function (e) {
-  if (e.which == 32 && game.player.canShoot) {  // spacebar
+  if (e.which == 32 && game.player.canShoot && isGaming()) {  // spacebar
     game.player.canShoot = false;
-    console.log("shoot");
-    console.log(game.player.superShootActivated);
     game.player.shoot();
   }
   dataKeyPressed[e.which] = true;
@@ -122,38 +128,43 @@ $(window).keyup(function (e) {
   else if (e.which == 39 && cond_help_screen) {
     document.getElementById('move_right_help_menu').classList.remove('button_help_hover');
   }
-  else if (e.which == 81 && game.inventory['shield'] > 0) {
-    game.player.shieldActivated = true;
-    game.player.shieldTimer = maxShieldTimer;
-    game.inventory['shield'] -= 1;
-    game.inventory['items_in_bag']--;
-    document.getElementById("bonus_description_shield").style.display = "none";
-    document.getElementById("bar_wrapper_shield").style.display = "flex";
-  }
-  else if (e.which == 87 && game.inventory['trap'] > 0) {
-    game.inventory['trap'] -= 1;
-    game.inventory['items_in_bag']--;
-    let bonus_trap = new TrapPlaced();
-    document.getElementById("bonus_trap_wrapper").style.display = "none";
-    game.bonusOnMap.push(bonus_trap);
-    // putTrap();
-  }
-  else if (e.which == 69 && game.inventory['turbo'] > 0) {
-    game.player.turboActivated = true;
-    game.player.turboTimer = maxTurboTimer;
-    game.inventory['turbo'] -= 1;
-    game.inventory['items_in_bag']--;
-    game.player.speed = 20;
-    document.getElementById("bonus_description_turbo").style.display = "none";
-    document.getElementById("bar_wrapper_turbo").style.display = "flex";
-  }
-  else if (e.which == 82 && game.inventory['super_shoot'] > 0) {
-    game.player.superShootActivated = true;
-    game.player.superShootTimer = maxSuperShootTimer;
-    game.inventory['super_shoot'] -= 1;
-    game.inventory['items_in_bag']--;
-    document.getElementById("bonus_description_super_shoot").style.display = "none";
-    document.getElementById("bar_wrapper_super_shoot").style.display = "flex";
+  else if (isGaming()) {
+    if (e.which == 81 && game.inventory['shield'] > 0) {
+      game.player.shieldActivated = true;
+      game.player.bonusActivated = true;
+      game.player.shieldTimer = maxShieldTimer;
+      game.inventory['shield'] -= 1;
+      game.inventory['items_in_bag']--;
+      document.getElementById("bonus_description_shield").style.display = "none";
+      document.getElementById("bar_wrapper_shield").style.display = "flex";
+    }
+    if (e.which == 87 && game.inventory['trap'] > 0) {
+      game.inventory['trap'] -= 1;
+      game.inventory['items_in_bag']--;
+      let bonus_trap = new TrapPlaced();
+      document.getElementById("bonus_trap_wrapper").style.display = "none";
+      game.bonusOnMap.push(bonus_trap);
+      // putTrap();
+    }
+    if (e.which == 69 && game.inventory['turbo'] > 0) {
+      game.player.turboActivated = true;
+      game.player.bonusActivated = true;
+      game.player.turboTimer = maxTurboTimer;
+      game.inventory['turbo'] -= 1;
+      game.inventory['items_in_bag']--;
+      game.player.speed = 20;
+      document.getElementById("bonus_description_turbo").style.display = "none";
+      document.getElementById("bar_wrapper_turbo").style.display = "flex";
+    }
+    if (e.which == 82 && game.inventory['super_shoot'] > 0) {
+      game.player.superShootActivated = true;
+      game.player.bonusActivated = true;
+      game.player.superShootTimer = maxSuperShootTimer;
+      game.inventory['super_shoot'] -= 1;
+      game.inventory['items_in_bag']--;
+      document.getElementById("bonus_description_super_shoot").style.display = "none";
+      document.getElementById("bar_wrapper_super_shoot").style.display = "flex";
+    }
   }
 
   dataKeyPressed[e.which] = false;
@@ -164,17 +175,19 @@ $(window).keyup(function (e) {
 
 /* Do keyboard events stored in dataKeyPressed */
 game.doKeyboardEvents = function () {
-  if (dataKeyPressed[37]) {  // left arrow
-    game.player.moveLeft();
-  }
-  if (dataKeyPressed[38]) {  // up arrow
-    game.player.moveUp();
-  }
-  if (dataKeyPressed[39]) {  // right arrow
-    game.player.moveRight();
-  }
-  if (dataKeyPressed[40]) {  // down arrow
-    game.player.moveDown();
+  if (isGaming()) {
+    if (dataKeyPressed[37]) {  // left arrow
+      game.player.moveLeft();
+    }
+    if (dataKeyPressed[38]) {  // up arrow
+      game.player.moveUp();
+    }
+    if (dataKeyPressed[39]) {  // right arrow
+      game.player.moveRight();
+    }
+    if (dataKeyPressed[40]) {  // down arrow
+      game.player.moveDown();
+    }
   }
 };
 
@@ -324,6 +337,7 @@ game.checkGameOver =
 
 game.spawnEnnemies =
   function (wave) {
+    return;
     let nbEnnemies = wave * 10;
     for (let i = 0; i < nbEnnemies; i++) {
       let x = Math.random() * (sWidth - 59);
@@ -366,57 +380,6 @@ game.checkCollisionBonus =
           }
         }
         );
-
-      }
-      else if (bonus.type == 'shield') {
-        if (bonus.isColliding(game.player)) {
-          game.player.shieldTimer = maxShieldTimer;
-          game.inventory['shield']++;
-          game.inventory['items_in_bag']++;
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          showBonus('shield');
-
-          console.log("we wait 3 sec after the shield is picked up");
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          game.spawnBonus()
-        }
-      }
-      else if (bonus.type == 'trap') {
-        if (bonus.isColliding(game.player)) {
-          game.inventory['trap']++;
-          game.inventory['items_in_bag']++;
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          showBonus('trap');
-
-          console.log("we wait 3 sec after trap");
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          game.spawnBonus()
-        }
-      }
-      else if (bonus.type == 'turbo') {
-        if (bonus.isColliding(game.player)) {
-          game.player.turboTimer = maxTurboTimer;
-          game.inventory['turbo']++;
-          game.inventory['items_in_bag']++;
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          showBonus('turbo');
-
-          console.log("we wait 3 sec after turbo");
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          game.spawnBonus()
-        }
-      }
-      else if (bonus.type == 'super_shoot') {
-        if (bonus.isColliding(game.player)) {
-          game.player.superShootTimer = maxSuperShootTimer;
-          game.inventory['super_shoot']++;
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          showBonus('super_shoot');
-
-          console.log("we wait 3 sec after super_shoot");
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          game.spawnBonus()
-        }
       }
       else if (bonus.type == 'timer_bonus') {
         if (bonus.isColliding(game.player)) {
@@ -424,32 +387,43 @@ game.checkCollisionBonus =
           game.catchTimerBonus();
           console.log("we wait 3 sec after timer bonus");
           await new Promise(resolve => setTimeout(resolve, 5000));
-
           game.spawnBonus("timer_bonus");
         }
       }
-    })
+      else {
+        if (bonus.isColliding(game.player)) {
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          game.canSpawnBonus = true;
+          if (game.inventory[bonus.type] != 1) {
+            game.inventory['items_in_bag']++;
+          }
+          game.inventory[bonus.type] = 1;
+          showBonus(bonus.type);
+        }
+      }
+    }
+    );
   }
 
 game.spawnBonus =
   function (bonus_chosen = "none") {
-    if (game.inventory['items_in_bag'] >= 4) {
-      return;
-    }
     let x = Math.random() * (sWidth - 65);
     let y = Math.random() * (0.9 * sHeight - 65);
+
     if (bonus_chosen == "timer_bonus") {
       console.log("bonus spawn = timer_bonus");
       bonus = new TimerBonus(x, y);
     }
     else {
+      if (game.inventory['items_in_bag'] >= 4) {
+        return;
+      }
+      if (!this.canSpawnBonus) {
+        return;
+      }
       let random = Math.random();
       console.log("\n\n\n");
       console.log("random = " + random);
-      /* print each element of inventory */
-      for (var key in game.inventory) {
-        console.log(key + " = " + game.inventory[key]);
-      }
 
       if (random < 0.25) {
         if (game.inventory['shield'] > 0 || game.player.shieldActivated) {
@@ -487,8 +461,10 @@ game.spawnBonus =
           bonus = new SuperShoot(x, y);
         }
       }
+
+      this.canSpawnBonus = false;
     }
-    game.bonusOnMap.push(bonus);
+    game.bonusOnMap.push(bonus)
   }
 
 game.drawBonus =
@@ -501,10 +477,14 @@ game.drawBonus =
 
 game.manageBonus =
   function () {
-    game.bonusSpawnTick++;
-    if (game.bonusSpawnTick > game.maxBonusSpawnTick) {
-      game.bonusSpawnTick = 0;
-      game.spawnBonus();
+
+    if (game.canSpawnBonus && game.player.bonusActivated == false) {
+      game.bonusSpawnTick++;
+
+      if (game.bonusSpawnTick > game.maxBonusSpawnTick) {
+        game.bonusSpawnTick = 0;
+        game.spawnBonus();
+      }
     }
     game.checkCollisionBonus();
 
@@ -672,6 +652,7 @@ class Player extends Shooter {
     this.shieldActivated = false;
     this.turboActivated = false;
     this.superShootActivated = false;
+    this.bonusActivated = false;
   }
 
   shoot() {
@@ -710,6 +691,8 @@ class Player extends Shooter {
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.shieldTimer == 0) {
         game.player.shieldActivated = false;
+
+        game.player.bonusActivated = false;
         document.getElementById('bonus_shield_wrapper').style.display = 'none';
       }
     }
@@ -725,6 +708,7 @@ class Player extends Shooter {
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.turboTimer == 0) {
         game.player.turboActivated = false;
+        game.player.bonusActivated = false;
         document.getElementById('bonus_turbo_wrapper').style.display = 'none';
         this.speed = speedPlayer;
       }
@@ -741,6 +725,7 @@ class Player extends Shooter {
       barTimer.innerHTML = countBar / 10 + ' s';
       if (this.superShootTimer == 0) {
         game.player.superShootActivated = false;
+        game.player.bonusActivated = false;
         document.getElementById('bonus_super_shoot_wrapper').style.display = 'none';
       }
     }
@@ -894,6 +879,7 @@ game.init =
     if (game.initialized == false) {
       hideAllBonus();
       game.player = new Player();
+      game.timer = 60;
       game.wave = 1;
       game.bonusOnMap = [];
       game.spawnBonus();
