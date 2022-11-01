@@ -56,9 +56,11 @@ const maxTrapGrabbed = 3;
 const speedPlayer = 13;
 const FPS = 30;
 var maxGameTimer = 60;
+game.tickPlayerImage = 0;
+
 
 function isGaming() {
-  return document.getElementById('screen_game').style.display == 'block' && document.getElementById('pause_menu').style.display == 'none';
+  return document.getElementById('screen_game').style.display == 'flex' && document.getElementById('pause_menu').style.display == 'none';
 }
 
 game.instance = {} //todo
@@ -96,26 +98,26 @@ game.switch_pause = function () {
 }
 
 $(window).keydown(function (e) {
-  let cond_pause_screen = document.getElementById('screen_game').style.display == 'block';
-  let cond_help_screen = document.getElementById('help_menu').style.display == 'block';
+  let cond_pause_screen = document.getElementById('screen_game').style.display == 'flex';
+  let cond_help_screen = document.getElementById('help_menu').style.display == 'flex';
   if (e.which == 27 && cond_help_screen) {
     game.changeScreen("pause_menu");
   }
   else if (e.which == 27 && can_presspause && cond_pause_screen) {
     game.switch_pause();
   }
-  else if (e.which == 37 && cond_help_screen) {
-    document.getElementById('move_left_help_menu').classList.add('button_help_hover');
-  }
-  else if (e.which == 39 && cond_help_screen) {
-    document.getElementById('move_right_help_menu').classList.add('button_help_hover');
-  }
+  // else if (e.which == 37 && cond_help_screen) {
+  //   document.getElementById('move_left_help_menu').classList.add('button_help_hover');
+  // }
+  // else if (e.which == 39 && cond_help_screen) {
+  //   document.getElementById('move_right_help_menu').classList.add('button_help_hover');
+  // }
   dataKeyPressed[e.which] = true;
 });
 
 $(window).keyup(function (e) {
-  let cond_pause_screen = document.getElementById('screen_game').style.display == 'block';
-  let cond_help_screen = document.getElementById('help_menu').style.display == 'block';
+  let cond_pause_screen = document.getElementById('screen_game').style.display == 'flex';
+  let cond_help_screen = document.getElementById('help_menu').style.display == 'flex';
   if (e.which == 27 && cond_pause_screen) {
     game.player.on_pause = true;
   }
@@ -197,6 +199,9 @@ game.doKeyboardEvents = function () {
 /* Definitions of the assets */
 const imgPlayer = new Image();
 imgPlayer.src = 'assets/player.png';
+const imgPlayer2 = new Image();
+imgPlayer2.src = 'assets/player_without_light.png';
+
 const imgShield = new Image();
 imgShield.src = 'assets/shield.png';
 const imgShieldInGame = new Image();
@@ -231,19 +236,19 @@ game.canvas.height = sHeight;
 game.changeScreen =
   function (menu) {
     if (menu == 'pause_menu') {
-      document.getElementById('pause_menu').style.display = 'block';
+      document.getElementById('pause_menu').style.display = 'flex';
       document.getElementById('help_menu').style.display = 'none';
     }
     else if (menu == 'help_menu') {
       document.getElementById('pause_menu').style.display = 'none';
-      document.getElementById('help_menu').style.display = 'block';
+      document.getElementById('help_menu').style.display = 'flex';
     }
     else {
       for (var i = 0; i < list_menu.length; i++) {
         if (list_menu[i] != menu) {
           document.getElementById(list_menu[i]).style.display = 'none';
         } else {
-          document.getElementById(list_menu[i]).style.display = 'block';
+          document.getElementById(list_menu[i]).style.display = 'flex';
         }
       }
       if (menu == 'screen_game') {
@@ -267,6 +272,18 @@ game.manageLifeBar =
     lifebar.innerHTML = game.player.lifebar + '%';
   }
 
+game.manageImagePlayer = function () {
+  game.tickPlayerImage++;
+  if (game.tickPlayerImage > 40) {
+    game.tickPlayerImage = 0;
+    if (game.player.image == imgPlayer) {
+      game.player.image = imgPlayer2;
+    }
+    else {
+      game.player.image = imgPlayer;
+    }
+  }
+}
 
 game.manageTimerBar =
   function () {
@@ -337,7 +354,6 @@ game.checkGameOver =
 
 game.spawnEnnemies =
   function (wave) {
-    return;
     let nbEnnemies = wave * 10;
     for (let i = 0; i < nbEnnemies; i++) {
       let x = Math.random() * (sWidth - 59);
@@ -811,6 +827,7 @@ function updateGame() {
 
     /* do all the in-game functions */
     game.moveEnnemies();
+    game.manageImagePlayer();
     game.checkLvlState();
     game.checkGameOver();
     game.manageLifeBar();

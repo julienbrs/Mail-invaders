@@ -409,6 +409,10 @@ button:hover {
 
 #help_menu {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     top: 0;
     left: 0;
     width: 100vw;
@@ -418,49 +422,75 @@ button:hover {
 }
 
 #help_menu_title {
-    position: absolute;
-    top: 23.7vh;
-    left: 43.6vw;
-    font-size: 1.5em;
+    position: flex;
+    font-size: 1.8em;
+    height: 17vh;
 }
 
-#move_left_help_menu {
-    position: absolute;
-    top: 50.5vh;
-    left: 38.4vw;
-    z-index: 4;
+help_menu_text {
+    position: flex;
+    font-size: 1em;
 }
 
+#description_of_the_game {
+    width: 65%;
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 1.8%;
+}
+#description_of_the_game h1 {
+    font-size: 1.3em;
+    line-height: 1.5em;
+
+}
+
+#description_of_commands {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: stretch;
+	align-content: stretch;
+}
+
+.help_command_wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2%;
+}
+
+.help_menu_img {
+    display: flex;
+    justify-content: flex-end;
+    width: 50%;
+    margin-right: 8%;
+}
+
+.help_menu_description {
+    display: flex;
+    white-space:nowrap;
+    justify-content: flex-start;
+    font-size: 0.6em;
+    width: 40%;
+}
+
+#help_menu_img_shoot {
+    position: relative;
+}
+#help_menu_texte_shoot
+{
+    position: relative;
+}
+
+#move_help_menu {
+    display: flex;
+    flex-direction: row;
+}
 #move_right_help_menu {
-    position: absolute;
-    top: 50.5vh;
-    left: 43.5vw;
-    z-index: 4;
+    margin-left: 4%;
 }
 
-
-#shoot_help_menu {
-    position: absolute;
-    top: 63vh;
-    left: 30.25vw;
-    z-index: 4;
-}
-
-#help_menu_shoot_text {
-    position: absolute;
-    top: 62.7vh;
-    left: 50vw;
-    z-index: 4;
-    font-size: 0.8em;
-}
-
-#help_menu_move_text {
-    position: absolute;
-    top: 50vh;
-    left: 50vw;
-    z-index: 4;
-    font-size: 0.8em;
-}
 
 .button_help_hover {
     box-shadow: #ffffff 10px 10px 10px 2px;
