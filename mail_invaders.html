@@ -11,6 +11,8 @@
 </head>
 
 <body>
+    <audio id="mainAudio" src="assets/main_audio.m4a" preload="auto">
+    </audio>
     <div id="main_container">
 
         <div id="start_menu">
@@ -24,7 +26,7 @@
                 <button class="button_start_menu" id="help_button">Help</button>
             </div>
             <div id="sound_button">
-                <input type="image" src="assets/button_sound.png" />
+                <input id ="testsound" type="image" class="audio" onClick="togglePlay()" src="assets/button_no_sound.png" />
             </div>
         </div>
 
@@ -106,7 +108,7 @@
             </div>
 
             <div id="logo_home"><input type="image" src="assets/logo_home.png" alt="home"></div>
-            <div id="logo_sound"><input type="image" src="assets/logo_sound.png" alt="sound"></div>
+            <div id="logo_sound"><input type="image" class="audio" onClick="togglePlay()" src="assets/logo_no_sound.png" alt="sound"></div>
 
             <canvas id="screenplay">
             </canvas>

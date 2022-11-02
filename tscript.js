@@ -229,6 +229,27 @@ imgMissile.src = 'assets/Missile.png';
 const imgSuperMissile = new Image();
 imgSuperMissile.src = 'assets/supershoot_missile.png';
 
+/* audio */
+const audio = new Audio('assets/main_audio.m4a');
+
+var mainAudio = document.getElementById("mainAudio");
+
+function togglePlay() {
+  homeimg = document.getElementById("sound_button");
+  ingameimg = document.getElementById("logo_sound");
+
+  if (mainAudio.paused) {
+    mainAudio.play();
+    homeimg.innerHTML = '<input id="testsound" type="image" class="audio" onclick="togglePlay()" src="assets/button_sound.png"/>'
+    ingameimg.innerHTML = '<input type="image" class="audio" onclick="togglePlay()" src="assets/logo_sound.png" alt="sound">'
+  } else {
+    mainAudio.pause();
+    homeimg.innerHTML = '<input id="testsound" type="image" class="audio" onclick="togglePlay()" src="assets/button_no_sound.png">'
+    ingameimg.innerHTML = '<input type="image" class="audio" onclick="togglePlay()" src="assets/logo_no_sound.png" alt="sound">'
+  }
+};
+
+
 /* Graphic features of the game */
 game.canvas.width = sWidth;
 game.canvas.height = sHeight;
@@ -288,9 +309,7 @@ game.manageImagePlayer = function () {
 game.manageTimerBar =
   function () {
     game.timerTick++;
-    if (game.timer == 0) {
-      game.player.lifebar = 0;
-    }
+
     if (game.timer > maxGameTimer) {
       game.timer = maxGameTimer;
     }
@@ -347,7 +366,7 @@ game.moveEnnemies =
 
 game.checkGameOver =
   function () {
-    if (game.player.lifebar <= 0) {
+    if (game.player.lifebar <= 0 || game.timer <= 0) {
       game.gameOver();
     }
   }
@@ -657,6 +676,8 @@ class Shooter extends PhysicalObject {
   }
 }
 
+
+
 class Player extends Shooter {
   constructor() {
     super(400, 800, 27, 64.5, imgPlayer, speedPlayer);
@@ -758,6 +779,7 @@ class Ennemy extends Shooter {
     this.y += this.speed;
     if (this.y > game.canvas.height) {
       game.ennemies.splice(game.ennemies.indexOf(this), 1);
+      game.gameOver();
     }
   }
 }
