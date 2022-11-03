@@ -230,7 +230,7 @@ const imgSuperMissile = new Image();
 imgSuperMissile.src = 'assets/supershoot_missile.png';
 
 /* audio */
-const audio = new Audio('assets/main_audio.m4a');
+const audio = new Audio('assets/sounds/main_audio.m4a');
 
 var mainAudio = document.getElementById("mainAudio");
 
