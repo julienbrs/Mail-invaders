@@ -106,15 +106,15 @@ button:hover {
 
 #start_menu_title {
     position: absolute;
-    top: 26.5vh;
-    left: 41.5vw;
-    width: 46.25vw;
+    top: 25.5%;
+    left: 42%;
+    width: 50vw;
     height: 10vh;
     z-index: 4;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-size: 2em;
+    font-size: 2.05em;
 }
 
 #sound_button {
