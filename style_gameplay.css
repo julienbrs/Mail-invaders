@@ -98,6 +98,28 @@ button:hover {
 .button_start_menu:hover {
     cursor: pointer;
 }
+#difficulty_button:hover {
+    cursor: auto;
+    background-color: #0E0C60;
+    border-color: #C8FF00;
+    color: #C8FF00
+}
+#difficulty_left_arrow{
+    position: relative;
+    left: 12%;
+    top: 3px;
+    z-index: 5;
+}
+
+#difficulty_right_arrow{
+    position: relative;
+    left: -23%;
+    top: 3px;
+}
+#difficulty_button{
+    position: relative;
+    left: -6%;
+}
 
 #start_button {
     background-color: #C8FF00;

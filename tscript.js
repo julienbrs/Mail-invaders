@@ -28,6 +28,9 @@ game.wave = 1;
 game.initialized = false;
 game.on_pause = false; // todo utiliser plutot classe avec display or not du menu pause et s'assurer qu'on est ingame
 var list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu", "game_over_menu"];
+const list_difficulty = ["easy", "medium", "hard"];
+maxDifficulty = 2;
+game.difficulty = 0;
 var can_presspause = true; // todo a virer
 game.score = 0;
 game.bonusOnMap = [];
@@ -43,7 +46,7 @@ game.inventory = {
 game.timer = 60;
 game.timerTick = 0;
 game.bonusSpawnTick = 0;
-game.maxBonusSpawnTick = 100;
+game.maxBonusSpawnTick = 700;
 game.canSpawnBonus = true;
 
 
@@ -194,6 +197,7 @@ game.doKeyboardEvents = function () {
 };
 
 
+
 /* Graphics */
 
 /* Definitions of the assets */
@@ -310,6 +314,33 @@ game.changeScreen =
     }
   }
 
+function downDifficulty() {
+  if (game.difficulty == 0){
+    return;
+  }
+  game.difficulty--;
+  document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
+  if (game.difficulty == 0) {
+    document.getElementById("difficulty_left_arrow").src = "assets/triangle_left_shadow.png";
+  }
+  else{
+    document.getElementById("difficulty_left_arrow").src = "assets/triangle_left.png"; 
+  }
+}
+
+function upDifficulty() {
+  if (game.difficulty == 2){
+    return;
+  }
+  game.difficulty++;
+  document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
+  if (game.difficulty == maxDifficulty) {
+    document.getElementById("difficulty_right_arrow").src = "assets/triangle_right_shadow.png";
+  }
+  else {
+    document.getElementById("difficulty_right_arrow").src = "assets/triangle_right.png";
+  }
+}
 
 
 game.manageLifeBar =
@@ -380,7 +411,7 @@ game.moveEnnemies =
       }
       else {
         if (ennemy.isColliding(game.player)) {
-          game.player.lifebar -= 100;
+          game.player.lifebar -= 20;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
         }
       }
@@ -392,8 +423,11 @@ game.moveEnnemies =
 
 game.checkGameOver =
   function () {
-    if (game.player.lifebar <= 0 || game.timer <= 0) {
-      game.gameOver();
+    if (game.player.lifebar <= 0){
+      game.gameOver("life");
+    }
+    else if (game.timer <= 0){
+      game.gameOver("timer");
     }
   }
 
@@ -797,7 +831,7 @@ class Ennemy extends Shooter {
     this.y += this.speed;
     if (this.y > game.canvas.height) {
       game.ennemies.splice(game.ennemies.indexOf(this), 1);
-      game.gameOver();
+      game.gameOver("ennemy_down");
     }
   }
 }
@@ -971,9 +1005,21 @@ game.stop =
   }
 
 game.gameOver =
-  function () {
+  function (reason_death) {
     game.stop();
+    let message;
     game.changeScreen('game_over_menu');
+    switch (reason_death) {
+      case "timer":
+        message = "You ran out of time..";
+        break;
+      case "life":
+        message = "You got destroyed..";
+        break
+      case "ennemy_down":
+        message = "An ennemy got into your base.."
+    }
+    document.getElementById("reason_of_death").innerHTML = '<h1>' + message + '</h1>';
   }
 
 

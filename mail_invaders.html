@@ -22,7 +22,11 @@
 
             <div id="start_menu_buttons">
                 <button class="button_start_menu" id="start_button">Play</button>
-                <button class="button_start_menu" id="difficulty_button">Easy</button>
+                <div id = "difficulty_button_wrapper">
+                    <input id = "difficulty_left_arrow" type="image" onClick="downDifficulty()" src="assets/triangle_left_shadow.png"/>
+                    <button class="button_start_menu" id="difficulty_button">Easy</button>
+                    <input id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="assets/triangle_right.png"/>
+                </div>
                 <button class="button_start_menu" id="help_button">Help</button>
             </div>
             <div id="sound_button">
