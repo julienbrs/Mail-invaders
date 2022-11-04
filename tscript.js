@@ -225,8 +225,15 @@ imgTurbo.src = 'assets/turbo.png';
 const imgSuperShoot = new Image();
 imgSuperShoot.src = 'assets/star.png';
 
-const imgEnnemies = new Image();
-imgEnnemies.src = 'assets/Mail.png';
+const imgSimpleMail = new Image();
+imgSimpleMail.src = 'assets/simple_mail.png';
+
+const imgDoubleMail = new Image();
+imgDoubleMail.src = 'assets/double_mail.png';
+
+const imgTripleMail = new Image();
+imgTripleMail.src = 'assets/triple_mail.png';
+
 const imgMissile = new Image();
 imgMissile.src = 'assets/Missile.png';
 
@@ -260,7 +267,6 @@ game.canvas.height = sHeight;
 
 game.changeScreen =
   function (menu) {
-    console.log("we change to " + menu);
     if (menu == 'pause_menu') {
       document.getElementById('pause_menu').style.display = 'flex';
       document.getElementById('help_menu').style.display = 'none';
@@ -285,29 +291,29 @@ game.changeScreen =
       else if (menu == 'start_menu') {
         document.body.style.backgroundImage =
           'url("assets/background_startmenu.jpg")';
-          const elements_start = document.getElementsByClassName("start_menu");
-          for (const element of elements_start){
-            element.style.display = 'flex';
-          }
-          document.getElementById("start_menu_buttons").style.setProperty("top", "44vh");
-          document.getElementById("start_menu_buttons").style.setProperty("left", "53vw");
-          document.getElementById("start_button").innerHTML = "Play";
+        const elements_start = document.getElementsByClassName("start_menu");
+        for (const element of elements_start) {
+          element.style.display = 'flex';
+        }
+        document.getElementById("start_menu_buttons").style.setProperty("top", "44vh");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "53vw");
+        document.getElementById("start_button").innerHTML = "Play";
       }
       else if (menu == 'game_over_menu') {
         document.body.style.backgroundImage =
-        'url("assets/background_startmenu.jpg")';
+          'url("assets/background_startmenu.jpg")';
         const start_menu = document.getElementById("start_menu");
         start_menu.style.display = "flex";
 
         const elements_start = document.getElementsByClassName("start_menu");
-        for (const element of elements_start){
+        for (const element of elements_start) {
           element.style.display = 'none';
         }
         document.getElementById("start_menu_buttons").style.setProperty("top", "50vh");
         document.getElementById("start_menu_buttons").style.setProperty("left", "49vw");
         document.getElementById("start_button").innerHTML = "Play Again";
         const elements_over = document.getElementsByClassName("game_over");
-        for (const element of elements_over){
+        for (const element of elements_over) {
           element.style.display = 'flex';
         }
       }
@@ -315,25 +321,27 @@ game.changeScreen =
   }
 
 function downDifficulty() {
-  if (game.difficulty == 0){
+  if (game.difficulty == 0) {
     return;
   }
   game.difficulty--;
   document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
+  document.getElementById("difficulty_title_ingame").innerHTML = '<h1>' + list_difficulty[game.difficulty] + '<h1>';
   if (game.difficulty == 0) {
     document.getElementById("difficulty_left_arrow").src = "assets/triangle_left_shadow.png";
   }
-  else{
-    document.getElementById("difficulty_left_arrow").src = "assets/triangle_left.png"; 
+  else {
+    document.getElementById("difficulty_left_arrow").src = "assets/triangle_left.png";
   }
 }
 
 function upDifficulty() {
-  if (game.difficulty == 2){
+  if (game.difficulty == 2) {
     return;
   }
   game.difficulty++;
   document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
+  document.getElementById("difficulty_title_ingame").innerHTML = '<h1>' + list_difficulty[game.difficulty] + '<h1>';
   if (game.difficulty == maxDifficulty) {
     document.getElementById("difficulty_right_arrow").src = "assets/triangle_right_shadow.png";
   }
@@ -423,21 +431,31 @@ game.moveEnnemies =
 
 game.checkGameOver =
   function () {
-    if (game.player.lifebar <= 0){
+    if (game.player.lifebar <= 0) {
       game.gameOver("life");
     }
-    else if (game.timer <= 0){
+    else if (game.timer <= 0) {
       game.gameOver("timer");
     }
   }
 
 game.spawnEnnemies =
   function (wave) {
-    let nbEnnemies = wave * 10;
-    for (let i = 0; i < nbEnnemies; i++) {
+    let nbSimpleEnnemy = wave * 10 * (game.difficulty + 1);
+    let nbTripleMail = wave * 3 * (game.difficulty + 1);
+    console.log("nbSimpleEnnemy : " + nbSimpleEnnemy);
+    /* Spawn Simple Ennemies */
+    for (let i = 0; i < nbSimpleEnnemy; i++) {
       let x = Math.random() * (sWidth - 59);
-      let y = Math.random() * (- 300 * (1 + wave * 0.3));
-      let ennemy = new Ennemy(x, y, 58, 43, imgEnnemies, 1);
+      let y = Math.random() * (- 300 * (1 + wave * 0.4));
+      let ennemy = new Ennemy(x, y, 58, 43, imgSimpleMail);
+      game.ennemies.push(ennemy);
+    }
+    /* Spawn Triple Mail */
+    for (let i = 0; i < nbTripleMail; i++) {
+      let x = Math.random() * (sWidth - 59);
+      let y = Math.random() * (- 300 * (1 + wave * 0.4));
+      let ennemy = new TripleMail(x, y, 58, 43, imgTripleMail);
       game.ennemies.push(ennemy);
     }
   }
@@ -822,8 +840,10 @@ class Player extends Shooter {
 }
 
 class Ennemy extends Shooter {
-  constructor(x, y, width, height, image, speed) {
-    super(x, y, width, height, image, speed);
+  constructor(x, y, width, height, image) {
+    super(x, y, width, height, image);
+    this.speed = 1.2;
+    this.life = 1;
   }
 
   move() {
@@ -833,6 +853,15 @@ class Ennemy extends Shooter {
       game.ennemies.splice(game.ennemies.indexOf(this), 1);
       game.gameOver("ennemy_down");
     }
+  }
+}
+
+class TripleMail extends Ennemy {
+  constructor(x, y, width, height, image) {
+    super(x, y, width, height, image);
+    this.life = 3;
+    this.speed = 1;
+    this.listImage = [imgSimpleMail, imgDoubleMail, imgSimpleMail];
   }
 }
 
@@ -858,7 +887,17 @@ class Laser extends PhysicalObject {
     for (let ennemy of game.ennemies) {
       if (this.isColliding(ennemy)) {
         this.delete();
-        game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+        ennemy.life--;
+        if (ennemy.life == 0) {
+          game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+        }
+        else {
+          /* check if ennemy is a triple mail */
+          if (ennemy.constructor.name === 'TripleMail') {
+            ennemy.image = ennemy.listImage[ennemy.life - 1];
+          }
+        }
+
       }
     }
   }
@@ -868,6 +907,7 @@ class Laser extends PhysicalObject {
     game.player.lasers.splice(game.player.lasers.indexOf(this), 1);
   }
 }
+
 
 class LaserPlayer extends Laser {
   constructor(x, y) {
