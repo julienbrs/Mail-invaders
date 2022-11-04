@@ -1,5 +1,6 @@
 // todo: collision tir mail se fait trop rapidement
 // todo: coeur de vie a afficher
+// todo quand on est collé à droite de l'écran, les tirs disparaissent
 //todo: reset de la lvlwave quand restart a faire
 //todo quand en pause on peut log des events, ou bien à fin de pause on enleve tous les evnets de datakeypressed
 //todo score need to be restart at restart
@@ -234,11 +235,17 @@ imgDoubleMail.src = 'assets/double_mail.png';
 const imgTripleMail = new Image();
 imgTripleMail.src = 'assets/triple_mail.png';
 
+const imgShooterMail = new Image();
+imgShooterMail.src = 'assets/shooter_mail.png';
+
 const imgMissile = new Image();
 imgMissile.src = 'assets/Missile.png';
 
 const imgSuperMissile = new Image();
 imgSuperMissile.src = 'assets/supershoot_missile.png';
+
+const imgMissileShooterMail = new Image();
+imgMissileShooterMail.src = 'assets/missile_shooter_mail.png';
 
 /* audio */
 const audio = new Audio('assets/sounds/main_audio.m4a');
@@ -320,6 +327,19 @@ game.changeScreen =
     }
   }
 
+game.addScoreEnnemy =
+  function (ennemy) {
+    if (ennemy.constructor.name === 'TripleMail') {
+      game.score += 300;
+    }
+    else if (ennemy.constructor.name === 'ShooterMail') {
+      game.score += 200;
+    }
+    else {
+      game.score += 100;
+    }
+  }
+
 function downDifficulty() {
   if (game.difficulty == 0) {
     return;
@@ -374,7 +394,6 @@ game.manageImagePlayer = function () {
 game.manageTimerBar =
   function () {
     game.timerTick++;
-
     if (game.timer > maxGameTimer) {
       game.timer = maxGameTimer;
     }
@@ -386,6 +405,7 @@ game.manageTimerBar =
     if (game.timerTick % 30 == 0) {
       game.timer--;
       game.timerTick = 0;
+      game.score += 100;
     }
   }
 
@@ -415,12 +435,14 @@ game.moveEnnemies =
         if (ennemy.isColliding(game.player)) {
           game.player.shieldTimer = 1;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+          game.addScoreEnnemy(ennemy);
         }
       }
       else {
         if (ennemy.isColliding(game.player)) {
           game.player.lifebar -= 20;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+          game.addScoreEnnemy(ennemy);
         }
       }
     }
@@ -442,8 +464,8 @@ game.checkGameOver =
 game.spawnEnnemies =
   function (wave) {
     let nbSimpleEnnemy = wave * 10 * (game.difficulty + 1);
-    let nbTripleMail = wave * 3 * (game.difficulty + 1);
-    console.log("nbSimpleEnnemy : " + nbSimpleEnnemy);
+    let nbTripleMail = 1.1 * wave * 3 * (game.difficulty + 1);
+    let nbShooterMail = 1.3 * wave * 2 * (game.difficulty + 1);
     /* Spawn Simple Ennemies */
     for (let i = 0; i < nbSimpleEnnemy; i++) {
       let x = Math.random() * (sWidth - 59);
@@ -456,6 +478,13 @@ game.spawnEnnemies =
       let x = Math.random() * (sWidth - 59);
       let y = Math.random() * (- 300 * (1 + wave * 0.4));
       let ennemy = new TripleMail(x, y, 58, 43, imgTripleMail);
+      game.ennemies.push(ennemy);
+    }
+    /* Spawn Shooter Mail */
+    for (let i = 0; i < nbShooterMail; i++) {
+      let x = Math.random() * (sWidth - 59);
+      let y = Math.random() * (- 300 * (1 + wave * 0.4));
+      let ennemy = new ShooterMail(x, y, 58, 43, imgShooterMail);
       game.ennemies.push(ennemy);
     }
   }
@@ -487,6 +516,7 @@ game.checkCollisionBonus =
           if (ennemy.isColliding(bonus)) {
             game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
             bonus.canStillGrabAmount--;
+            game.addScoreEnnemy(ennemy);
             if (bonus.canStillGrabAmount == 0) {
               game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
             }
@@ -622,6 +652,12 @@ class PhysicalObject {
   offScreen(dx, dy) {
     // TODO: rajouter width et heighth de l'objet pour plus de précision
     /* check if the object is off screen */
+    console.log(this.x + dx, this.y + dy);
+    console.log(this.x + dx < 0);
+    console.log(this.x + dx + this.width > game.canvas.width);
+    console.log(this.y + dy < 0);
+    console.log(this.y + dy + this.height > game.canvas.height);
+
     return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width ||
       this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
   }
@@ -731,17 +767,23 @@ class Shooter extends PhysicalObject {
 
 
   shoot() {
+    console.log("and now we shoot");
     /* shoot a laser */
     let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile, 10);
     this.lasers.push(laser);
-
   }
 
   drawLasers() {
     /* draw the lasers */
     for (let laser of this.lasers) {
       laser.draw();
-      laser.move(0, -this.speed);
+    }
+  }
+  moveLasers() {
+    /* move the lasers */
+    for (let laser of this.lasers) {
+      console.log("we move the lasers");
+      laser.move(0, +laser.speed);
     }
   }
 }
@@ -775,6 +817,7 @@ class Player extends Shooter {
       this.lasers.push(newLaser2);
     }
     else {
+      console.log("we are in player shoot")
       super.shoot();
     }
   }
@@ -865,6 +908,41 @@ class TripleMail extends Ennemy {
   }
 }
 
+class ShooterMail extends Ennemy {
+  constructor(x, y, width, height, image) {
+    super(x, y, width, height, image);
+    this.life = 2;
+    this.speed = 1.2;
+  }
+
+  tryToShoot() {
+    /* shoot a laser */
+    let rand = Math.random();
+    if (rand < 0.01) {
+      this.shoot();
+    }
+  }
+
+  shoot() {
+    /* shoot a laser */
+    let laser = new LaserMail(this.x + this.width / 2, this.y + this.height, imgMissileShooterMail, 100);
+    this.lasers.push(laser);
+  }
+
+  drawLasers() {
+    /* draw the lasers */
+    for (let laser of this.lasers) {
+      laser.draw();
+    }
+  }
+
+  moveLasers() {
+    for (let laser of this.lasers) {
+      laser.move(0, this.speed);
+    }
+  }
+}
+
 /* Laser class */
 class Laser extends PhysicalObject {
   constructor(x, y, width, height, speed) {
@@ -880,16 +958,20 @@ class Laser extends PhysicalObject {
   move(dx, dy) {
     /* move the laser */
     this.x += dx;
-    this.y += dy;
+    this.y -= dy;
+
     if (this.offScreen(0, 0)) {
       this.delete();
+      console.log("we delete the laser AA");
     }
     for (let ennemy of game.ennemies) {
       if (this.isColliding(ennemy)) {
+        console.log("we delete the laser BB");
         this.delete();
         ennemy.life--;
         if (ennemy.life == 0) {
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+          game.addScoreEnnemy(ennemy);
         }
         else {
           /* check if ennemy is a triple mail */
@@ -908,7 +990,16 @@ class Laser extends PhysicalObject {
   }
 }
 
-
+game.drawLasersEnnemies = function () {
+  /* draw the lasers of the ennemies */
+  for (let ennemy of game.ennemies) {
+    if (ennemy.constructor.name === 'ShooterMail') {
+      ennemy.tryToShoot();
+      ennemy.moveLasers();
+      ennemy.drawLasers();
+    }
+  }
+}
 class LaserPlayer extends Laser {
   constructor(x, y) {
     super(x, y, 14, 57, 14);
@@ -925,6 +1016,38 @@ class LaserPlayer extends Laser {
   }
 }
 
+class LaserMail extends Laser {
+  constructor(x, y) {
+    super(x, y, 14, 57, -14);
+  }
+
+  draw() {
+    /* draw the laser */
+    game.ctx.drawImage(imgMissileShooterMail, this.x, this.y, this.width, this.height);
+  }
+  move() {
+    /* move the laser */
+    this.x += 0;
+    this.y -= this.speed;
+    if (this.offScreen(0, 0)) {
+      console.log("we delete the laser CC");
+      console.log(this);
+      this.delete();
+    }
+    if (this.isColliding(game.player)) {
+      console.log("collision laser mail");
+      console.log("we delete the laser DD");
+      this.delete();
+      game.player.lifebar -= 1;
+      if (game.player.life == 0) {
+        game.gameOver("player_down");
+      }
+    }
+  }
+
+
+}
+
 
 /* Main loop of the game */
 function updateGame() {
@@ -937,16 +1060,18 @@ function updateGame() {
     /* do all the drawings */
     game.player.draw(game.ctx);
     game.player.drawLasers();
+    game.player.moveLasers();
     game.drawEnnemies();
 
     /* do all the in-game functions */
     game.moveEnnemies();
+    game.drawLasersEnnemies();
+
     game.manageImagePlayer();
     game.checkLvlState();
     game.checkGameOver();
     game.manageLifeBar();
     game.manageTimerBar();
-    game.score += 10;
     game.drawScore();
     game.manageBonus();
     game.drawBonus();
