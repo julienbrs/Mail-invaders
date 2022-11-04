@@ -57,11 +57,16 @@ const maxShieldTimer = 10 * 3.33 * 10;
 const maxTurboTimer = 10 * 3.33 * 10;
 const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
+const vitesseLaserEnnemy = 5;
+const vitesseLaserPlayer = 10;
+
 const speedPlayer = 13;
 const FPS = 30;
 var maxGameTimer = 60;
 game.tickPlayerImage = 0;
 
+/* so lasers dont dispawn when ennemy shooter is dead */
+var ennemyLasers = [];
 
 function isGaming() {
   return document.getElementById('screen_game').style.display == 'flex' && document.getElementById('pause_menu').style.display == 'none';
@@ -627,6 +632,12 @@ game.manageBonus =
 
   }
 
+game.moveEnnemyLasers =
+  function () {
+    for (let laser of ennemyLasers) {
+      laser.move(0, this.speed);
+    }
+  }
 
 function putTrap() {
   /* draw the ingame_trap at the place of the player */
@@ -652,11 +663,15 @@ class PhysicalObject {
   offScreen(dx, dy) {
     // TODO: rajouter width et heighth de l'objet pour plus de précision
     /* check if the object is off screen */
-    console.log(this.x + dx, this.y + dy);
-    console.log(this.x + dx < 0);
-    console.log(this.x + dx + this.width > game.canvas.width);
-    console.log(this.y + dy < 0);
-    console.log(this.y + dy + this.height > game.canvas.height);
+    if (this.y + dy + this.height > game.canvas.height) {
+    }
+    if (this.x + dx + this.width > game.canvas.width) {
+
+    }
+    if (this.x + dx < 0) {
+    }
+    if (this.y + dy < 0) {
+    }
 
     return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width ||
       this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
@@ -767,9 +782,8 @@ class Shooter extends PhysicalObject {
 
 
   shoot() {
-    console.log("and now we shoot");
     /* shoot a laser */
-    let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile, 10);
+    let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile);
     this.lasers.push(laser);
   }
 
@@ -782,7 +796,6 @@ class Shooter extends PhysicalObject {
   moveLasers() {
     /* move the lasers */
     for (let laser of this.lasers) {
-      console.log("we move the lasers");
       laser.move(0, +laser.speed);
     }
   }
@@ -808,16 +821,13 @@ class Player extends Shooter {
     /* shoot a laser */
     if (this.superShootActivated) {
       const newLaser = new LaserPlayer(
-        this.x + this.width / 2 - 15, this.y - this.height / 2, 10, 30,
-        5);
+        this.x + this.width / 2 - 15, this.y - this.height / 2, imgSuperShoot);
       const newLaser2 = new LaserPlayer(
-        this.x + this.width / 2 + 10, this.y - this.height / 2, 10, 30,
-        5);
+        this.x + this.width / 2 + 10, this.y - this.height / 2, imgSuperShoot);
       this.lasers.push(newLaser);
       this.lasers.push(newLaser2);
     }
     else {
-      console.log("we are in player shoot")
       super.shoot();
     }
   }
@@ -925,34 +935,31 @@ class ShooterMail extends Ennemy {
 
   shoot() {
     /* shoot a laser */
-    let laser = new LaserMail(this.x + this.width / 2, this.y + this.height, imgMissileShooterMail, 100);
-    this.lasers.push(laser);
+    let laser = new LaserMail(this.x + this.width / 2, this.y + this.height, imgMissileShooterMail);
+    /* adding laser to array ennemyLasers */
+    ennemyLasers.push(laser);
   }
 
   drawLasers() {
     /* draw the lasers */
-    for (let laser of this.lasers) {
+    for (let laser of ennemyLasers) {
       laser.draw();
     }
   }
 
-  moveLasers() {
-    for (let laser of this.lasers) {
-      laser.move(0, this.speed);
-    }
-  }
 }
 
 /* Laser class */
+
 class Laser extends PhysicalObject {
-  constructor(x, y, width, height, speed) {
-    super(x, y, width, height);
+  constructor(x, y, width, height, speed, image) {
+    super(x, y, width, height, image);
     this.speed = speed;
   }
 
   draw() {
     /* draw the laser */
-    game.ctx.drawImage(imgMissile, this.x, this.y, this.width, this.height);
+    game.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
   }
 
   move(dx, dy) {
@@ -960,13 +967,11 @@ class Laser extends PhysicalObject {
     this.x += dx;
     this.y -= dy;
 
-    if (this.offScreen(0, 0)) {
+    if (this.offScreen(-5, 0)) {
       this.delete();
-      console.log("we delete the laser AA");
     }
     for (let ennemy of game.ennemies) {
       if (this.isColliding(ennemy)) {
-        console.log("we delete the laser BB");
         this.delete();
         ennemy.life--;
         if (ennemy.life == 0) {
@@ -979,10 +984,10 @@ class Laser extends PhysicalObject {
             ennemy.image = ennemy.listImage[ennemy.life - 1];
           }
         }
-
       }
     }
   }
+
 
   delete() {
     /* delete the laser */
@@ -995,14 +1000,13 @@ game.drawLasersEnnemies = function () {
   for (let ennemy of game.ennemies) {
     if (ennemy.constructor.name === 'ShooterMail') {
       ennemy.tryToShoot();
-      ennemy.moveLasers();
       ennemy.drawLasers();
     }
   }
 }
 class LaserPlayer extends Laser {
-  constructor(x, y) {
-    super(x, y, 14, 57, 14);
+  constructor(x, y, image) {
+    super(x, y, 14, 57, vitesseLaserPlayer, image);
   }
 
   draw() {
@@ -1011,41 +1015,37 @@ class LaserPlayer extends Laser {
       game.ctx.drawImage(imgSuperMissile, this.x, this.y, this.width, this.height);
     }
     else {
-      game.ctx.drawImage(imgMissile, this.x, this.y, this.width, this.height);
+      super.draw();
     }
   }
 }
 
 class LaserMail extends Laser {
-  constructor(x, y) {
-    super(x, y, 14, 57, -14);
+  constructor(x, y, image) {
+    super(x, y, 42, 44, -vitesseLaserEnnemy, image);
   }
 
-  draw() {
-    /* draw the laser */
-    game.ctx.drawImage(imgMissileShooterMail, this.x, this.y, this.width, this.height);
-  }
   move() {
+    console.log(this.speed);
+    console.log(this);
     /* move the laser */
     this.x += 0;
     this.y -= this.speed;
-    if (this.offScreen(0, 0)) {
-      console.log("we delete the laser CC");
-      console.log(this);
+    if (this.offScreen(-5, 0)) {
       this.delete();
     }
     if (this.isColliding(game.player)) {
-      console.log("collision laser mail");
-      console.log("we delete the laser DD");
       this.delete();
-      game.player.lifebar -= 1;
+      game.player.lifebar -= 10;
       if (game.player.life == 0) {
-        game.gameOver("player_down");
       }
     }
   }
 
-
+  delete() {
+    /* delete the laser */
+    ennemyLasers.splice(ennemyLasers.indexOf(this), 1);
+  }
 }
 
 
@@ -1056,7 +1056,6 @@ function updateGame() {
   if (game.on_pause == false) {
     /* reset the canvas */
     game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
-
     /* do all the drawings */
     game.player.draw(game.ctx);
     game.player.drawLasers();
@@ -1065,6 +1064,7 @@ function updateGame() {
 
     /* do all the in-game functions */
     game.moveEnnemies();
+    game.moveEnnemyLasers();
     game.drawLasersEnnemies();
 
     game.manageImagePlayer();
@@ -1141,6 +1141,7 @@ game.init =
       game.canSpawnBonus = true;
       game.player = new Player();
       game.timer = 60;
+      ennemyLasers = [];
       game.wave = 1;
       game.bonusOnMap = [];
       game.spawnBonus();
