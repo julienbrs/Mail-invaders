@@ -16,7 +16,7 @@
     <div id="main_container">
 
         <div id="start_menu">
-            <div id="start_menu_title">
+            <div id="start_menu_title" class ="start_menu">
                 <h1>Mail Invaders</h1>
             </div>
 
@@ -28,6 +28,25 @@
             <div id="sound_button">
                 <input id ="testsound" type="image" class="audio" onClick="togglePlay()" src="assets/button_no_sound.png" />
             </div>
+        </div>
+        <div id = "game_over_menu">
+            <div id = "game_over_mail_invaders">
+                <h1>Mail Invaders</h1>
+            </div>
+            <div id = "wrapper_game_over">
+                <div id ="game_over_title">
+                    <h1>Game Over...</h1>
+                </div>
+                <div id = "reason_of_death">
+                    <h1>You ran out of time</h1>
+                </div>
+                <div id = "score_wrapper_game_over">
+                    <h1>Score :</h1>
+                    <h1 class="score_value">0</h1>
+                </div>
+            </div>
+            <button class="button_start_menu" id="game_over_home">Main Menu</button>
+
         </div>
 
         <div id="screen_game">
@@ -119,10 +138,8 @@
                     <h1>Pause</h1>
                 </div>
                 <div id="pause_menu_score_wrapper">
-                    <div id="pause_menu_score">
-                        <h1>Score :</h1>
-                        <h1 id="pause_menu_score_value" class="score_value">0</h1>
-                    </div>
+                    <h1>Score :</h1>
+                    <h1 id="pause_menu_score_value" class="score_value">0</h1>
                 </div>
                 <div id="pause_menu_buttons">
                     <button class="button_pause_menu" id="resume_button">Resume</button>

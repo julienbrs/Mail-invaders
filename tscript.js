@@ -27,7 +27,7 @@ game.ctx = game.canvas.getContext('2d');
 game.wave = 1;
 game.initialized = false;
 game.on_pause = false; // todo utiliser plutot classe avec display or not du menu pause et s'assurer qu'on est ingame
-var list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu"];
+var list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu", "game_over_menu"];
 var can_presspause = true; // todo a virer
 game.score = 0;
 game.bonusOnMap = [];
@@ -256,6 +256,7 @@ game.canvas.height = sHeight;
 
 game.changeScreen =
   function (menu) {
+    console.log("we change to " + menu);
     if (menu == 'pause_menu') {
       document.getElementById('pause_menu').style.display = 'flex';
       document.getElementById('help_menu').style.display = 'none';
@@ -280,6 +281,31 @@ game.changeScreen =
       else if (menu == 'start_menu') {
         document.body.style.backgroundImage =
           'url("assets/background_startmenu.jpg")';
+          const elements_start = document.getElementsByClassName("start_menu");
+          for (const element of elements_start){
+            element.style.display = 'flex';
+          }
+          document.getElementById("start_menu_buttons").style.setProperty("top", "44vh");
+          document.getElementById("start_menu_buttons").style.setProperty("left", "53vw");
+          document.getElementById("start_button").innerHTML = "Play";
+      }
+      else if (menu == 'game_over_menu') {
+        document.body.style.backgroundImage =
+        'url("assets/background_startmenu.jpg")';
+        const start_menu = document.getElementById("start_menu");
+        start_menu.style.display = "flex";
+
+        const elements_start = document.getElementsByClassName("start_menu");
+        for (const element of elements_start){
+          element.style.display = 'none';
+        }
+        document.getElementById("start_menu_buttons").style.setProperty("top", "50vh");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "49vw");
+        document.getElementById("start_button").innerHTML = "Play Again";
+        const elements_over = document.getElementsByClassName("game_over");
+        for (const element of elements_over){
+          element.style.display = 'flex';
+        }
       }
     }
   }
@@ -354,7 +380,7 @@ game.moveEnnemies =
       }
       else {
         if (ennemy.isColliding(game.player)) {
-          game.player.lifebar -= 20;
+          game.player.lifebar -= 100;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
         }
       }
@@ -420,7 +446,6 @@ game.checkCollisionBonus =
         if (bonus.isColliding(game.player)) {
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           game.catchTimerBonus();
-          console.log("we wait 3 sec after timer bonus");
           await new Promise(resolve => setTimeout(resolve, 5000));
           game.spawnBonus("timer_bonus");
         }
@@ -446,7 +471,6 @@ game.spawnBonus =
     let y = Math.random() * (0.9 * sHeight - 65);
 
     if (bonus_chosen == "timer_bonus") {
-      console.log("bonus spawn = timer_bonus");
       bonus = new TimerBonus(x, y);
     }
     else {
@@ -457,12 +481,9 @@ game.spawnBonus =
         return;
       }
       let random = Math.random();
-      console.log("\n\n\n");
-      console.log("random = " + random);
 
       if (random < 0.25) {
         if (game.inventory['shield'] > 0 || game.player.shieldActivated) {
-          console.log("we do another bonus");
           game.spawnBonus();
         }
         else {
@@ -471,7 +492,6 @@ game.spawnBonus =
       }
       else if (random < 0.5) {
         if (game.inventory['trap'] > 0) {
-          console.log("we do another bonus");
           game.spawnBonus();
         }
         else {
@@ -480,7 +500,6 @@ game.spawnBonus =
       }
       else if (random < 0.75) {
         if (game.inventory['turbo'] > 0 || game.player.turboActivated) {
-          console.log("we do another bonus");
           game.spawnBonus();
         }
         else {
@@ -489,7 +508,6 @@ game.spawnBonus =
       }
       else {
         if (game.inventory['super_shoot'] > 0 || game.player.superShootActivated) {
-          console.log("we do another bonus");
           game.spawnBonus();
         }
         else {
@@ -871,9 +889,13 @@ document.getElementById('start_button').onclick = function () {
   game.changeScreen('screen_game');
 }
 
+
 /* Button of pause menu */
 
 document.getElementById("logo_home").onclick = function () {
+  game.changeScreen('start_menu');
+}
+document.getElementById("game_over_home").onclick = function () {
   game.changeScreen('start_menu');
 }
 
@@ -917,6 +939,7 @@ game.init =
   function () {
     if (game.initialized == false) {
       hideAllBonus();
+      game.canSpawnBonus = true;
       game.player = new Player();
       game.timer = 60;
       game.wave = 1;
@@ -950,7 +973,7 @@ game.stop =
 game.gameOver =
   function () {
     game.stop();
-    game.changeScreen('start_menu');
+    game.changeScreen('game_over_menu');
   }
 
 
