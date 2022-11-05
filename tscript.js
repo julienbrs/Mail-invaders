@@ -13,6 +13,8 @@
 // hover sound of difficulty weird
 // add heart bonus
 // todo changer curseur
+//todo move poubelle
+//adapter difficulté des niveaux
 //score at pause need to be done better
 //todo supermissile passent de rouge à jaune quand timer passe à 0 => solve ça
 // centrer timerbar bonus sur le logo bonus
@@ -35,7 +37,7 @@ game.ctx = game.canvas.getContext('2d');
 game.wave = 1;
 game.initialized = false;
 game.on_pause = false; // todo utiliser plutot classe avec display or not du menu pause et s'assurer qu'on est ingame
-var list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu", "game_over_menu"];
+var list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu", "game_over_menu", "leaderboard_menu"];
 const list_difficulty = ["easy", "medium", "hard"];
 maxDifficulty = 2;
 game.difficulty = 0;
@@ -375,7 +377,7 @@ game.changeScreen =
           element.style.display = 'none';
         }
         document.getElementById("start_menu_buttons").style.setProperty("top", "58vh");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "49vw");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "45.5vw");
         document.getElementById("start_button").innerHTML = "Play Again";
         const elements_over = document.getElementsByClassName("game_over");
         for (const element of elements_over) {
@@ -1192,7 +1194,7 @@ document.getElementById("home_button").onclick = function () {
   game.changeScreen('start_menu');
 }
 
-document.getElementById("help_button_pause_menu").onclick = function () {
+document.getElementById("leaderboard_button_pause_menu").onclick = function () {
   game.changeScreen('help_menu');
 }
 
@@ -1264,11 +1266,12 @@ game.gameOver =
         message = "An ennemy got into your base.."
     }
     if (isHighscore(game.score)) {
-      console.log("WE GOT AN HIGHSCORE");
-      document.getElementById("score_title_game_over").innerHTML = "<h1>Highscore!</h1>";
+      document.getElementById("score_title_game_over").innerHTML = "<h1 id='highscore_title'>Highscore!</h1>";
       /* put score_title_game_over in red */
-      document.getElementById("score_title_game_over").style.color = "red";
-
+      document.getElementById("highscore_title").style.color = "red";
+    }
+    else {
+      document.getElementById("score_title_game_over").innerHTML = "<h1>Score</h1>";
     }
     document.getElementById("reason_of_death").innerHTML = '<h1>' + message + '</h1>';
 
@@ -1287,25 +1290,37 @@ function getScoresInArray() {
   arrayKeyValues.sort(function (a, b) {
     return b[1] - a[1];
   });
-  console.log(arrayKeyValues);
   return arrayKeyValues;
 }
 
 
 function isHighscore(newScore) {
-  console.log("in isHighscore");
-  console.log(newScore);
+  console.log("isHighscore");
   let scores = getScoresInArray();
+  if (!scores.length) return true;
   if (newScore > scores[0][1]) {
     return true;
   }
   return false;
+
 }
 
 function setScore(name, score) {
   localStorage.setItem(name, score);
-  console.log(localStorage.getItem(name));
+  let scores = getScoresInArray();
+  console.log(scores);
+  /* write the scores in the leaderboard menu */
+  let n = (scores.length < 5) ? scores.length : 5;
+  for (let i = 0; i < n; i++) {
+    /* get 5th h1 of the leaderboard menu with jquery */
+    let h1 = $("#leaderboard_header_name h1:nth-child(" + (i + 2) + ")");
+    h1.html(scores[i][0]);
+    h1 = $("#leaderboard_header_score h1:nth-child(" + (i + 2) + ")");
+    h1.html(scores[i][1]);
+    h1 = $("#leaderboard_header_rank h1:nth-child(" + (i + 2) + ")");
+    h1.html(i + 1);
+  }
 }
 
+//todo expliquer ça
 //localStorage.clear();
-//setScore("Default", 0);

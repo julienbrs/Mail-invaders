@@ -197,7 +197,7 @@ button:hover {
 #game_over_home {
     position: absolute;
     top: 85.5%;
-    left: 49%;
+    left: 45.5%;
 }
 #score_wrapper_game_over h1 {
     color: #C8FF00;
@@ -219,6 +219,8 @@ button:hover {
 
 }
 #game_over_name_input{
+    position: relative;
+    left: -0%;
     height: 5vh;
     display: flex;
     flex-direction: row;
@@ -231,7 +233,7 @@ button:hover {
     width: 8.3vw;
     height: 5vh;
     position: relative;
-    left: 3.5%;
+    left: 6.3%;
     top: 5%;
     background-color: #C8FF00;
     color: #0E0C60;
@@ -244,6 +246,80 @@ button:hover {
     border-style: solid;
     margin-left: 0;
 }
+
+/* Leaderboard */
+
+#leaderboard_menu {
+    position: absolute;
+    top: 15%;
+    left: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-shadow: 0px 8px 16px rgba(9, 8, 83, 0.4);
+}
+#leaderboard_top_wrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-bottom: 2%;
+
+}
+#leaderboard_menu_title{
+    position:relative;
+    left: -18%;
+}
+#cancel_button_leaderboard_menu{
+    position: relative;
+    left: 0%;
+    top: 2vh;
+    margin-left:50%;
+}
+#leaderboard_menu_mail_invaders {
+    position: relative;
+    left: 5%;
+    top: -2%;
+    width: 50vw;
+    height: 10vh;
+    z-index: 4;
+    font-size: 2.5em;
+    margin-bottom: 8%;
+}
+
+#leaderboard {
+    display: flex;
+    background: #0E0C60;
+    border: 4px solid #C8FF00;
+    border-radius: 31px;
+    width: 80%;
+    height: 50%;
+    font-size: 0.6em;
+}
+
+.leaderboard_title h1{
+    color:#C8FF00;
+    margin-bottom: 5%;
+}
+#leaderboard_header_rank{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 10%;
+    margin-left: 5%;
+}
+.column_leaderboard{
+    display: flex;
+    flex-direction: column;
+    overflow:hidden;
+    align-items: flex-start;
+    width: 35%;
+    margin-left: 10%;
+}
+#leaderboard_header_score{
+    width: 45%;
+}
+
 
 /* Menu in-game */
 
@@ -485,6 +561,14 @@ button:hover {
     font-size: 8px;
     display: flex;
     z-index: 4;
+}
+#score_value_game_over{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+    top: -0.3em;
+    left: 50%;
 }
 
 .score_value {

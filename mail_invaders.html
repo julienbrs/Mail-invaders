@@ -26,7 +26,7 @@
                     <button class = "button_start_menu" id="difficulty_button">Easy</button>
                     <input class="sound_button" id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="assets/triangle_right.png"/>
                 </div>
-                <button class = " sound_button button_start_menu" id="help_button">Help</button>
+                <button class = " sound_button button_start_menu" id="help_button" onClick="game.changeScreen('leaderboard_menu')" >Leaderboard</button>
             </div>
             <div id="sound_button">
                 <input id ="testsound" type="image" class = " sound_button audio_button" onClick="togglePlay()" src="assets/button_no_sound.png" />
@@ -47,7 +47,9 @@
                     <div id = "score_title_game_over">
                         <h1>Score</h1>
                     </div>
-                    <h1 class="score_value">0</h1>
+                    <div id = "score_value_game_over">
+                        <h1 class="score_value">0</h1>
+                    </div>
                 </div>
                 <div id = "game_over_name_input">
                     <!-- Input to put your name -->
@@ -55,8 +57,53 @@
                     <button id="save_score_button" class = "sound_button" onClick="toggleSaveScore()" >Save score</button>
                 </div>
             </div>
-            <button class = " sound_button button_start_menu" id="game_over_home">Main Menu</button>
+            <button class = "sound_button button_start_menu" id="game_over_home">Main Menu</button>
 
+        </div>
+        <div id="leaderboard_menu">
+            <div id="leaderboard_menu_mail_invaders">
+                <h1>Mail invaders</h1>
+            </div>
+            <div id="leaderboard_top_wrapper">
+                <div id="leaderboard_menu_title">
+                    <h1>Leaderboard</h1>
+                </div>
+                <div id = "cancel_button_leaderboard_menu">
+                    <input type="image" onClick="game.changeScreen('start_menu')" src="assets/cancel_button.png" alt="cancel_button">
+                </div>
+            </div>
+            <div id="leaderboard">
+                <div id="leaderboard_header_rank">
+                    <div id="rank_title" class="leaderboard_title">
+                        <h1>Rank</h1>
+                    </div>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                </div>
+                <div id="leaderboard_header_name" class="column_leaderboard">
+                    <div id="name_title" class="leaderboard_title">
+                        <h1>Name</h1>
+                    </div>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                </div>
+                <div id="leaderboard_header_score" class="column_leaderboard">
+                    <div id="score_title" class="leaderboard_title">
+                        <h1>Score</h1>
+                    </div>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                    <h1></h1>
+                </div>
+            </div>
         </div>
 
         <div id="screen_game">
@@ -162,13 +209,13 @@
                     <button class = " sound_button button_pause_menu" id="resume_button">Resume</button>
                     <button class = " sound_button button_pause_menu" id="restart_button">Restart</button>
                     <button class = " sound_button button_pause_menu" id="home_button">Home</button>
-                    <button class = " sound_button button_pause_menu" id="help_button_pause_menu">Help</button>
+                    <button class = " sound_button button_pause_menu" id="leaderboard_button_pause_menu">Leaderboard</button>
                 </div>
             </div>
 
             <div id="help_menu">
                 <div id="help_menu_title">
-                    <h1>Help</h1>
+                    <h1>Leaderboard</h1>
                 </div>
                 <div id = "cancel_button_help_pause">
                     <input type="image" onClick="game.changeScreen('pause_menu')" src="assets/cancel_button.png" alt="cancel_button">
