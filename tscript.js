@@ -4,6 +4,9 @@
 //todo: reset de la lvlwave quand restart a faire
 //todo quand en pause on peut log des events, ou bien à fin de pause on enleve tous les evnets de datakeypressed
 //todo score need to be restart at restart
+// check si le bon message s'affiche à la mort
+//todo séparer fichier audio d'assets
+// respecter la sémantique des fichiers html voir énoncé
 //todo hitbox avec shield
 // todo gameover window
 // mettre autre temps pour les bonus 
@@ -314,6 +317,14 @@ function togglePlay() {
   }
 };
 
+function toggleSaveScore() {
+
+  let nameValue = document.getElementById("name_input").value;
+  let scoreValue = game.score;
+  setScore(nameValue, scoreValue);
+  let scores = getScoresInArray();
+  /* print all scores from scores array */
+}
 
 /* Graphic features of the game */
 game.canvas.width = sWidth;
@@ -349,8 +360,8 @@ game.changeScreen =
         for (const element of elements_start) {
           element.style.display = 'flex';
         }
-        document.getElementById("start_menu_buttons").style.setProperty("top", "44vh");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "53vw");
+        document.getElementById("start_menu_buttons").style.setProperty("top", "45vh");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "47vw");
         document.getElementById("start_button").innerHTML = "Play";
       }
       else if (menu == 'game_over_menu') {
@@ -363,7 +374,7 @@ game.changeScreen =
         for (const element of elements_start) {
           element.style.display = 'none';
         }
-        document.getElementById("start_menu_buttons").style.setProperty("top", "50vh");
+        document.getElementById("start_menu_buttons").style.setProperty("top", "58vh");
         document.getElementById("start_menu_buttons").style.setProperty("left", "49vw");
         document.getElementById("start_button").innerHTML = "Play Again";
         const elements_over = document.getElementsByClassName("game_over");
@@ -1252,9 +1263,49 @@ game.gameOver =
       case "ennemy_down":
         message = "An ennemy got into your base.."
     }
+    if (isHighscore(game.score)) {
+      console.log("WE GOT AN HIGHSCORE");
+      document.getElementById("score_title_game_over").innerHTML = "<h1>Highscore!</h1>";
+      /* put score_title_game_over in red */
+      document.getElementById("score_title_game_over").style.color = "red";
+
+    }
     document.getElementById("reason_of_death").innerHTML = '<h1>' + message + '</h1>';
+
   }
 
 
 game.changeScreen('start_menu');
 
+
+/* Get all the scores in localStorage and return them in an array */
+function getScoresInArray() {
+  /* array of array key: values */
+  let arrayKeyValues = Object.entries(localStorage);
+
+  /* sort arrayKeyValues by score */
+  arrayKeyValues.sort(function (a, b) {
+    return b[1] - a[1];
+  });
+  console.log(arrayKeyValues);
+  return arrayKeyValues;
+}
+
+
+function isHighscore(newScore) {
+  console.log("in isHighscore");
+  console.log(newScore);
+  let scores = getScoresInArray();
+  if (newScore > scores[0][1]) {
+    return true;
+  }
+  return false;
+}
+
+function setScore(name, score) {
+  localStorage.setItem(name, score);
+  console.log(localStorage.getItem(name));
+}
+
+//localStorage.clear();
+//setScore("Default", 0);

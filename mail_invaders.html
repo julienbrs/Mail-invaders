@@ -44,8 +44,15 @@
                     <h1>You ran out of time</h1>
                 </div>
                 <div id = "score_wrapper_game_over">
-                    <h1>Score :</h1>
+                    <div id = "score_title_game_over">
+                        <h1>Score</h1>
+                    </div>
                     <h1 class="score_value">0</h1>
+                </div>
+                <div id = "game_over_name_input">
+                    <!-- Input to put your name -->
+                    <input type="text" id="name_input" placeholder="Enter your name">
+                    <button id="save_score_button" class = "sound_button" onClick="toggleSaveScore()" >Save score</button>
                 </div>
             </div>
             <button class = " sound_button button_start_menu" id="game_over_home">Main Menu</button>
@@ -136,7 +143,7 @@
                 </div>
             </div>
 
-            <div id="logo_home"><input type="image" src="assets/logo_home.png" alt="home"></div>
+            <div id="logo_home" class = " sound_button"><input type="image" src="assets/logo_home.png" alt="home"></div>
             <div id="logo_sound"><input type="image" class = " sound_button audio_button" onClick="togglePlay()" src="assets/logo_no_sound.png" alt="sound"></div>
 
             <canvas id="screenplay">
