@@ -374,13 +374,31 @@ button:hover {
     border-radius: 15px;
 }
 
-
+#bar_wrapper_life{
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5%;
+}
+#bar_wrapper_life h1{
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 5%;
+}
+#list_life{
+    display: flex;
+    flex-direction: row;
+}
+.life{
+    margin-right: 5%;
+}
 #bar_wrapper_life {
     display: flex;
     justify-content: flex-start;
 }
 
-#lifebar_inner {
+/* #lifebar_inner {
     transition-property: width;
     transition-duration: 0.3s;
     display: flex;
@@ -393,7 +411,7 @@ button:hover {
     text-align: center;
     font-size: 17px;
     border-radius: 15px;
-}
+} */
 
 #timerbar_inner {
     transition-property: width;
@@ -551,6 +569,12 @@ button:hover {
 #move_help_menu {
     display: flex;
     flex-direction: row;
+}
+
+#cancel_button_help_pause {
+    position: absolute;
+    top: 16vh;
+    left: 85vw;
 }
 
 

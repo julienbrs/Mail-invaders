@@ -11,8 +11,7 @@
 </head>
 
 <body>
-    <audio loop id="mainAudio" src="assets/sounds/main_audio.m4a" preload="auto">
-    </audio>
+    <audio loop id="mainAudio" src="assets/sounds/main_audio.mp3" preload="auto"></audio>
     <div id="main_container">
 
         <div id="start_menu">
@@ -21,16 +20,16 @@
             </div>
 
             <div id="start_menu_buttons">
-                <button class="button_start_menu" id="start_button">Play</button>
+                <button class = " sound_button button_start_menu" id="start_button">Play</button>
                 <div id = "difficulty_button_wrapper">
-                    <input id = "difficulty_left_arrow" type="image" onClick="downDifficulty()" src="assets/triangle_left_shadow.png"/>
-                    <button class="button_start_menu" id="difficulty_button">Easy</button>
-                    <input id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="assets/triangle_right.png"/>
+                    <input class="sound_button" id = "difficulty_left_arrow" type="image" onClick="downDifficulty()" src="assets/triangle_left_shadow.png"/>
+                    <button class = "button_start_menu" id="difficulty_button">Easy</button>
+                    <input class="sound_button" id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="assets/triangle_right.png"/>
                 </div>
-                <button class="button_start_menu" id="help_button">Help</button>
+                <button class = " sound_button button_start_menu" id="help_button">Help</button>
             </div>
             <div id="sound_button">
-                <input id ="testsound" type="image" class="audio" onClick="togglePlay()" src="assets/button_no_sound.png" />
+                <input id ="testsound" type="image" class = " sound_button audio_button" onClick="togglePlay()" src="assets/button_no_sound.png" />
             </div>
         </div>
         <div id = "game_over_menu">
@@ -49,7 +48,7 @@
                     <h1 class="score_value">0</h1>
                 </div>
             </div>
-            <button class="button_start_menu" id="game_over_home">Main Menu</button>
+            <button class = " sound_button button_start_menu" id="game_over_home">Main Menu</button>
 
         </div>
 
@@ -116,8 +115,15 @@
 
                 </div>
                 <div id="wrapper_hud_bottom">
-                    <div class="bar_wrapper" id="bar_wrapper_life">
-                        <div id="lifebar_inner">50</div>
+                    <div id="bar_wrapper_life">
+                        <h1>Life</h1>
+                        <div id="list_life">
+                            <input id = "life1" class = "life" type="image" src="assets/life_fill.png" />
+                            <input id = "life2" class = "life" type="image" src="assets/life_fill.png" />
+                            <input id = "life3" class = "life" type="image" src="assets/life_fill.png" />
+                            <input id = "life4" class = "life" type="image" src="assets/life_fill.png" />
+                            <input id = "life5" class = "life" type="image" src="assets/life_fill.png" />
+                        </div>
                     </div>
                     <div id="hud_score">
                         <h1>Score :</h1>
@@ -131,7 +137,7 @@
             </div>
 
             <div id="logo_home"><input type="image" src="assets/logo_home.png" alt="home"></div>
-            <div id="logo_sound"><input type="image" class="audio" onClick="togglePlay()" src="assets/logo_no_sound.png" alt="sound"></div>
+            <div id="logo_sound"><input type="image" class = " sound_button audio_button" onClick="togglePlay()" src="assets/logo_no_sound.png" alt="sound"></div>
 
             <canvas id="screenplay">
             </canvas>
@@ -146,10 +152,10 @@
                     <h1 id="pause_menu_score_value" class="score_value">0</h1>
                 </div>
                 <div id="pause_menu_buttons">
-                    <button class="button_pause_menu" id="resume_button">Resume</button>
-                    <button class="button_pause_menu" id="restart_button">Restart</button>
-                    <button class="button_pause_menu" id="home_button">Home</button>
-                    <button class="button_pause_menu" id="help_button_pause_menu">Help</button>
+                    <button class = " sound_button button_pause_menu" id="resume_button">Resume</button>
+                    <button class = " sound_button button_pause_menu" id="restart_button">Restart</button>
+                    <button class = " sound_button button_pause_menu" id="home_button">Home</button>
+                    <button class = " sound_button button_pause_menu" id="help_button_pause_menu">Help</button>
                 </div>
             </div>
 
@@ -157,17 +163,19 @@
                 <div id="help_menu_title">
                     <h1>Help</h1>
                 </div>
+                <div id = "cancel_button_help_pause">
+                    <input type="image" onClick="game.changeScreen('pause_menu')" src="assets/cancel_button.png" alt="cancel_button">
+                </div>
                 <div id = "description_of_the_game">
                     <h1>
-                        The goal of the game is to shoot the mails that invade <br> you, and to stay alive until the timer runs out. <br>
-                        Some bonus items can help you.
+                        Shoot the mails that invade you, stay alive <br> but don't let the timer runs out! <br>
+                        Bonus are here to help you.
                     </h1>
                 </div>
                 <div id = "description_of_commands">
                     <div class = "help_command_wrapper">
                         <div class = "help_menu_img" id = "move_help_menu">
                             <div id="move_arrows_help_menu"><input type="image" src="assets/key_arrows.png" alt="key arrows"></div>
-                            <!-- <div id="move_right_help_menu"><input type="image" src="assets/button_move_right.png" alt="right arrow"></div> -->
                         </div>
                         <div class = "help_menu_description">
                             <h1>Move</h1>

@@ -7,6 +7,9 @@
 //todo hitbox avec shield
 // todo gameover window
 // mettre autre temps pour les bonus 
+// hover sound of difficulty weird
+// add heart bonus
+// todo changer curseur
 //score at pause need to be done better
 //todo supermissile passent de rouge à jaune quand timer passe à 0 => solve ça
 // centrer timerbar bonus sur le logo bonus
@@ -14,6 +17,7 @@
 // probleme poubelle et spawn bonus
 // mettre temps pour poubelle plutot
 // mettre toutes les valeurs qu'on reset dans game init dans un seul attribut de game pour reset entierement plus facielement, genre game.instance
+//todo check à la fin du bonus supershoot la tete des lasers déja tirés
 
 /* Get width of the screeplay */
 const sWidth = document.getElementById('screenplay').offsetWidth;
@@ -59,11 +63,17 @@ const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
 const vitesseLaserEnnemy = 5;
 const vitesseLaserPlayer = 10;
+const maxNbLife = 5;
 
 const speedPlayer = 13;
 const FPS = 30;
 var maxGameTimer = 60;
 game.tickPlayerImage = 0;
+
+const idLife3 = document.getElementById("life3");
+const idLife2 = document.getElementById("life2");
+const idLife1 = document.getElementById("life1");
+const idLife0 = document.getElementById("life0");
 
 /* so lasers dont dispawn when ennemy shooter is dead */
 var ennemyLasers = [];
@@ -181,6 +191,20 @@ $(window).keyup(function (e) {
   dataKeyPressed[e.which] = false;
 });
 
+function setSoundClickHover() {
+  let listElement = document.getElementsByClassName("sound_button");
+  for (let element of listElement) {
+    element.addEventListener("mouseover", function () {
+      audioHoverButton.cloneNode(true).play();
+    });
+    element.addEventListener("click", function () {
+      audioClickButton.cloneNode(true).play();
+    }
+    );
+  }
+}
+setSoundClickHover();
+
 
 
 
@@ -220,6 +244,9 @@ imgShieldInGame.src = 'assets/shield_ingame.png';
 const imgTimerBonus = new Image();
 imgTimerBonus.src = 'assets/clock.png';
 
+const imgHeart = new Image();
+imgHeart.src = 'assets/bonus_life.png';
+
 const imgTrap = new Image();
 imgTrap.src = 'assets/trap.png';
 const imgTrapInGame = new Image();
@@ -252,8 +279,23 @@ imgSuperMissile.src = 'assets/supershoot_missile.png';
 const imgMissileShooterMail = new Image();
 imgMissileShooterMail.src = 'assets/missile_shooter_mail.png';
 
+const imgCancelButton = new Image();
+imgCancelButton.src = 'assets/cancel_button.png';
+
+const imgLifeEmpty = new Image();
+imgLifeEmpty.src = 'assets/life_empty.png';
+
+const imgLifeFill = new Image();
+imgLifeFill.src = 'assets/life_fill.png';
+
 /* audio */
-const audio = new Audio('assets/sounds/main_audio.m4a');
+
+const audioPlayerShoot = new Audio('assets/sounds/shoot.mp3');
+const audioHoverButton = new Audio('assets/sounds/hover_sound.mp3');
+const audioClickButton = new Audio('assets/sounds/click_sound.mp3');
+const audioEnnemyDown = new Audio('assets/sounds/ennemy_down.mp3');
+const audioBonusPicked = new Audio('assets/sounds/bonus_picked.mp3');
+
 
 var mainAudio = document.getElementById("mainAudio");
 
@@ -263,12 +305,12 @@ function togglePlay() {
 
   if (mainAudio.paused) {
     mainAudio.play();
-    homeimg.innerHTML = '<input id="testsound" type="image" class="audio" onclick="togglePlay()" src="assets/button_sound.png"/>'
-    ingameimg.innerHTML = '<input type="image" class="audio" onclick="togglePlay()" src="assets/logo_sound.png" alt="sound">'
+    homeimg.innerHTML = '<input id="testsound" type="image" class="audio_button" onclick="togglePlay()" src="assets/button_sound.png"/>'
+    ingameimg.innerHTML = '<input type="image" class="audio_button" onclick="togglePlay()" src="assets/logo_sound.png" alt="sound">'
   } else {
     mainAudio.pause();
-    homeimg.innerHTML = '<input id="testsound" type="image" class="audio" onclick="togglePlay()" src="assets/button_no_sound.png">'
-    ingameimg.innerHTML = '<input type="image" class="audio" onclick="togglePlay()" src="assets/logo_no_sound.png" alt="sound">'
+    homeimg.innerHTML = '<input id="testsound" type="image" class="audio_button" onclick="togglePlay()" src="assets/button_no_sound.png">'
+    ingameimg.innerHTML = '<input type="image" class="audio_button" onclick="togglePlay()" src="assets/logo_no_sound.png" alt="sound">'
   }
 };
 
@@ -335,13 +377,13 @@ game.changeScreen =
 game.addScoreEnnemy =
   function (ennemy) {
     if (ennemy.constructor.name === 'TripleMail') {
-      game.score += 300;
+      game.score += 300 * (game.difficulty + 1);
     }
     else if (ennemy.constructor.name === 'ShooterMail') {
-      game.score += 200;
+      game.score += 200 * (game.difficulty + 1);
     }
     else {
-      game.score += 100;
+      game.score += 100 * (game.difficulty + 1);
     }
   }
 
@@ -352,6 +394,7 @@ function downDifficulty() {
   game.difficulty--;
   document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
   document.getElementById("difficulty_title_ingame").innerHTML = '<h1>' + list_difficulty[game.difficulty] + '<h1>';
+  document.getElementById("difficulty_right_arrow").src = "assets/triangle_right.png";
   if (game.difficulty == 0) {
     document.getElementById("difficulty_left_arrow").src = "assets/triangle_left_shadow.png";
   }
@@ -367,6 +410,7 @@ function upDifficulty() {
   game.difficulty++;
   document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
   document.getElementById("difficulty_title_ingame").innerHTML = '<h1>' + list_difficulty[game.difficulty] + '<h1>';
+  document.getElementById("difficulty_left_arrow").src = "assets/triangle_left.png";
   if (game.difficulty == maxDifficulty) {
     document.getElementById("difficulty_right_arrow").src = "assets/triangle_right_shadow.png";
   }
@@ -375,13 +419,16 @@ function upDifficulty() {
   }
 }
 
-
-game.manageLifeBar =
-  function () {
-    const lifebar = document.getElementById('lifebar_inner');
-    lifebar.style.width = game.player.lifebar + '%';
-    lifebar.innerHTML = game.player.lifebar + '%';
+game.manageLifePlayer = function () {
+  for (var i = 1; i <= maxNbLife; i++) {
+    if (i <= game.player.life) {
+      document.getElementById("life" + i).src = "assets/life_fill.png";
+    }
+    else {
+      document.getElementById("life" + i).src = "assets/life_empty.png";
+    }
   }
+}
 
 game.manageImagePlayer = function () {
   game.tickPlayerImage++;
@@ -410,7 +457,7 @@ game.manageTimerBar =
     if (game.timerTick % 30 == 0) {
       game.timer--;
       game.timerTick = 0;
-      game.score += 100;
+      game.score += 100 * (game.difficulty + 1);
     }
   }
 
@@ -440,14 +487,16 @@ game.moveEnnemies =
         if (ennemy.isColliding(game.player)) {
           game.player.shieldTimer = 1;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+          audioEnnemyDown.cloneNode(true).play();
           game.addScoreEnnemy(ennemy);
         }
       }
       else {
         if (ennemy.isColliding(game.player)) {
-          game.player.lifebar -= 20;
+          game.player.life -= 1;
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
           game.addScoreEnnemy(ennemy);
+          audioEnnemyDown.cloneNode(true).play();
         }
       }
     }
@@ -458,7 +507,7 @@ game.moveEnnemies =
 
 game.checkGameOver =
   function () {
-    if (game.player.lifebar <= 0) {
+    if (game.player.life <= 0) {
       game.gameOver("life");
     }
     else if (game.timer <= 0) {
@@ -468,6 +517,7 @@ game.checkGameOver =
 
 game.spawnEnnemies =
   function (wave) {
+    game.spawnBonus("heart");
     let nbSimpleEnnemy = wave * 10 * (game.difficulty + 1);
     let nbTripleMail = 1.1 * wave * 3 * (game.difficulty + 1);
     let nbShooterMail = 1.3 * wave * 2 * (game.difficulty + 1);
@@ -520,6 +570,7 @@ game.checkCollisionBonus =
         game.ennemies.forEach(function (ennemy) {
           if (ennemy.isColliding(bonus)) {
             game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+            audioEnnemyDown.cloneNode(true).play();
             bonus.canStillGrabAmount--;
             game.addScoreEnnemy(ennemy);
             if (bonus.canStillGrabAmount == 0) {
@@ -531,14 +582,23 @@ game.checkCollisionBonus =
       }
       else if (bonus.type == 'timer_bonus') {
         if (bonus.isColliding(game.player)) {
+          audioBonusPicked.cloneNode(true).play();
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           game.catchTimerBonus();
           await new Promise(resolve => setTimeout(resolve, 5000));
           game.spawnBonus("timer_bonus");
         }
       }
+      else if (bonus.type == 'heart') {
+        if (bonus.isColliding(game.player)) {
+          audioBonusPicked.cloneNode(true).play();
+          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+          game.player.life++;
+        }
+      }
       else {
         if (bonus.isColliding(game.player)) {
+          audioBonusPicked.cloneNode(true).play();
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           game.canSpawnBonus = true;
           if (game.inventory[bonus.type] != 1) {
@@ -559,6 +619,9 @@ game.spawnBonus =
 
     if (bonus_chosen == "timer_bonus") {
       bonus = new TimerBonus(x, y);
+    }
+    else if (bonus_chosen == "heart") {
+      bonus = new Heart(x, y);
     }
     else {
       if (game.inventory['items_in_bag'] >= 4) {
@@ -691,6 +754,11 @@ class Bonus extends PhysicalObject {
   }
 }
 
+class Heart extends Bonus {
+  constructor(x, y) {
+    super(x, y, 50, 50, imgHeart, "heart");
+  }
+}
 class TimerBonus extends Bonus {
   constructor(x, y) {
     super(x, y, 48, 52, imgTimerBonus, 'timer_bonus');
@@ -807,7 +875,7 @@ class Player extends Shooter {
   constructor() {
     super(400, 800, 27, 64.5, imgPlayer, speedPlayer);
     this.canShoot = true;
-    this.lifebar = 100;
+    this.life = 5;
     this.shieldTimer = 0;
     this.turboTimer = 0;
     this.superShootTimer = 0;
@@ -818,6 +886,8 @@ class Player extends Shooter {
   }
 
   shoot() {
+    /* to play a new shoot sound before the previous one is finished, we need to create a clone */
+    audioPlayerShoot.cloneNode(true).play();
     /* shoot a laser */
     if (this.superShootActivated) {
       const newLaser = new LaserPlayer(
@@ -921,7 +991,7 @@ class TripleMail extends Ennemy {
 class ShooterMail extends Ennemy {
   constructor(x, y, width, height, image) {
     super(x, y, width, height, image);
-    this.life = 2;
+    this.life = 1;
     this.speed = 1.2;
   }
 
@@ -975,6 +1045,7 @@ class Laser extends PhysicalObject {
         this.delete();
         ennemy.life--;
         if (ennemy.life == 0) {
+          audioEnnemyDown.cloneNode(true).play();
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
           game.addScoreEnnemy(ennemy);
         }
@@ -1026,8 +1097,6 @@ class LaserMail extends Laser {
   }
 
   move() {
-    console.log(this.speed);
-    console.log(this);
     /* move the laser */
     this.x += 0;
     this.y -= this.speed;
@@ -1036,9 +1105,7 @@ class LaserMail extends Laser {
     }
     if (this.isColliding(game.player)) {
       this.delete();
-      game.player.lifebar -= 10;
-      if (game.player.life == 0) {
-      }
+      game.player.life -= 1;
     }
   }
 
@@ -1068,9 +1135,9 @@ function updateGame() {
     game.drawLasersEnnemies();
 
     game.manageImagePlayer();
+    game.manageLifePlayer();
     game.checkLvlState();
     game.checkGameOver();
-    game.manageLifeBar();
     game.manageTimerBar();
     game.drawScore();
     game.manageBonus();
