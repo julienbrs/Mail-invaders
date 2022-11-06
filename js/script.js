@@ -58,8 +58,8 @@ game.inventory = {
 game.trapOnMap = {};
 /* Time caracteristics */
 game.timerTick = 0;
-game.bonusSpawnTick = 20;
-game.maxBonusSpawnTick = 100;
+game.bonusSpawnTick = 350;
+game.maxBonusSpawnTick = 700;
 game.tickPlayerImage = 0;
 
 
@@ -354,9 +354,9 @@ game.changeScreen =
           element.style.display = 'flex';
         }
         /* Adapting elements position and text for start menu */
-        document.getElementById("start_menu_buttons").style.setProperty("top", "45vh");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "47vw");
         document.getElementById("start_button").innerHTML = "Play";
+        document.getElementById("start_menu_title").style.visibility = "visible";
+        document.getElementById("start_menu_buttons").style.position = "static";
       }
 
       else if (menu == 'game_over_menu') {
@@ -368,14 +368,17 @@ game.changeScreen =
         for (const element of startMenuElements) {
           element.style.display = 'none';
         }
+        document.getElementById("start_menu_title").style.display = "flex";
+        document.getElementById("start_menu_title").style.visibility = "hidden";
         /* Then show elements of the game over menu that might have been hidden at the previous start menu */
         const elements_over = document.getElementsByClassName("game_over");
         for (const element of elements_over) {
           element.style.display = 'flex';
         }
         /* Adapting elements position and text for game over menu */
-        document.getElementById("start_menu_buttons").style.setProperty("top", "58vh");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "42.8%");
+        document.getElementById("start_menu_buttons").style.position = "absolute";
+        document.getElementById("start_menu_buttons").style.setProperty("top", "180%");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "2.48%");
         document.getElementById("start_button").innerHTML = "Play Again";
       }
     }

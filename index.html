@@ -15,19 +15,21 @@
     <div id="main_container">
 
         <div id="start_menu">
-            <div id="start_menu_title" class ="start_menu">
-                <h1>Mail Invaders</h1>
-            </div>
-
-            <div id="start_menu_buttons">
-                <button class = " sound_button button_start_menu" id="start_button">Play</button>
-                <div id = "difficulty_button_wrapper">
-                    <input id = "difficulty_left_arrow" class="sound_button" type="image" onClick="downDifficulty()" src="images/triangle_left_shadow.png"/>
-                    <button class = "button_start_menu" id="difficulty_button">Easy</button>
-                    <input class="sound_button" id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="images/triangle_right.png"/>
+            <did id= "mid_wrapper_start_menu">
+                <div id="start_menu_title" class ="start_menu">
+                    <h1>Mail Invaders</h1>
                 </div>
-                <button id="help_button" class=" sound_button button_start_menu" onClick="game.changeScreen('leaderboard_menu')" >Leaderboard</button>
-            </div>
+
+                <div id="start_menu_buttons">
+                    <button class = " sound_button button_start_menu" id="start_button">Play</button>
+                    <div id = "difficulty_button_wrapper">
+                        <input id = "difficulty_left_arrow" class="sound_button" type="image" onClick="downDifficulty()" src="images/triangle_left_shadow.png"/>
+                        <button class = "button_start_menu" id="difficulty_button">Easy</button>
+                        <input class="sound_button" id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="images/triangle_right.png"/>
+                    </div>
+                    <button id="help_button" class=" sound_button button_start_menu" onClick="game.changeScreen('leaderboard_menu')" >Leaderboard</button>
+                </div>
+            </did>
             <div id="sound_button_start_menu">
                 <input id ="toggle_sound_start_menu" class = "sound_button audio_button" type="image" onClick="togglePlaySound()" src="images/button_no_sound.png" />
             </div>
