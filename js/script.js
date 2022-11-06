@@ -375,7 +375,7 @@ game.changeScreen =
         }
         /* Adapting elements position and text for game over menu */
         document.getElementById("start_menu_buttons").style.setProperty("top", "58vh");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "45.5vw");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "42.8%");
         document.getElementById("start_button").innerHTML = "Play Again";
       }
     }
@@ -1336,4 +1336,4 @@ function toggleSaveScore() {
 setSoundClickHover();
 game.changeScreen('start_menu');
 //todo expliquer ça
-//localStorage.clear();
+localStorage.clear();
