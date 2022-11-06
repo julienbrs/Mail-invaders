@@ -121,6 +121,8 @@ button:hover {
   height: 4vh;
   z-index: 4;
 }
+
+/* Game Over Menu Style */
 .game_over {
   display: none;
 }
@@ -227,6 +229,8 @@ button:hover {
   border-width: 3px;
   border-style: solid;
 }
+
+/* Leaderboard Style */
 #leaderboard_menu {
   position: absolute;
   top: 15%;
@@ -266,6 +270,7 @@ button:hover {
 }
 #leaderboard {
   display: flex;
+  white-space: nowrap;
   background: #0e0c60;
   border: 4px solid #c8ff00;
   border-radius: 31px;
@@ -295,6 +300,14 @@ button:hover {
 #leaderboard_header_score {
   width: 45%;
 }
+#score_value_game_over {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-left: 3vw;
+}
+
+/* In-Game Style */
 #title_game_wrapper {
   position: absolute;
   top: 0.8%;
@@ -499,16 +512,13 @@ button:hover {
   display: flex;
   z-index: 4;
 }
-#score_value_game_over {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-left: 3vw;
-}
+
 .score_value {
   color: #c8ff00;
   margin-left: 8px;
 }
+
+/* Pause Menu Styles */
 #pause_menu {
   position: absolute;
   top: 0;
@@ -547,6 +557,8 @@ button:hover {
   font-size: 0.6em;
   display: flex;
 }
+
+/* Help Menu Style */
 #help_menu_in_game {
   position: absolute;
   display: flex;

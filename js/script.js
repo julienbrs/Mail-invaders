@@ -38,7 +38,7 @@ game.inventory = {
 game.trapOnMap = {};
 /* Time caracteristics */
 game.timerTick = 0;
-game.maxBonusSpawnTick = 700;
+game.maxBonusSpawnTick = 400;
 game.tickPlayerImage = 0;
 
 
@@ -738,9 +738,9 @@ game.spawnEnnemies =
     }
 
     /* Choose how many ennemies to spawn */
-    let nbSimpleEnnemy = 1.3 * wave * 6 * (game.difficulty + 1);
-    let nbTripleMail = 1.1 * wave ** 2 * 3 * (game.difficulty + 1);
-    let nbShooterMail = 1.3 * wave * 2 * (game.difficulty + 1);
+    let nbSimpleEnnemy = 1 * wave * 6 * (game.difficulty + 1);
+    let nbTripleMail = 0.8 * wave ** 2 * 3 * (game.difficulty + 1);
+    let nbShooterMail = 1 * wave * 2 * (game.difficulty + 1);
     /* Spawn Simple Ennemies */
     for (let i = 0; i < nbSimpleEnnemy; i++) {
       let x = Math.random() * (sWidth - 59);
@@ -1189,7 +1189,7 @@ class ShooterMail extends Ennemy {
   tryToShoot() {
     /* shoot a laser */
     let rand = Math.random();
-    if (rand < 0.02) {
+    if (rand < 0.01) {
       this.shoot();
     }
   }
@@ -1408,6 +1408,7 @@ function switchDivSaveScore() {
 setSoundClickHover();
 game.changeScreen('start_menu');
 writeInLeaderboard();
+
 /* To reset the leaderboard, clear the local storage */
 /* To do so, decomment the next line, run the script and comment back */
 //localStorage.clear();
