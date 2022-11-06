@@ -46,18 +46,20 @@
                 <div id = "reason_of_death">
                     <h1>You ran out of time</h1>
                 </div>
-                <div id = "score_wrapper_game_over">
-                    <div id = "score_title_game_over">
-                        <h1>Score</h1>
+                <div id = "wrapper_highscore_name_go">
+                    <div id = "score_wrapper_game_over">
+                        <div id = "score_title_game_over">
+                            <h1>Score</h1>
+                        </div>
+                        <div id = "score_value_game_over">
+                            <h1 class="score_value">0</h1>
+                        </div>
                     </div>
-                    <div id = "score_value_game_over">
-                        <h1 class="score_value">0</h1>
+                    <div id = "game_over_name_input">
+                        <!-- Input to put your name -->
+                        <input type="text" id="name_input" placeholder="Enter your name">
+                        <button id="save_score_button" class = "sound_button" onClick="toggleSaveScore()" >Save score</button>
                     </div>
-                </div>
-                <div id = "game_over_name_input">
-                    <!-- Input to put your name -->
-                    <input type="text" id="name_input" placeholder="Enter your name">
-                    <button id="save_score_button" class = "sound_button" onClick="toggleSaveScore()" >Save score</button>
                 </div>
             </div>
 

@@ -379,9 +379,8 @@ game.changeScreen =
           element.style.display = 'flex';
         }
         /* Adapting elements position and text for game over menu */
-        document.getElementById("start_menu_buttons").style.position = "absolute";
-        document.getElementById("start_menu_buttons").style.setProperty("top", "155%");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "6.2%");
+        document.getElementById("start_menu_buttons").style.position = "relative";
+        document.getElementById("start_menu_buttons").style.setProperty("top", "10vh");
         document.getElementById("start_button").innerHTML = "Play Again";
       }
     }
