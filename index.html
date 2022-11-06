@@ -17,51 +17,56 @@
 
         <!-- Home Page -->
         <div id="start_menu">
-            <did id= "mid_wrapper_start_menu">
-                <div id="start_menu_title" class ="start_menu">
+            <did id="mid_wrapper_start_menu">
+                <div id="start_menu_title" class="start_menu">
                     <h1>Mail Invaders</h1>
                 </div>
 
                 <div id="start_menu_buttons">
-                    <button class = " sound_button button_start_menu" id="start_button">Play</button>
-                    <div id = "difficulty_button_wrapper">
-                        <input id = "difficulty_left_arrow" class="sound_button" type="image" onClick="downDifficulty()" src="images/triangle_left_shadow.png"/>
-                        <button class = "button_start_menu" id="difficulty_button">Easy</button>
-                        <input class="sound_button" id = "difficulty_right_arrow" type="image" onClick="upDifficulty()" src="images/triangle_right.png"/>
-                        <button id="game_over_home" class = "sound_button button_start_menu">Main Menu</button>
+                    <button class=" sound_button button_start_menu" id="start_button">Play</button>
+                    <div id="difficulty_button_wrapper">
+                        <input id="difficulty_left_arrow" class="sound_button" type="image" onClick="downDifficulty()"
+                            src="images/triangle_left_shadow.png" />
+                        <button class="button_start_menu" id="difficulty_button">Easy</button>
+                        <input class="sound_button" id="difficulty_right_arrow" type="image" onClick="upDifficulty()"
+                            src="images/triangle_right.png" />
+                        <button id="game_over_home" class="sound_button button_start_menu">Main Menu</button>
                     </div>
-                    <button id="help_button" class=" sound_button button_start_menu" onClick="game.changeScreen('leaderboard_menu')" >Leaderboard</button>
+                    <button id="help_button" class=" sound_button button_start_menu"
+                        onClick="game.changeScreen('leaderboard_menu')">Leaderboard</button>
                 </div>
             </did>
             <div id="sound_button_start_menu">
-                <input id ="toggle_sound_start_menu" class = "sound_button audio_button" type="image" onClick="togglePlaySound()" src="images/button_no_sound.png" />
+                <input id="toggle_sound_start_menu" class="sound_button audio_button" type="image"
+                    onClick="togglePlaySound()" src="images/button_no_sound.png" />
             </div>
         </div>
         <!-- GameOver Page -->
-        <div id = "game_over_menu">
-            <div id = "game_over_mail_invaders">
+        <div id="game_over_menu">
+            <div id="game_over_mail_invaders">
                 <h1>Mail Invaders</h1>
             </div>
-            <div id = "wrapper_game_over">
-                <div id ="game_over_title">
+            <div id="wrapper_game_over">
+                <div id="game_over_title">
                     <h1>Game Over...</h1>
                 </div>
-                <div id = "reason_of_death">
-                    <h1>You ran out of time</h1>
+                <div id="reason_of_death">
+                    <h2>You ran out of time</h2>
                 </div>
-                <div id = "wrapper_highscore_name_go">
-                    <div id = "score_wrapper_game_over">
-                        <div id = "score_title_game_over">
-                            <h1>Score</h1>
+                <div id="wrapper_highscore_name_go">
+                    <div id="score_wrapper_game_over">
+                        <div id="score_title_game_over">
+                            <h4>Score</h4>
                         </div>
-                        <div id = "score_value_game_over">
-                            <h1 class="score_value">0</h1>
+                        <div id="score_value_game_over">
+                            <h4 class="score_value">0</h4>
                         </div>
                     </div>
-                    <div id = "game_over_name_input">
+                    <div id="game_over_name_input">
                         <!-- Input to put your name -->
                         <input type="text" id="name_input" placeholder="Enter your name">
-                        <button id="save_score_button" class = "sound_button" onClick="toggleSaveScore()" >Save score</button>
+                        <button id="save_score_button" class="sound_button" onClick="toggleSaveScore()">Save
+                            score</button>
                         <button id="saved_score">Saved</button>
                     </div>
                 </div>
@@ -76,42 +81,43 @@
             </div>
             <div id="leaderboard_top_wrapper">
                 <div id="leaderboard_menu_title">
-                    <h1>Leaderboard</h1>
+                    <h2>Leaderboard</h2>
                 </div>
-                <div id = "cancel_button_leaderboard_menu">
-                    <input type="image" class = "sound_button" onClick="game.changeScreen('start_menu')" src="images/cancel_button.png" alt="cancel_button">
+                <div id="cancel_button_leaderboard_menu">
+                    <input type="image" class="sound_button" onClick="game.changeScreen('start_menu')"
+                        src="images/cancel_button.png" alt="cancel_button">
                 </div>
             </div>
             <div id="leaderboard">
                 <div id="leaderboard_header_rank">
                     <div id="rank_title" class="leaderboard_title">
-                        <h1>Rank</h1>
+                        <h4>Rank</h4>
                     </div>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
                 </div>
                 <div id="leaderboard_header_name" class="column_leaderboard">
                     <div id="name_title" class="leaderboard_title">
-                        <h1>Name</h1>
+                        <h4>Name</h4>
                     </div>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
                 </div>
                 <div id="leaderboard_header_score" class="column_leaderboard">
                     <div id="score_title" class="leaderboard_title">
-                        <h1>Score</h1>
+                        <h4>Score</h4>
                     </div>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
-                    <h1></h1>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
+                    <h5></h5>
                 </div>
             </div>
         </div>
@@ -126,20 +132,20 @@
                 </div>
                 <div id="star_img"><img src="images/starlight.png" alt="star"></div>
                 <div id="difficulty_title_ingame">
-                    <h1>Easy</h1>
+                    <h3>Easy</h3>
                 </div>
             </div>
             <div id="wrapper_hud">
                 <div id="bonus_title">
-                    <h1>Bonus</h1>
+                    <h2>Bonus</h2>
                 </div>
                 <div id="wrapper_hud_bonus">
                     <div id="bonus_shield_wrapper" class="bonus_wrapper">
                         <div class="bonus_img" id="bonus_shield_img"><img src="images/shield.png" alt="shield logo">
                         </div>
                         <div id="bonus_description_shield" class="bonus_description">
-                            <h1>Shield</h1>
-                            <h2>Press Q</h2>
+                            <h3>Shield</h3>
+                            <h4>Press Q</h4>
                         </div>
                         <div class="bar_wrapper" id="bar_wrapper_shield">
                             <div id="bar_wrapper_shield_inner"></div>
@@ -148,8 +154,8 @@
                     <div id="bonus_trap_wrapper" class="bonus_wrapper">
                         <div class="bonus_img" id="bonus_trap_img"><img src="images/trap.png" alt="trap logo"></div>
                         <div id="bonus_description_trap" class="bonus_description">
-                            <h1>Trap</h1>
-                            <h2>Press W</h2>
+                            <h3>Trap</h3>
+                            <h4>Press W</h4>
                         </div>
                         <div class="bar_wrapper" id="bar_wrapper_trap">
                             <div id="bar_wrapper_trap_inner"></div>
@@ -158,8 +164,8 @@
                     <div id="bonus_turbo_wrapper" class="bonus_wrapper">
                         <div class="bonus_img" id="bonus_turbo_img"><img src="images/turbo.png" alt="turbo logo"></div>
                         <div id="bonus_description_turbo" class="bonus_description">
-                            <h1>Turbo</h1>
-                            <h2>Press E</h2>
+                            <h3>Turbo</h3>
+                            <h4>Press E</h4>
                         </div>
                         <div class="bar_wrapper" id="bar_wrapper_turbo">
                             <div id="bar_wrapper_turbo_inner"></div>
@@ -170,8 +176,8 @@
                         <div class="bonus_img" id="bonus_super_shoot_img"><img src="images/star.png" alt="turbo logo">
                         </div>
                         <div id="bonus_description_super_shoot" class="bonus_description">
-                            <h1>Star</h1>
-                            <h2>Press R</h2>
+                            <h3>Star</h3>
+                            <h4>Press R</h4>
                         </div>
                         <div class="bar_wrapper" id="bar_wrapper_super_shoot">
                             <div id="bar_wrapper_super_shoot_inner"></div>
@@ -181,18 +187,18 @@
                 </div>
                 <div id="wrapper_hud_bottom">
                     <div id="bar_wrapper_life">
-                        <h1>Life</h1>
+                        <h3>Life</h3>
                         <div id="list_life">
-                            <input id = "life1" class = "life" type="image" src="images/life_fill.png" />
-                            <input id = "life2" class = "life" type="image" src="images/life_fill.png" />
-                            <input id = "life3" class = "life" type="image" src="images/life_fill.png" />
-                            <input id = "life4" class = "life" type="image" src="images/life_fill.png" />
-                            <input id = "life5" class = "life" type="image" src="images/life_fill.png" />
+                            <input id="life1" class="life" type="image" src="images/life_fill.png" />
+                            <input id="life2" class="life" type="image" src="images/life_fill.png" />
+                            <input id="life3" class="life" type="image" src="images/life_fill.png" />
+                            <input id="life4" class="life" type="image" src="images/life_fill.png" />
+                            <input id="life5" class="life" type="image" src="images/life_fill.png" />
                         </div>
                     </div>
                     <div id="hud_score">
-                        <h1>Score :</h1>
-                        <h1 class="score_value">0</h1>
+                        <h3>Score :</h3>
+                        <h3 class="score_value">0</h3>
                     </div>
 
                     <div class="bar_wrapper" id="bar_wrapper_timer">
@@ -200,9 +206,11 @@
                     </div>
                 </div>
             </div>
-            <div id="logo_pause_in_game" class = "sound_button"><input type="image" src="images/pause.png" alt="home"></div>
-            <div id="logo_home" class = "sound_button"><input type="image" src="images/logo_home.png" alt="home"></div>
-            <div id="logo_sound_in_game"><input type="image" class = " sound_button audio_button" onClick="togglePlaySound()" src="images/logo_no_sound.png" alt="sound"></div>
+            <div id="logo_pause_in_game" class="sound_button"><input type="image" src="images/pause.png" alt="home">
+            </div>
+            <div id="logo_home" class="sound_button"><input type="image" src="images/logo_home.png" alt="home"></div>
+            <div id="logo_sound_in_game"><input type="image" class=" sound_button audio_button"
+                    onClick="togglePlaySound()" src="images/logo_no_sound.png" alt="sound"></div>
 
             <canvas id="screenplay">
             </canvas>
@@ -217,75 +225,82 @@
                     <h1 id="pause_menu_score_value" class="score_value">0</h1>
                 </div>
                 <div id="pause_menu_buttons">
-                    <button class = " sound_button button_pause_menu" id="resume_button">Resume</button>
-                    <button class = " sound_button button_pause_menu" id="restart_button">Restart</button>
-                    <button class = " sound_button button_pause_menu" id="home_button">Home</button>
-                    <button class = " sound_button button_pause_menu" id="help_button_pause_menu">Help</button>
+                    <button class=" sound_button button_pause_menu" id="resume_button">Resume</button>
+                    <button class=" sound_button button_pause_menu" id="restart_button">Restart</button>
+                    <button class=" sound_button button_pause_menu" id="home_button">Home</button>
+                    <button class=" sound_button button_pause_menu" id="help_button_pause_menu">Help</button>
                 </div>
             </div>
 
             <!-- Help Menu -->
             <div id="help_menu_in_game">
                 <div id="help_menu_title">
-                    <h1>Leaderboard</h1>
+                    <h2>Help</h2>
                 </div>
-                <div id = "cancel_button_help_pause">
-                    <input type="image" onClick="game.changeScreen('pause_menu')" src="images/cancel_button.png" alt="cancel_button">
+                <div id="cancel_button_help_pause">
+                    <input type="image" onClick="game.changeScreen('pause_menu')" src="images/cancel_button.png"
+                        alt="cancel_button">
                 </div>
-                <div id = "description_of_the_game">
-                    <h1>
+                <div id="description_of_the_game">
+                    <p>
                         Shoot the mails that invade you, stay alive <br> but don't let the timer runs out! <br>
                         Bonus are here to help you.
-                    </h1>
+                    </p>
                 </div>
-                <div id = "description_of_commands">
-                    <div class = "help_command_wrapper">
-                        <div class = "help_menu_img" id = "move_help_menu">
-                            <div id="move_arrows_help_menu"><input type="image" src="images/key_arrows.png" alt="key arrows"></div>
+                <div id="description_of_commands">
+                    <div class="help_command_wrapper">
+                        <div class="help_menu_img" id="move_help_menu">
+                            <div id="move_arrows_help_menu"><input type="image" src="images/key_arrows.png"
+                                    alt="key arrows"></div>
                         </div>
-                        <div class = "help_menu_description">
-                            <h1>Move</h1>
-                        </div>
-                    </div>
-                    <div class = "help_command_wrapper">
-                        <div class = "help_menu_img" id = "help_menu_img_shoot" >
-                            <div id="shoot_help_menu"><input type="image" src="images/key_space_bar.png" alt="spacebar button"></div>
-                        </div>
-                        <div class = "help_menu_description" id = "help_menu_texte_shoot">
-                            <h1>Shoot</h1>
+                        <div class="help_menu_description">
+                            <p>Move</p>
                         </div>
                     </div>
-                    <div class = "help_command_wrapper">
-                        <div class = "help_menu_img" >
-                            <div id="pause_help_menu"><input type="image" src="images/key_q.png" alt="escape button"></div>
+                    <div class="help_command_wrapper">
+                        <div class="help_menu_img" id="help_menu_img_shoot">
+                            <div id="shoot_help_menu"><input type="image" src="images/key_space_bar.png"
+                                    alt="spacebar button"></div>
                         </div>
-                        <div class = "help_menu_description">
-                            <h1>Activate a shield that will protect you</h1>
+                        <div class="help_menu_description" id="help_menu_texte_shoot">
+                            <p>Shoot</p>
                         </div>
                     </div>
-                    <div class = "help_command_wrapper">
-                        <div class = "help_menu_img" >
-                            <div id="pause_help_menu"><input type="image" src="images/key_w.png" alt="escape button"></div>
+                    <div class="help_command_wrapper">
+                        <div class="help_menu_img">
+                            <div id="pause_help_menu"><input type="image" src="images/key_q.png" alt="escape button">
+                            </div>
                         </div>
-                        <div class = "help_menu_description">
-                            <h1>Place a deadly trap where you are</h1>
+                        <div class="help_menu_description">
+                            <p>Activate a shield that will protect you</p>
+                        </div>
+                    </div>
+                    <div class="help_command_wrapper">
+                        <div class="help_menu_img">
+                            <div id="pause_help_menu"><input type="image" src="images/key_w.png" alt="escape button">
+                            </div>
+                        </div>
+                        <div class="help_menu_description">
+                            <p>Place a deadly trap where you are</p>
                         </div>
                     </div>
 
-                    <div class = "help_command_wrapper">
-                        <div class = "help_menu_img" >
-                            <div id="pause_help_menu"><input type="image" src="images/key_e.png" alt="escape button"></div>
+                    <div class="help_command_wrapper">
+                        <div class="help_menu_img">
+                            <div id="pause_help_menu"><input type="image" src="images/key_e.png" alt="escape button">
+                            </div>
                         </div>
-                        <div class = "help_menu_description">
-                            <h1>Activate a turbo to go faster</h1>
+                        <div class="help_menu_description">
+                            <p>Activate a turbo to go faster</p>
                         </div>
                     </div>
-                    <div class = "help_command_wrapper">
-                        <div class = "help_menu_img" >
-                            <div id="pause_help_menu"><input type="image" src="images/key_r.png" alt="escape button"></div>
+                    <div class="help_command_wrapper">
+                        <div class="help_menu_img">
+                            <div id="pause_help_menu"><input type="image" src="images/key_r.png" alt="escape button">
+                            </div>
                         </div>
-                        <div class = "help_menu_description">
-                            <h1>activate x2 shooter</h1>
+                        <div class="help_menu_description">
+                            <p>activate x2 shooter</p>
                         </div>
                     </div>
 

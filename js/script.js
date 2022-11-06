@@ -412,7 +412,7 @@ function downDifficulty() {
   game.difficulty--;
   /* Change text difficulty and little arrow selectors */
   document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
-  document.getElementById("difficulty_title_ingame").innerHTML = '<h1>' + list_difficulty[game.difficulty] + '<h1>';
+  document.getElementById("difficulty_title_ingame").innerHTML = '<h3>' + list_difficulty[game.difficulty] + '</h3>';
   document.getElementById("difficulty_right_arrow").src = "images/triangle_right.png";
   if (game.difficulty == 0) {
     /* Left arrow selector is in shadow if difficulty is at the lowest */
@@ -431,7 +431,7 @@ function upDifficulty() {
   game.difficulty++;
   /* Change text difficulty and little arrow selectors */
   document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
-  document.getElementById("difficulty_title_ingame").innerHTML = '<h1>' + list_difficulty[game.difficulty] + '<h1>';
+  document.getElementById("difficulty_title_ingame").innerHTML = '<h3>' + list_difficulty[game.difficulty] + '</h3>';
   document.getElementById("difficulty_left_arrow").src = "images/triangle_left.png";
   if (game.difficulty == maxDifficulty) {
     /* Right arrow selector is in shadow if difficulty is at the highest */
@@ -807,10 +807,10 @@ game.gameOver =
     /* Choose the message of death */
     switch (reason_death) {
       case "timer":
-        message = "You ran out of time..";
+        message = "You ran out of time...";
         break;
       case "life":
-        message = "You got destroyed..";
+        message = "You got destroyed...";
         break
       case "ennemy_down":
         message = "An ennemy got into your base.."
@@ -1375,12 +1375,12 @@ function writeInLeaderboard() {
   let n = (scores.length < 5) ? scores.length : 5;
   for (let i = 0; i < n; i++) {
     /* Write in the leaderboard menu */
-    let h1 = $("#leaderboard_header_name h1:nth-child(" + (i + 2) + ")");
-    h1.html(scores[i][0]);
-    h1 = $("#leaderboard_header_score h1:nth-child(" + (i + 2) + ")");
-    h1.html(scores[i][1]);
-    h1 = $("#leaderboard_header_rank h1:nth-child(" + (i + 2) + ")");
-    h1.html(i + 1);
+    let h5 = $("#leaderboard_header_name h5:nth-child(" + (i + 2) + ")");
+    h5.html(scores[i][0]);
+    h5 = $("#leaderboard_header_score h5:nth-child(" + (i + 2) + ")");
+    h5.html(scores[i][1]);
+    h5 = $("#leaderboard_header_rank h5:nth-child(" + (i + 2) + ")");
+    h5.html(i + 1);
   }
 }
 
