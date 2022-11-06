@@ -129,6 +129,10 @@ button:hover {
   top: 2%;
   left: 2%;
 }
+#game_over_home {
+  position: relative;
+  left: 4.5%;
+}
 #wrapper_game_over {
   position: absolute;
   top: 23%;
@@ -164,11 +168,7 @@ button:hover {
   margin: 0;
   margin-left: 12px;
 }
-#game_over_home {
-  position: absolute;
-  top: 85.5%;
-  left: 44%;
-}
+
 #highscore_title {
   font-size: 2.5em;
 }
@@ -189,8 +189,6 @@ button:hover {
   text-align: center;
 }
 #game_over_name_input {
-  position: relative;
-  left: 0;
   height: 5vh;
   display: flex;
   flex-direction: row;
@@ -244,12 +242,12 @@ button:hover {
 }
 #leaderboard_menu_mail_invaders {
   position: relative;
-  left: 5%;
+  left: 10%;
   top: -2%;
   width: 50vw;
   height: 10vh;
   z-index: 4;
-  font-size: 2.5em;
+  font-size: 2.2em;
   margin-bottom: 8%;
 }
 #leaderboard {

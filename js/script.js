@@ -2,6 +2,7 @@
 // musique ou son pour game over ?
 // todo changer curseur
 // laisser bonus title quand activé
+// todo maxlife = 5 quand heart pris et déjà life max
 //todo move poubelle
 // enlever tous les underscore
 // redraw map than bonus maybe ?
@@ -348,6 +349,7 @@ game.changeScreen =
 
       else if (menu == 'start_menu') {
         document.body.style.backgroundImage = 'url("images/background_startmenu.jpg")';
+        document.getElementById("game_over_home").style.display = "none";
         /* Show elements of the start menu that might have been hidden at the previous game over */
         const startMenuElements = document.getElementsByClassName("start_menu");
         for (const element of startMenuElements) {
@@ -370,6 +372,7 @@ game.changeScreen =
         }
         document.getElementById("start_menu_title").style.display = "flex";
         document.getElementById("start_menu_title").style.visibility = "hidden";
+        document.getElementById("game_over_home").style.display = "block";
         /* Then show elements of the game over menu that might have been hidden at the previous start menu */
         const elements_over = document.getElementsByClassName("game_over");
         for (const element of elements_over) {
@@ -377,8 +380,8 @@ game.changeScreen =
         }
         /* Adapting elements position and text for game over menu */
         document.getElementById("start_menu_buttons").style.position = "absolute";
-        document.getElementById("start_menu_buttons").style.setProperty("top", "180%");
-        document.getElementById("start_menu_buttons").style.setProperty("left", "2.48%");
+        document.getElementById("start_menu_buttons").style.setProperty("top", "155%");
+        document.getElementById("start_menu_buttons").style.setProperty("left", "6.2%");
         document.getElementById("start_button").innerHTML = "Play Again";
       }
     }
