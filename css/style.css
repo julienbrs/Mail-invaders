@@ -4,8 +4,8 @@
 
 @font-face {
     font-family: 'nulshockbold';
-    src: url('assets/nulshock_bd-webfont.woff2') format('woff2'),
-        url('assets/nulshock_bd-webfont.woff') format('woff');
+    src: url('nulshock_bd-webfont.woff2') format('woff2'),
+        url('nulshock_bd-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
@@ -15,7 +15,7 @@
 
 body {
     font-family: 'nulshockbold', 'montserratregular', 'Trebuchet MS', Arial, sans-serif;
-    background-image: url("assets/background_startmenu.jpg");
+    background-image: url("../images/background_startmenu.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -137,7 +137,7 @@ button:hover {
     font-size: 2.05em;
 }
 
-#sound_button {
+#sound_button_start_menu {
     position: absolute;
     top: 3vh;
     left: 93.7vw;
@@ -355,14 +355,14 @@ button:hover {
     cursor: pointer;
 }
 
-#logo_sound {
+#logo_sound_in_game {
     position: absolute;
     top: 5.2vh;
     left: 91.66vw;
     z-index: 3;
 }
 
-#logo_sound:hover {
+#logo_sound_in_game:hover {
     cursor: pointer;
 }
 
@@ -457,7 +457,7 @@ button:hover {
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     align-content: stretch;
 }
 
@@ -477,6 +477,7 @@ button:hover {
 
 .bonus_img {
     position: relative;
+    top: -5%;
     z-index: 4;
     margin-right: 7%;
 }
@@ -629,7 +630,7 @@ button:hover {
 
 /* Help menu */
 
-#help_menu {
+#help_menu_in_game {
     position: absolute;
     display: flex;
     flex-direction: column;
