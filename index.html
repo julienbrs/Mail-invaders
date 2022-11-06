@@ -5,6 +5,7 @@
     <title>Mail Invaders</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
@@ -59,6 +60,7 @@
                         <!-- Input to put your name -->
                         <input type="text" id="name_input" placeholder="Enter your name">
                         <button id="save_score_button" class = "sound_button" onClick="toggleSaveScore()" >Save score</button>
+                        <button id="saved_score">Saved</button>
                     </div>
                 </div>
             </div>
@@ -193,7 +195,7 @@
                     </div>
                 </div>
             </div>
-
+            <div id="logo_pause_in_game" class = "sound_button"><input type="image" src="images/pause.png" alt="home"></div>
             <div id="logo_home" class = "sound_button"><input type="image" src="images/logo_home.png" alt="home"></div>
             <div id="logo_sound_in_game"><input type="image" class = " sound_button audio_button" onClick="togglePlaySound()" src="images/logo_no_sound.png" alt="sound"></div>
 

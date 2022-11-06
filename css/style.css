@@ -194,6 +194,24 @@ button:hover {
   margin-right: 0;
 }
 #save_score_button {
+  display: block;
+  width: 8.3vw;
+  height: 5vh;
+  position: relative;
+  top: 5%;
+  background-color: #c8ff00;
+  color: #0e0c60;
+  border-color: #c8ff00;
+  font-size: 0.8em;
+  font-family: nulshockbold, montserratsemibold, "Trebuchet MS", Arial,
+    sans-serif;
+  box-shadow: 3px 3px 2px 1px rgba(14, 12, 96, 0.3);
+  border-radius: 50.5px;
+  border-width: 3px;
+  border-style: solid;
+}
+#saved_score {
+  display: none;
   width: 8.3vw;
   height: 5vh;
   position: relative;
@@ -294,6 +312,11 @@ button:hover {
 }
 #difficulty_title_ingame {
   font-size: 0.7em;
+}
+#logo_pause_in_game {
+  position: absolute;
+  top: 5.7vh;
+  left: 83vw;
 }
 #logo_home {
   position: absolute;

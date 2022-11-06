@@ -1,0 +1,21 @@
+Sources
+
+
+**Images**
+
+- background (modified) by freepik [https://fr.freepik.com/vecteurs-libre/fond-galaxie-dessin-anime-planetes_14121184.htm#query=space&position=25&from_view=search&track=sph]
+
+- planets by pch.vector via Freepik [https://fr.freepik.com/vecteurs-libre/kit-icones-planetes-dessin-anime-colore_8270973.htm#query=planet&position=1&from_view=search&track=sph]
+
+- mail + color inspiration by Rosina Gavrilash [https://icons8.com/illustrations/illustration/space-astronaut-in-space-plane-shoots-at-flying-messages]
+
+- spaceship (modified) by storyset via Freepik [https://fr.freepik.com/vecteurs-libre/illustration-du-concept-etoiles_13717649.htm#page=5&query=spaceship&position=5&from_view=search&track=sph]
+
+- icons via the Figma extension "Iconify"
+
+
+**Audio**
+
+- all the sound effects come form Zapsplat.com
+
+- music: 8 Bit Space Groove by HeatleyBros - Royalty Free Video Game Music via Youtube [https://www.youtube.com/watch?v=Bok8nLviThg&list=RDQMDLoBzDk29ZE&index=2]

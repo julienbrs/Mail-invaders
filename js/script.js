@@ -1,23 +1,3 @@
-//todo hitbox avec shield
-// musique ou son pour game over ?
-// todo changer curseur
-// laisser bonus title quand activé
-// todo maxlife = 5 quand heart pris et déjà life max
-//todo move poubelle
-// enlever tous les underscore
-// redraw map than bonus maybe ?
-// spawn ennemies out of screen
-// heart spawn need to be randomized
-// todo switch case in spawnbonus ?
-// todo came from game over or start menu for leaderboard
-//todo indep FPS
-// todo vitesse laser when turbo
-// add bonus title when activated
-// todo sound dmg player + pause button in game
-// todo pause menu
-// function frame to seconds for fps
-// enlever son arrows difficulty quand max ou min
-// mettre toutes les valeurs qu'on reset dans game init dans un seul attribut de game pour reset entierement plus facielement, genre game.instance
 
 /* Get caracteristics of the screen */
 const sWidth = document.getElementById('screenplay').offsetWidth;
@@ -25,8 +5,6 @@ const sHeight = document.getElementById('screenplay').offsetHeight;
 
 /* Contains elements, methods and objects of the game */
 var game = {};
-/* Contains initialized elements of a party */
-game.instance = {};
 /* Drawing elements */
 game.canvas = document.getElementById('screenplay');
 game.ctx = game.canvas.getContext('2d');
@@ -44,8 +22,9 @@ var dataKeyPressed = {};
 game.ennemyLasers = [];
 /* game.Flags */
 game.initialized = false;
-game.onPause = false; // todo utiliser plutot classe avec display or not du menu pause et s'assurer qu'on est ingame
+game.onPause = false;
 game.canSpawnBonus = true;
+game.savedScore = false;
 /* On map elements */
 game.bonusOnMap = [];
 game.inventory = {
@@ -59,7 +38,6 @@ game.inventory = {
 game.trapOnMap = {};
 /* Time caracteristics */
 game.timerTick = 0;
-game.bonusSpawnTick = 350;
 game.maxBonusSpawnTick = 700;
 game.tickPlayerImage = 0;
 
@@ -68,8 +46,8 @@ game.tickPlayerImage = 0;
 
 const FPS = 30;
 /* Time caracteristics */
-const maxShieldTimer = 20 * 3.33 * 10;
-const maxTurboTimer = 10 * 3.33 * 10;
+const maxShieldTimer = 20 * 3.33 * 10;  // 20 seconds
+const maxTurboTimer = 10 * 3.33 * 10;   // 10 seconds
 const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
 var maxGameTimer = 60;
@@ -80,10 +58,10 @@ const speedPlayer = 13;
 
 const list_difficulty = ["easy", "medium", "hard"];
 const list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu_in_game", "game_over_menu", "leaderboard_menu"];
-const maxDifficulty = 2; //todo  à virer ?
+const maxDifficulty = 2;
 const maxNbLife = 5;
 /* Flags */
-var canPressPause = true; // todo a virer
+var canPressPause = true;
 
 /* div id that we will use often */
 const idLife3 = document.getElementById("life3");
@@ -114,8 +92,14 @@ imgHeart.src = 'images/bonus_life.png';
 
 const imgTrap = new Image();
 imgTrap.src = 'images/trap.png';
-const imgTrapInGame = new Image();
-imgTrapInGame.src = 'images/trap_ingame.png';
+const imgTrapInGame0 = new Image();
+imgTrapInGame0.src = 'images/trap_ingame0.png';
+imgTrapInGame1 = new Image();
+imgTrapInGame1.src = 'images/trap_ingame1.png';
+const imgTrapInGame2 = new Image();
+imgTrapInGame2.src = 'images/trap_ingame2.png';
+const imgTrapInGame3 = new Image();
+imgTrapInGame3.src = 'images/trap_ingame3.png';
 
 const imgTurbo = new Image();
 imgTurbo.src = 'images/turbo.png';
@@ -139,8 +123,6 @@ imgSuperMissile.src = 'images/supershoot_missile.png';
 const imgMissileShooterMail = new Image();
 imgMissileShooterMail.src = 'images/missile_shooter_mail.png';
 
-const imgCancelButton = new Image();
-imgCancelButton.src = 'images/cancel_button.png';
 const imgLifeEmpty = new Image();
 imgLifeEmpty.src = 'images/life_empty.png';
 const imgLifeFill = new Image();
@@ -152,6 +134,7 @@ const audioHoverButton = new Audio('audio/hover_sound.mp3');
 const audioClickButton = new Audio('audio/click_sound.mp3');
 const audioEnnemyDown = new Audio('audio/ennemy_down.mp3');
 const audioBonusPicked = new Audio('audio/bonus_picked.mp3');
+const audioDamageTaken = new Audio('audio/damage_player.mp3');
 
 
 
@@ -294,6 +277,9 @@ function setSoundClickHover() {
 document.getElementById('start_button').onclick = function () {
   game.initialized = false;
   game.changeScreen('screen_game');
+}
+document.getElementById("logo_pause_in_game").onclick = function () {
+  game.switchPause();
 }
 document.getElementById("logo_home").onclick = function () {
   game.changeScreen('start_menu');
@@ -566,7 +552,7 @@ game.spawnBonus =
         return;
       }
 
-      if (!this.canSpawnBonus) { //todo: does it work without that ?
+      if (!this.canSpawnBonus) {
         return;
       }
 
@@ -625,8 +611,14 @@ game.manageBonus =
     }
     game.checkCollisionBonus();
 
-
-
+    /* Move traps if there are some */
+    game.bonusOnMap.forEach(function (bonus) {
+      if (bonus.type == "trap_placed") {
+        console.log("found a trap");
+        bonus.move();
+      }
+    }
+    );
   }
 
 game.catchingTimerBonus =
@@ -643,7 +635,7 @@ game.checkCollisionBonus =
     game.bonusOnMap.forEach(async function (bonus) {
       if (bonus.type == 'trap_placed') {
         /* If it's a trap, check collision with ennemies */
-        game.ennemies.forEach(function (ennemy) {
+        game.ennemies.forEach(async function (ennemy) {
           if (ennemy.isColliding(bonus)) {
             /* Kill ennemy, play a sound, trap is used and add score */
             game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
@@ -652,6 +644,7 @@ game.checkCollisionBonus =
             game.addScoreEnnemy(ennemy);
             if (bonus.canStillGrabAmount == 0) {
               /* Remove the trap from the map */
+              await new Promise(resolve => setTimeout(resolve, 1000));
               game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
             }
           }
@@ -672,7 +665,9 @@ game.checkCollisionBonus =
         if (bonus.isColliding(game.player)) {
           audioBonusPicked.cloneNode(true).play();
           game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          game.player.life++;
+          if (game.player.life < game.maxNbLife) {
+            game.player.life++;
+          }
         }
       }
       else {
@@ -725,6 +720,7 @@ game.moveEnnemies =
         if (ennemy.isColliding(game.player)) {
           game.player.life -= 1;
           game.addScoreEnnemy(ennemy);
+          audioDamageTaken.cloneNode(true).play();
           audioEnnemyDown.cloneNode(true).play();
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
         }
@@ -736,9 +732,10 @@ game.moveEnnemies =
 
 game.spawnEnnemies =
   function (wave) {
-    /* Spawn a heart bonus every wave */
-    // todo heart here, heart every 2 waves?
-    game.spawnBonus("heart");
+    /* Spawn a heart bonus every 2 wave */
+    if ((wave + 1) % 2) {
+      game.spawnBonus("heart");
+    }
 
     /* Choose how many ennemies to spawn */
     let nbSimpleEnnemy = 1.3 * wave * 6 * (game.difficulty + 1);
@@ -747,21 +744,21 @@ game.spawnEnnemies =
     /* Spawn Simple Ennemies */
     for (let i = 0; i < nbSimpleEnnemy; i++) {
       let x = Math.random() * (sWidth - 59);
-      let y = Math.random() * (- 300 * (1 + wave * 0.4));
+      let y = -Math.random() * (350 * (1 + wave * 0.4));
       let ennemy = new Ennemy(x, y, 58, 43, imgSimpleMail);
       game.ennemies.push(ennemy);
     }
     /* Spawn Triple Mail */
     for (let i = 0; i < nbTripleMail; i++) {
       let x = Math.random() * (sWidth - 59);
-      let y = Math.random() * (- 300 * (1 + wave * 0.4));
+      let y = -Math.random() * (350 * (1 + wave * 0.4));
       let ennemy = new TripleMail(x, y, 58, 43, imgTripleMail);
       game.ennemies.push(ennemy);
     }
     /* Spawn Shooter Mail */
     for (let i = 0; i < nbShooterMail; i++) {
       let x = Math.random() * (sWidth - 59);
-      let y = Math.random() * (- 300 * (1 + wave * 0.4));
+      let y = -Math.random() * (350 * (1 + wave * 0.4));
       let ennemy = new ShooterMail(x, y, 58, 43, imgShooterMail);
       game.ennemies.push(ennemy);
     }
@@ -802,6 +799,9 @@ game.gameOver =
   function (reason_death) {
     /* Stop and clear the main loop */
     clearInterval(game.interval);
+    /* Reset the save_score div */
+    game.savedScore = true;   /* will be changed to false in the next line */
+    switchDivSaveScore();
     let message;
     game.changeScreen('game_over_menu');
     /* Choose the message of death */
@@ -818,37 +818,36 @@ game.gameOver =
     /* If it's a new highscore, say it */
     if (isHighscore(game.score)) {
       document.getElementById("score_title_game_over").innerHTML = "<h1 id='highscore_title'>Highscore!</h1>";
-      document.getElementById("highscore_title").style.color = "red"; //todo put the good color
+      document.getElementById("highscore_title").style.color = "#ff0068";
     }
     /* If not, put right properties */
     else {
       document.getElementById("score_title_game_over").innerHTML = "<h1>Score</h1>";
     }
     document.getElementById("reason_of_death").innerHTML = '<h1>' + message + '</h1>';
-
   }
 
 /* Start the game */
 game.initialize =
   function () {
     if (game.initialized == false) {
-      /* do all the initilization stuff, todo: do it cleaner in only one game.instance object */
       hideAllBonus();
-      game.canSpawnBonus = true;
-      game.player = new Player();
-      game.timer = 60;
-      game.ennemyLasers = [];
-      game.wave = 1;
-      game.bonusOnMap = [];
       game.initialized = true;
-      game.score = 0;
-      game.onPause = false;
       game.canPressPause = true;
-      game.spawnBonus("timer_bonus");
+      game.canSpawnBonus = true;
+      game.onPause = false;
+      game.timer = 60;
+      game.bonusSpawnTick = 700;
+      game.score = 0;
+      game.wave = 1;
+      game.ennemies = [];
+      game.ennemyLasers = [];
+      game.bonusOnMap = [];
+      game.player = new Player();
+      game.spawnEnnemies(game.wave);
       game.player.x = game.canvas.width / 2 - game.player.width / 2;
       game.player.y = game.canvas.height - game.player.height;
-      game.ennemies = [];
-      game.spawnEnnemies(game.wave);
+      game.spawnBonus("timer_bonus");
       if (game.interval === null) {
         game.interval = setInterval(updateGame, FPS);
       }
@@ -878,7 +877,6 @@ class PhysicalObject {
   }
 
   offScreen(dx, dy) {
-    // TODO: rajouter width et heighth de l'objet pour plus de précision
     /* check if the object is off screen */
     if (this.y + dy + this.height > game.canvas.height) {
     }
@@ -945,10 +943,49 @@ class Trap extends Bonus {
 
 class TrapPlaced extends Bonus {
   constructor() {
-    super(game.player.x, game.player.y, 48, 76, imgTrapInGame, "trap_placed");
+    super(game.player.x, game.player.y, 48, 76, imgTrapInGame3, "trap_placed");
     this.canStillGrabAmount = maxTrapGrabbed;
+    this.dx = 0;
+    this.maxDx = 100;
+    this.moveRight = true;
+    this.listImg = [imgTrapInGame0, imgTrapInGame1, imgTrapInGame2, imgTrapInGame3];
   }
 
+  move() {
+    /* Move the trap */
+    if (this.canStillGrabAmount == 0) {
+      return;
+    }
+    if (this.moveRight) {
+      /* Check if it will be offscreen */
+      if (this.offScreen(0, 0)) {
+        this.moveRight = false;
+      }
+      this.x += 3;
+      this.dx += 3;
+      if (this.dx >= this.maxDx) {
+        this.moveRight = false;
+      }
+    }
+    else {
+      /* Check if it will be offscreen */
+      if (this.offScreen(0, 0)) {
+        this.moveRight = true;
+        this.x += 3;
+        this.dx += 3;
+        return
+      }
+      this.x -= 3;
+      this.dx -= 3;
+      if (this.dx <= -this.maxDx) {
+        this.moveRight = true;
+      }
+    }
+  }
+  draw() {
+    /* draw the object */
+    game.ctx.drawImage(this.listImg[this.canStillGrabAmount], this.x, this.y, this.width, this.height);
+  }
 }
 
 /* Shooters */
@@ -1016,7 +1053,12 @@ class Shooter extends PhysicalObject {
   moveLasers() {
     /* move the lasers */
     for (let laser of this.lasers) {
-      laser.move(0, +laser.speed);
+      if (this.turboTimer > 0) {
+        laser.move(0, +1.5 * laser.speed);
+      }
+      else {
+        laser.move(0, +laser.speed);
+      }
     }
   }
 }
@@ -1025,7 +1067,7 @@ class Player extends Shooter {
   constructor() {
     super(400, 800, 27, 64.5, imgPlayer, speedPlayer);
     this.canShoot = true;
-    this.life = 5;
+    this.life = maxNbLife;
     this.shieldTimer = 0;
     this.turboTimer = 0;
     this.superShootTimer = 0;
@@ -1037,7 +1079,7 @@ class Player extends Shooter {
 
   shoot() {
     /* To play a new shoot sound before the previous one is finished, we need to create a clone */
-    audioPlayerShoot.cloneNode(true).play();
+    let audiooo = audioPlayerShoot.cloneNode(true).play();
     /* Shoot a laser */
     if (this.superShootActivated) {
       const newLaser = new LaserPlayer(
@@ -1053,16 +1095,13 @@ class Player extends Shooter {
   }
 
 
-  draw() {
-    //todo normal si t'arrives pas à bien lire, je ferais ça plus clean mais on draw juste le player ainsi que les bonus qui sont sur lui
-    /* draw the player over bonuses */
+  draw() {    /* draw the player over bonuses */
     game.ctx.globalCompositeOperation = 'source-over';
     super.draw();
     game.ctx.globalCompositeOperation = 'destination-over';
     /* Draw the shield if needed */
-    //todo check si le shield est bien centré
     if (this.shieldTimer > 0 && this.shieldActivated) {
-      game.ctx.drawImage(imgShieldInGame, this.x - this.height / 2.1, this.y - this.height / 3.5, this.height * 1.5, this.height * 1.5);
+      game.ctx.drawImage(imgShieldInGame, this.x - this.height / 1.9, this.y - this.height / 3.5, this.height * 1.5, this.height * 1.5);
       this.shieldTimer--;
       const barTimer = document.getElementById('bar_wrapper_shield');
       let countBar = Math.round(this.shieldTimer / maxShieldTimer * 200);
@@ -1150,14 +1189,14 @@ class ShooterMail extends Ennemy {
   tryToShoot() {
     /* shoot a laser */
     let rand = Math.random();
-    if (rand < 0.01) {
+    if (rand < 0.02) {
       this.shoot();
     }
   }
 
   shoot() {
     /* shoot a laser */
-    let laser = new LaserMail(this.x + this.width / 2, this.y + this.height, imgMissileShooterMail);
+    let laser = new LaserMail(this.x + this.width / 2 - 20, this.y + this.height, imgMissileShooterMail);
     /* adding laser to array game.ennemyLasers */
     game.ennemyLasers.push(laser);
   }
@@ -1210,7 +1249,6 @@ class Laser extends PhysicalObject {
     }
   }
 
-
   delete() {
     /* delete the laser */
     game.player.lasers.splice(game.player.lasers.indexOf(this), 1);
@@ -1242,13 +1280,25 @@ class LaserMail extends Laser {
     /* move the laser */
     this.x += 0;
     this.y -= this.speed;
-    if (this.offScreen(-5, 0)) {
+    if (this.offScreen(-0, 0)) {
       this.delete();
     }
     if (this.isColliding(game.player)) {
       this.delete();
       game.player.life -= 1;
+      audioDamageTaken.cloneNode(true).play();
     }
+    /* Check if collide with trap placed */
+    game.bonusOnMap.forEach(function (bonus) {
+      /* Check if collide with trap placed */
+      if (bonus.type == "trap_placed") {
+        console.log("ITS A TRAP");
+        if (bonus.isColliding(this)) {
+          this.delete();
+        }
+      }
+    }, this);
+
   }
 
   delete() {
@@ -1316,6 +1366,10 @@ function isHighscore(newScore) {
 /* Store the score in localStorage */
 function setScore(name, score) {
   localStorage.setItem(name, score);
+  writeInLeaderboard();
+}
+
+function writeInLeaderboard() {
   let scores = getScoresInArray();
   /* Write the scores in the leaderboard menu */
   let n = (scores.length < 5) ? scores.length : 5;
@@ -1331,14 +1385,29 @@ function setScore(name, score) {
 }
 
 /* Button to save the score */
-//todo : can click only once and then display "saved"
 function toggleSaveScore() {
   let nameValue = document.getElementById("name_input").value;
+  if (nameValue == "") return;
   let scoreValue = game.score;
   setScore(nameValue, scoreValue);
+  switchDivSaveScore();
+}
+
+function switchDivSaveScore() {
+  game.savedScore = !game.savedScore;
+  if (game.savedScore) {
+    document.getElementById("save_score_button").style.display = "none";
+    document.getElementById("saved_score").style.display = "block";
+  }
+  else {
+    document.getElementById("save_score_button").style.display = "block";
+    document.getElementById("saved_score").style.display = "none";
+  }
 }
 
 setSoundClickHover();
 game.changeScreen('start_menu');
-//todo expliquer ça
-localStorage.clear();
+writeInLeaderboard();
+/* To reset the leaderboard, clear the local storage */
+/* To do so, decomment the next line, run the script and comment back */
+//localStorage.clear();
