@@ -25,20 +25,20 @@
                 <div id="start_menu_buttons">
                     <button class=" sound_button button_start_menu" id="start_button">Play</button>
                     <div id="difficulty_button_wrapper">
-                        <input id="difficulty_left_arrow" class="sound_button" type="image" onClick="downDifficulty()"
+                        <input id="difficulty_left_arrow" class="sound_button" type="image" onClick="downDifficulty(); this.blur();"
                             src="images/triangle_left_shadow.png" />
                         <button class="button_start_menu" id="difficulty_button">Easy</button>
-                        <input class="sound_button" id="difficulty_right_arrow" type="image" onClick="upDifficulty()"
+                        <input class="sound_button" id="difficulty_right_arrow" type="image" onClick="upDifficulty(); this.blur();"
                             src="images/triangle_right.png" />
                         <button id="game_over_home" class="sound_button button_start_menu">Main Menu</button>
                     </div>
                     <button id="help_button" class=" sound_button button_start_menu"
-                        onClick="game.changeScreen('leaderboard_menu')">Leaderboard</button>
+                        onClick="game.changeScreen('leaderboard_menu');this.blur();">Leaderboard</button>
                 </div>
             </did>
             <div id="sound_button_start_menu">
                 <input id="toggle_sound_start_menu" class="sound_button audio_button" type="image"
-                    onClick="togglePlaySound()" src="images/button_no_sound.png" />
+                    onClick="togglePlaySound();this.blur();" src="images/button_no_sound.png" />
             </div>
         </div>
         <!-- GameOver Page -->
@@ -65,7 +65,7 @@
                     <div id="game_over_name_input">
                         <!-- Input to put your name -->
                         <input type="text" id="name_input" placeholder="Enter your name">
-                        <button id="save_score_button" class="sound_button" onClick="toggleSaveScore()">Save
+                        <button id="save_score_button" class="sound_button" onClick="toggleSaveScore();this.blur();">Save
                             score</button>
                         <button id="saved_score">Saved</button>
                     </div>
@@ -84,7 +84,7 @@
                     <h2>Leaderboard</h2>
                 </div>
                 <div id="cancel_button_leaderboard_menu">
-                    <input type="image" class="sound_button" onClick="game.changeScreen('start_menu')"
+                    <input type="image" class="sound_button" onClick="game.goOutOfLeaderboard();this.blur();"
                         src="images/cancel_button.png" alt="cancel_button">
                 </div>
             </div>
@@ -210,7 +210,7 @@
             </div>
             <div id="logo_home" class="sound_button"><input type="image" src="images/logo_home.png" alt="home"></div>
             <div id="logo_sound_in_game"><input type="image" class=" sound_button audio_button"
-                    onClick="togglePlaySound()" src="images/logo_no_sound.png" alt="sound"></div>
+                    onClick="togglePlaySound();this.blur();" src="images/logo_no_sound.png" alt="sound"></div>
 
             <canvas id="screenplay">
             </canvas>
@@ -238,7 +238,7 @@
                     <h2>Help</h2>
                 </div>
                 <div id="cancel_button_help_pause">
-                    <input type="image" onClick="game.changeScreen('pause_menu')" src="images/cancel_button.png"
+                    <input type="image" onClick="game.changeScreen('pause_menu');this.blur();" src="images/cancel_button.png"
                         alt="cancel_button">
                 </div>
                 <div id="description_of_the_game">

@@ -1,13 +1,12 @@
-
 /* Get caracteristics of the screen */
-const sWidth = document.getElementById('screenplay').offsetWidth;
-const sHeight = document.getElementById('screenplay').offsetHeight;
+const sWidth = document.getElementById("screenplay").offsetWidth;
+const sHeight = document.getElementById("screenplay").offsetHeight;
 
 /* Contains elements, methods and objects of the game */
 var game = {};
 /* Drawing elements */
-game.canvas = document.getElementById('screenplay');
-game.ctx = game.canvas.getContext('2d');
+game.canvas = document.getElementById("screenplay");
+game.ctx = game.canvas.getContext("2d");
 
 /* Game party caracteristics */
 game.wave = 1;
@@ -25,15 +24,18 @@ game.initialized = false;
 game.onPause = false;
 game.canSpawnBonus = true;
 game.savedScore = false;
+/* Flag to say that after leaving leaderboard we should come back to gameover menu */
+var cameFromGameOver = false;
+
 /* On map elements */
 game.bonusOnMap = [];
 game.inventory = {
-  'shield': 0,
-  'trap': 0,
-  'turbo': 0,
-  'super_shoot': 0,
-  'trap_placed': 0,
-  'items_in_bag': 0
+  shield: 0,
+  trap: 0,
+  turbo: 0,
+  super_shoot: 0,
+  trap_placed: 0,
+  items_in_bag: 0,
 };
 game.trapOnMap = {};
 /* Time caracteristics */
@@ -41,13 +43,12 @@ game.timerTick = 0;
 game.maxBonusSpawnTick = 400;
 game.tickPlayerImage = 0;
 
-
 /* Constants */
 
 const FPS = 30;
 /* Time caracteristics */
-const maxShieldTimer = 20 * 3.33 * 10;  // 20 seconds
-const maxTurboTimer = 10 * 3.33 * 10;   // 10 seconds
+const maxShieldTimer = 20 * 3.33 * 10; // 20 seconds
+const maxTurboTimer = 10 * 3.33 * 10; // 10 seconds
 const maxSuperShootTimer = 10 * 3.33 * 10;
 const maxTrapGrabbed = 3;
 var maxGameTimer = 60;
@@ -57,7 +58,14 @@ const vitesseLaserPlayer = 10;
 const speedPlayer = 13;
 
 const list_difficulty = ["easy", "medium", "hard"];
-const list_menu = ['start_menu', 'screen_game', "pause_menu", "help_menu_in_game", "game_over_menu", "leaderboard_menu"];
+const list_menu = [
+  "start_menu",
+  "screen_game",
+  "pause_menu",
+  "help_menu_in_game",
+  "game_over_menu",
+  "leaderboard_menu",
+];
 const maxDifficulty = 2;
 const maxNbLife = 5;
 /* Flags */
@@ -70,90 +78,89 @@ const idLife1 = document.getElementById("life1");
 const idLife0 = document.getElementById("life0");
 const mainAudio = document.getElementById("mainAudio");
 
-
 /* Assets */
 
 /* Definitions of the images */
 const imgPlayer = new Image();
-imgPlayer.src = 'images/player.png';
+imgPlayer.src = "images/player.png";
 const imgPlayer2 = new Image();
-imgPlayer2.src = 'images/player_without_light.png';
+imgPlayer2.src = "images/player_without_light.png";
 
 const imgShield = new Image();
-imgShield.src = 'images/shield.png';
+imgShield.src = "images/shield.png";
 const imgShieldInGame = new Image();
-imgShieldInGame.src = 'images/shield_ingame.png';
+imgShieldInGame.src = "images/shield_ingame.png";
 
 const imgTimerBonus = new Image();
-imgTimerBonus.src = 'images/clock.png';
+imgTimerBonus.src = "images/clock.png";
 
 const imgHeart = new Image();
-imgHeart.src = 'images/bonus_life.png';
+imgHeart.src = "images/bonus_life.png";
 
 const imgTrap = new Image();
-imgTrap.src = 'images/trap.png';
+imgTrap.src = "images/trap.png";
 const imgTrapInGame0 = new Image();
-imgTrapInGame0.src = 'images/trap_ingame0.png';
+imgTrapInGame0.src = "images/trap_ingame0.png";
 imgTrapInGame1 = new Image();
-imgTrapInGame1.src = 'images/trap_ingame1.png';
+imgTrapInGame1.src = "images/trap_ingame1.png";
 const imgTrapInGame2 = new Image();
-imgTrapInGame2.src = 'images/trap_ingame2.png';
+imgTrapInGame2.src = "images/trap_ingame2.png";
 const imgTrapInGame3 = new Image();
-imgTrapInGame3.src = 'images/trap_ingame3.png';
+imgTrapInGame3.src = "images/trap_ingame3.png";
 
 const imgTurbo = new Image();
-imgTurbo.src = 'images/turbo.png';
+imgTurbo.src = "images/turbo.png";
 
 const imgSuperShoot = new Image();
-imgSuperShoot.src = 'images/star.png';
+imgSuperShoot.src = "images/star.png";
 
 const imgSimpleMail = new Image();
-imgSimpleMail.src = 'images/simple_mail.png';
+imgSimpleMail.src = "images/simple_mail.png";
 const imgDoubleMail = new Image();
-imgDoubleMail.src = 'images/double_mail.png';
+imgDoubleMail.src = "images/double_mail.png";
 const imgTripleMail = new Image();
-imgTripleMail.src = 'images/triple_mail.png';
+imgTripleMail.src = "images/triple_mail.png";
 const imgShooterMail = new Image();
-imgShooterMail.src = 'images/shooter_mail.png';
+imgShooterMail.src = "images/shooter_mail.png";
 
 const imgMissile = new Image();
-imgMissile.src = 'images/Missile.png';
+imgMissile.src = "images/Missile.png";
 const imgSuperMissile = new Image();
-imgSuperMissile.src = 'images/supershoot_missile.png';
+imgSuperMissile.src = "images/supershoot_missile.png";
 const imgMissileShooterMail = new Image();
-imgMissileShooterMail.src = 'images/missile_shooter_mail.png';
+imgMissileShooterMail.src = "images/missile_shooter_mail.png";
 
 const imgLifeEmpty = new Image();
-imgLifeEmpty.src = 'images/life_empty.png';
+imgLifeEmpty.src = "images/life_empty.png";
 const imgLifeFill = new Image();
-imgLifeFill.src = 'images/life_fill.png';
+imgLifeFill.src = "images/life_fill.png";
 
 /* Audios */
-const audioPlayerShoot = new Audio('audio/shoot.mp3');
-const audioHoverButton = new Audio('audio/hover_sound.mp3');
-const audioClickButton = new Audio('audio/click_sound.mp3');
-const audioEnnemyDown = new Audio('audio/ennemy_down.mp3');
-const audioBonusPicked = new Audio('audio/bonus_picked.mp3');
-const audioDamageTaken = new Audio('audio/damage_player.mp3');
-
-
+const audioPlayerShoot = new Audio("audio/shoot.mp3");
+const audioHoverButton = new Audio("audio/hover_sound.mp3");
+const audioClickButton = new Audio("audio/click_sound.mp3");
+const audioEnnemyDown = new Audio("audio/ennemy_down.mp3");
+const audioBonusPicked = new Audio("audio/bonus_picked.mp3");
+const audioDamageTaken = new Audio("audio/damage_player.mp3");
 
 /* Events */
 
 /* Keyboard events */
 /* Adding key to dataKeyPressed array when pressed */
 $(window).keydown(function (e) {
-  if (e.which == 32 && game.player.canShoot && isGaming()) {  // 32 = spacebar
+  if (e.which == 32 && game.player.canShoot && isGaming()) {
+    // 32 = spacebar
     /* canShoot is used to avoid shooting too fast by leaving the spacebar pressed */
     game.player.canShoot = false;
     game.player.shoot();
+    dataKeyPressed[e.which] = true;
   }
-  dataKeyPressed[e.which] = true;
 });
 
 /* Removing key from dataKeyPressed array when released */
 $(window).keyup(function (e) {
-  if (e.which == 32) {  // 32 = spacebar
+  if (e.which == 32) {
+    // 32 = spacebar
     game.player.canShoot = true;
   }
   dataKeyPressed[e.which] = false;
@@ -161,55 +168,61 @@ $(window).keyup(function (e) {
 
 /* Pause the game when pressing Escape */
 $(window).keydown(function (e) {
-  let isGameLaunched = document.getElementById('screen_game').style.display == 'flex';
-  let isOnPause = document.getElementById('help_menu_in_game').style.display == 'flex';
-  if (e.which == 27 && isOnPause) { // 27 = escape
+  let isGameLaunched =
+    document.getElementById("screen_game").style.display == "flex";
+  let isOnPause =
+    document.getElementById("help_menu_in_game").style.display == "flex";
+  if (e.which == 27 && isOnPause) {
+    // 27 = escape
     game.changeScreen("pause_menu");
-  }
-  else if (e.which == 27 && canPressPause && isGameLaunched) {
+  } else if (e.which == 27 && canPressPause && isGameLaunched) {
     game.switchPause();
   }
   dataKeyPressed[e.which] = true;
 });
 
 $(window).keyup(function (e) {
-
   if (isGaming()) {
-    if (e.which == 81 && game.inventory['shield'] > 0) {  // 81 = q
+    if (e.which == 81 && game.inventory["shield"] > 0) {
+      // 81 = q
       game.player.shieldActivated = true;
       game.player.bonusActivated = true;
       game.player.shieldTimer = maxShieldTimer;
-      game.inventory['shield'] -= 1;
-      game.inventory['items_in_bag']--;
-      document.getElementById("bonus_description_shield").style.display = "none";
+      game.inventory["shield"] -= 1;
+      game.inventory["items_in_bag"]--;
+      document.getElementById("bonus_description_shield").style.display =
+        "none";
       document.getElementById("bar_wrapper_shield").style.display = "flex";
     }
-    if (e.which == 87 && game.inventory['trap'] > 0) {  // 87 = w
-      game.inventory['trap'] -= 1;
-      game.inventory['items_in_bag']--;
+    if (e.which == 87 && game.inventory["trap"] > 0) {
+      // 87 = w
+      game.inventory["trap"] -= 1;
+      game.inventory["items_in_bag"]--;
       game.bonusOnMap.push(new TrapPlaced());
       /* Hiding the bonus in HUD */
       document.getElementById("bonus_trap_wrapper").style.display = "none";
     }
-    if (e.which == 69 && game.inventory['turbo'] > 0) {  // 69 = e
+    if (e.which == 69 && game.inventory["turbo"] > 0) {
+      // 69 = e
       game.player.turboActivated = true;
       game.player.bonusActivated = true;
       game.player.turboTimer = maxTurboTimer;
       game.player.speed = 20;
-      game.inventory['turbo'] -= 1;
-      game.inventory['items_in_bag']--;
+      game.inventory["turbo"] -= 1;
+      game.inventory["items_in_bag"]--;
       /* Hiding bonus description, showing timer bar */
       document.getElementById("bonus_description_turbo").style.display = "none";
       document.getElementById("bar_wrapper_turbo").style.display = "flex";
     }
-    if (e.which == 82 && game.inventory['super_shoot'] > 0) {
+    if (e.which == 82 && game.inventory["super_shoot"] > 0) {
       game.player.superShootActivated = true;
       game.player.bonusActivated = true;
       game.player.superShootTimer = maxSuperShootTimer;
-      game.inventory['super_shoot'] -= 1;
-      game.inventory['items_in_bag']--;
+      game.inventory["super_shoot"] -= 1;
+      game.inventory["items_in_bag"]--;
       /* Hiding bonus description, showing timer bar */
-      document.getElementById("bonus_description_super_shoot").style.display = "none";
+      document.getElementById("bonus_description_super_shoot").style.display =
+        "none";
       document.getElementById("bar_wrapper_super_shoot").style.display = "flex";
     }
   }
@@ -220,21 +233,24 @@ $(window).keyup(function (e) {
 /* Do keyboard events stored in dataKeyPressed */
 game.doKeyboardEvents = function () {
   if (isGaming()) {
-    if (dataKeyPressed[37]) {  // left arrow
+    if (dataKeyPressed[37]) {
+      // left arrow
       game.player.moveLeft();
     }
-    if (dataKeyPressed[38]) {  // up arrow
+    if (dataKeyPressed[38]) {
+      // up arrow
       game.player.moveUp();
     }
-    if (dataKeyPressed[39]) {  // right arrow
+    if (dataKeyPressed[39]) {
+      // right arrow
       game.player.moveRight();
     }
-    if (dataKeyPressed[40]) {  // down arrow
+    if (dataKeyPressed[40]) {
+      // down arrow
       game.player.moveDown();
     }
   }
 };
-
 
 /* Buttons events */
 
@@ -247,17 +263,21 @@ function togglePlaySound() {
     /* Weird, can't change the image with .src, so has to be done manually with innerHTML */
     // logoSoundStartMenu.src = "images/button_sound.png";
     // logoSoundInGame.src = "images/logo_sound_in_game.png";
-    logoSoundStartMenu.innerHTML = '<input id="toggle_sound_start_menu" type="image" class="audio_button" onclick="togglePlaySound()" src="images/button_sound.png"/>'
-    logoSoundInGame.innerHTML = '<input type="image" class="audio_button" onclick="togglePlaySound()" src="images/logo_sound_in_game.png" alt="sound">'
+    logoSoundStartMenu.innerHTML =
+      '<input id="toggle_sound_start_menu" type="image" class="audio_button" onclick="togglePlaySound();this.blur();" src="images/button_sound.png"/>';
+    logoSoundInGame.innerHTML =
+      '<input type="image" class="audio_button" onclick="togglePlaySound();this.blur();" src="images/logo_sound_in_game.png" alt="sound">';
   } else {
     mainAudio.pause();
     /* Weird, can't change the image with .src, so has to be done manually with innerHTML */
     // logoSoundStartMenu.src = "images/button_no_sounde.png";
     // logoSoundInGame.src = "images/logo_no_sound.png";
-    logoSoundStartMenu.innerHTML = '<input id="toggle_sound_start_menu" type="image" class="audio_button" onclick="togglePlaySound()" src="images/button_no_sound.png">'
-    logoSoundInGame.innerHTML = '<input type="image" class="audio_button" onclick="togglePlaySound()" src="images/logo_no_sound.png" alt="sound">'
+    logoSoundStartMenu.innerHTML =
+      '<input id="toggle_sound_start_menu" type="image" class="audio_button" onclick="togglePlaySound();this.blur();" src="images/button_no_sound.png">';
+    logoSoundInGame.innerHTML =
+      '<input type="image" class="audio_button" onclick="togglePlaySound();this.blur();" src="images/logo_no_sound.png" alt="sound">';
   }
-};
+}
 
 /* Link sound effect to buttons */
 function setSoundClickHover() {
@@ -268,109 +288,121 @@ function setSoundClickHover() {
     });
     element.addEventListener("click", function () {
       audioClickButton.cloneNode(true).play();
-    }
-    );
+    });
   }
 }
 
 /* Link click buttons to right changeScreen */
-document.getElementById('start_button').onclick = function () {
+document.getElementById("start_button").onclick = function () {
+  this.blur();
   game.initialized = false;
-  game.changeScreen('screen_game');
-}
+  game.changeScreen("screen_game");
+};
 document.getElementById("logo_pause_in_game").onclick = function () {
+  this.blur();
   game.switchPause();
-}
+};
 document.getElementById("logo_home").onclick = function () {
-  game.changeScreen('start_menu');
-}
+  this.blur();
+  game.changeScreen("start_menu");
+};
 document.getElementById("game_over_home").onclick = function () {
-  game.changeScreen('start_menu');
-}
+  this.blur();
+  game.changeScreen("start_menu");
+};
 document.getElementById("resume_button").onclick = function () {
-  game.changeScreen('screen_game');
+  this.blur();
+  game.changeScreen("screen_game");
   game.switchPause();
-}
+};
 document.getElementById("restart_button").onclick = function () {
+  this.blur();
   game.initialized = false;
   game.canPressPause = true;
   game.onPause = false;
-  game.changeScreen('screen_game');
-}
+  game.changeScreen("screen_game");
+};
 document.getElementById("home_button").onclick = function () {
-  game.changeScreen('start_menu');
-}
+  this.blur();
+  game.changeScreen("start_menu");
+};
 document.getElementById("help_button_pause_menu").onclick = function () {
-  game.changeScreen('help_menu_in_game');
-}
-
+  this.blur();
+  game.changeScreen("help_menu_in_game");
+};
 
 /* Menu management */
-game.changeScreen =
-  function (menu) {
-    if (menu == 'pause_menu') {
-      document.getElementById('pause_menu').style.display = 'flex';
-      document.getElementById('help_menu_in_game').style.display = 'none';
+game.changeScreen = function (menu) {
+  if (menu == "game_over_menu"){cameFromGameOver = true;}
+  else if (menu == "leaderboard_menu"){}
+  else { cameFromGameOver = false}
+
+  if (menu == "pause_menu") {
+    document.getElementById("pause_menu").style.display = "flex";
+    document.getElementById("help_menu_in_game").style.display = "none";
+  } else if (menu == "help_menu_in_game") {
+    document.getElementById("pause_menu").style.display = "none";
+    document.getElementById("help_menu_in_game").style.display = "flex";
+  } else {
+    /* Hide all menus except the one we want to show */
+    for (var i = 0; i < list_menu.length; i++) {
+      if (list_menu[i] != menu) {
+        document.getElementById(list_menu[i]).style.display = "none";
+      } else {
+        document.getElementById(list_menu[i]).style.display = "flex";
+      }
     }
-    else if (menu == 'help_menu_in_game') {
-      document.getElementById('pause_menu').style.display = 'none';
-      document.getElementById('help_menu_in_game').style.display = 'flex';
-    }
 
-    else {
-      /* Hide all menus except the one we want to show */
-      for (var i = 0; i < list_menu.length; i++) {
-        if (list_menu[i] != menu) {
-          document.getElementById(list_menu[i]).style.display = 'none';
-        } else {
-          document.getElementById(list_menu[i]).style.display = 'flex';
-        }
+    /* Do specific actions for each menu */
+    if (menu == "screen_game") {
+      document.body.style.backgroundImage =
+        'url("images/background_ingame.jpg")';
+      game.initialize();
+    } else if (menu == "start_menu") {
+      document.body.style.backgroundImage =
+        'url("images/background_startmenu.jpg")';
+      document.getElementById("game_over_home").style.display = "none";
+      /* Show elements of the start menu that might have been hidden at the previous game over */
+      const startMenuElements = document.getElementsByClassName("start_menu");
+      for (const element of startMenuElements) {
+        element.style.display = "flex";
       }
-
-      /* Do specific actions for each menu */
-      if (menu == 'screen_game') {
-        document.body.style.backgroundImage = 'url("images/background_ingame.jpg")';
-        game.initialize();
+      /* Adapting elements position and text for start menu */
+      document.getElementById("start_button").innerHTML = "Play";
+      document.getElementById("start_menu_title").style.visibility = "visible";
+      document.getElementById("start_menu_buttons").style.position = "static";
+    } else if (menu == "game_over_menu") {
+      document.body.style.backgroundImage =
+        'url("images/background_startmenu.jpg")';
+      /* First show start menu because some are reused for game over menu */
+      document.getElementById("start_menu").style.display = "flex";
+      /* Then hide elements of the start menu that are not used in game over menu */
+      const startMenuElements = document.getElementsByClassName("start_menu");
+      for (const element of startMenuElements) {
+        element.style.display = "none";
       }
-
-      else if (menu == 'start_menu') {
-        document.body.style.backgroundImage = 'url("images/background_startmenu.jpg")';
-        document.getElementById("game_over_home").style.display = "none";
-        /* Show elements of the start menu that might have been hidden at the previous game over */
-        const startMenuElements = document.getElementsByClassName("start_menu");
-        for (const element of startMenuElements) {
-          element.style.display = 'flex';
-        }
-        /* Adapting elements position and text for start menu */
-        document.getElementById("start_button").innerHTML = "Play";
-        document.getElementById("start_menu_title").style.visibility = "visible";
-        document.getElementById("start_menu_buttons").style.position = "static";
+      document.getElementById("start_menu_title").style.display = "flex";
+      document.getElementById("start_menu_title").style.visibility = "hidden";
+      document.getElementById("game_over_home").style.display = "block";
+      /* Then show elements of the game over menu that might have been hidden at the previous start menu */
+      const elements_over = document.getElementsByClassName("game_over");
+      for (const element of elements_over) {
+        element.style.display = "flex";
       }
-
-      else if (menu == 'game_over_menu') {
-        document.body.style.backgroundImage = 'url("images/background_startmenu.jpg")';
-        /* First show start menu because some are reused for game over menu */
-        document.getElementById("start_menu").style.display = "flex";
-        /* Then hide elements of the start menu that are not used in game over menu */
-        const startMenuElements = document.getElementsByClassName("start_menu");
-        for (const element of startMenuElements) {
-          element.style.display = 'none';
-        }
-        document.getElementById("start_menu_title").style.display = "flex";
-        document.getElementById("start_menu_title").style.visibility = "hidden";
-        document.getElementById("game_over_home").style.display = "block";
-        /* Then show elements of the game over menu that might have been hidden at the previous start menu */
-        const elements_over = document.getElementsByClassName("game_over");
-        for (const element of elements_over) {
-          element.style.display = 'flex';
-        }
-        /* Adapting elements position and text for game over menu */
-        document.getElementById("start_menu_buttons").style.position = "relative";
-        document.getElementById("start_menu_buttons").style.setProperty("top", "10vh");
-        document.getElementById("start_button").innerHTML = "Play Again";
-      }
+      /* Adapting elements position and text for game over menu */
+      document.getElementById("start_menu_buttons").style.position = "relative";
+      document
+        .getElementById("start_menu_buttons")
+        .style.setProperty("top", "10vh");
+      document.getElementById("start_button").innerHTML = "Play Again";
     }
   }
+};
+
+game.goOutOfLeaderboard = function() {
+  if (cameFromGameOver){this.changeScreen("game_over_menu");}
+  else{this.changeScreen("start_menu");}
+}
 
 /* Pause or resume the game */
 game.switchPause = function () {
@@ -379,124 +411,130 @@ game.switchPause = function () {
   /* Change the value of on_pause to know if the game is paused or not */
   game.onPause = !game.onPause;
   if (game.onPause) {
-    game.changeScreen('pause_menu');
+    game.changeScreen("pause_menu");
   } else {
-    game.changeScreen('screen_game');
+    game.changeScreen("screen_game");
   }
-}
+};
 
 /* Check if it is playing and not paused */
 function isGaming() {
-  return document.getElementById('screen_game').style.display == 'flex' && document.getElementById('pause_menu').style.display == 'none';
+  return (
+    document.getElementById("screen_game").style.display == "flex" &&
+    document.getElementById("pause_menu").style.display == "none" &&
+    document.getElementById("help_menu_in_game").style.display == "none");
 }
 
 /* Update score depending of the ennemy killed and the difficulty */
-game.addScoreEnnemy =
-  function (ennemy) {
-    if (ennemy.constructor.name === 'TripleMail') {
-      game.score += 300 * (game.difficulty + 1);
-    }
-    else if (ennemy.constructor.name === 'ShooterMail') {
-      game.score += 200 * (game.difficulty + 1);
-    }
-    else {
-      game.score += 100 * (game.difficulty + 1);
-    }
+game.addScoreEnnemy = function (ennemy) {
+  if (ennemy.constructor.name === "TripleMail") {
+    game.score += 300 * (game.difficulty + 1);
+  } else if (ennemy.constructor.name === "ShooterMail") {
+    game.score += 200 * (game.difficulty + 1);
+  } else {
+    game.score += 100 * (game.difficulty + 1);
   }
+};
 
 /* button to lower the difficulty */
 function downDifficulty() {
-  if (game.difficulty == 0) { // do nothing if difficulty is already at the lowest
+  if (game.difficulty == 0) {
+    // do nothing if difficulty is already at the lowest
     return;
   }
   game.difficulty--;
   /* Change text difficulty and little arrow selectors */
-  document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
-  document.getElementById("difficulty_title_ingame").innerHTML = '<h3>' + list_difficulty[game.difficulty] + '</h3>';
-  document.getElementById("difficulty_right_arrow").src = "images/triangle_right.png";
+  document.getElementById("difficulty_button").innerHTML =
+    list_difficulty[game.difficulty];
+  document.getElementById("difficulty_title_ingame").innerHTML =
+    "<h3>" + list_difficulty[game.difficulty] + "</h3>";
+  document.getElementById("difficulty_right_arrow").src =
+    "images/triangle_right.png";
   if (game.difficulty == 0) {
     /* Left arrow selector is in shadow if difficulty is at the lowest */
-    document.getElementById("difficulty_left_arrow").src = "images/triangle_left_shadow.png";
-  }
-  else {
+    document.getElementById("difficulty_left_arrow").src =
+      "images/triangle_left_shadow.png";
+  } else {
     /* Left arrow selector is not in shadow */
-    document.getElementById("difficulty_left_arrow").src = "images/triangle_left.png";
+    document.getElementById("difficulty_left_arrow").src =
+      "images/triangle_left.png";
   }
 }
 
 function upDifficulty() {
-  if (game.difficulty == 2) { // do nothing if difficulty is already at the highest
+  if (game.difficulty == 2) {
+    // do nothing if difficulty is already at the highest
     return;
   }
   game.difficulty++;
   /* Change text difficulty and little arrow selectors */
-  document.getElementById("difficulty_button").innerHTML = list_difficulty[game.difficulty];
-  document.getElementById("difficulty_title_ingame").innerHTML = '<h3>' + list_difficulty[game.difficulty] + '</h3>';
-  document.getElementById("difficulty_left_arrow").src = "images/triangle_left.png";
+  document.getElementById("difficulty_button").innerHTML =
+    list_difficulty[game.difficulty];
+  document.getElementById("difficulty_title_ingame").innerHTML =
+    "<h3>" + list_difficulty[game.difficulty] + "</h3>";
+  document.getElementById("difficulty_left_arrow").src =
+    "images/triangle_left.png";
   if (game.difficulty == maxDifficulty) {
     /* Right arrow selector is in shadow if difficulty is at the highest */
-    document.getElementById("difficulty_right_arrow").src = "images/triangle_right_shadow.png";
-  }
-  else {
+    document.getElementById("difficulty_right_arrow").src =
+      "images/triangle_right_shadow.png";
+  } else {
     /* Right arrow selector is not in shadow */
-    document.getElementById("difficulty_right_arrow").src = "images/triangle_right.png";
+    document.getElementById("difficulty_right_arrow").src =
+      "images/triangle_right.png";
   }
 }
 
-
 /* Graphics functions */
 
-game.drawEnnemies =
-  function () {
-    game.ennemies.forEach(function (ennemy) {
-      ennemy.draw(game.ctx);
-    });
-  }
+game.drawEnnemies = function () {
+  game.ennemies.forEach(function (ennemy) {
+    ennemy.draw(game.ctx);
+  });
+};
 
 game.drawScore = function () {
   const scores = document.getElementsByClassName("score_value");
   for (const score of scores) {
     score.innerHTML = game.score;
   }
-}
+};
 
-game.drawBonus =
-  function () {
-    game.bonusOnMap.forEach(function (bonus) {
-      bonus.draw(game.ctx);
-    });
-  }
+game.drawBonus = function () {
+  game.bonusOnMap.forEach(function (bonus) {
+    bonus.draw(game.ctx);
+  });
+};
 
 game.drawLasersEnnemies = function () {
   for (let ennemy of game.ennemies) {
     /* Only ShooterMail has lasers */
-    if (ennemy.constructor.name === 'ShooterMail') {
+    if (ennemy.constructor.name === "ShooterMail") {
       ennemy.tryToShoot();
       ennemy.drawLasers();
     }
   }
-}
+};
 
-game.drawTimerBar =
-  function () {
-    game.timerTick++;
-    if (game.timer > maxGameTimer) {
-      game.timer = maxGameTimer;
-    }
-    let percentageBar = game.timer / maxGameTimer * 100;
-    if (percentageBar < 15) {
-      percentageBar = 15;
-    }
-
-    const timerbar = document.getElementById('timerbar_inner');
-    timerbar.style.width = percentageBar + '%';
-    timerbar.innerHTML = game.timer + ' s';
-    if (game.timerTick % 30 == 0) {
-      game.timer--;
-      game.timerTick = 0;
-      game.score += 100 * (game.difficulty + 1);
-    }
+game.drawTimerBar = function () {
+  game.timerTick++;
+  if (game.timer > maxGameTimer) {
+    game.timer = maxGameTimer;
   }
+  let percentageBar = (game.timer / maxGameTimer) * 100;
+  if (percentageBar < 15) {
+    percentageBar = 15;
+  }
+
+  const timerbar = document.getElementById("timerbar_inner");
+  timerbar.style.width = percentageBar + "%";
+  timerbar.innerHTML = game.timer + " s";
+  if (game.timerTick % 30 == 0) {
+    game.timer--;
+    game.timerTick = 0;
+    game.score += 100 * (game.difficulty + 1);
+  }
+};
 
 game.manageImagePlayer = function () {
   game.tickPlayerImage++;
@@ -506,185 +544,162 @@ game.manageImagePlayer = function () {
     /* Change the image of the player */
     if (game.player.image == imgPlayer) {
       game.player.image = imgPlayer2;
-    }
-    else {
+    } else {
       game.player.image = imgPlayer;
     }
   }
-}
+};
 
 /* Affiche le nombre de vies restantes avec des coeurs remplies ou vides */
 game.manageLifePlayer = function () {
   for (var i = 1; i <= maxNbLife; i++) {
     if (i <= game.player.life) {
       document.getElementById("life" + i).src = "images/life_fill.png";
-    }
-    else {
+    } else {
       document.getElementById("life" + i).src = "images/life_empty.png";
     }
   }
-}
-
-
+};
 
 /* Bonus Functions */
 
-game.spawnBonus =
-  function (bonus_chosen = "none") {
-    /* Pick a random location for the bonus */
-    let x = Math.random() * (sWidth - 65);
-    let y = Math.random() * (0.9 * sHeight - 65);
+game.spawnBonus = function (bonus_chosen = "none") {
+  /* Pick a random location for the bonus */
+  let x = Math.random() * (sWidth - 65);
+  let y = Math.random() * (0.9 * sHeight - 65);
 
-    if (bonus_chosen == "timer_bonus") {
-      bonus = new TimerBonus(x, y);
+  if (bonus_chosen == "timer_bonus") {
+    bonus = new TimerBonus(x, y);
+  } else if (bonus_chosen == "heart") {
+    /* Check if there is already a heart on the map */
+    if (game.bonusOnMap.some((bonus) => bonus.type == "heart")) {
+      return;
     }
-    else if (bonus_chosen == "heart") {
-      /* Check if there is already a heart on the map */
-      if (game.bonusOnMap.some(bonus => bonus.type == "heart")) {
-        return;
-      }
-      bonus = new Heart(x, y);
+    bonus = new Heart(x, y);
+  } else {
+    /* If bag is full, do not spawn a bonus */
+    if (game.inventory["items_in_bag"] >= 4) {
+      return;
     }
 
-    else {
-      /* If bag is full, do not spawn a bonus */
-      if (game.inventory['items_in_bag'] >= 4) {
-        return;
-      }
-
-      if (!this.canSpawnBonus) {
-        return;
-      }
-
-      /* If no bonus is chosen, pick a random one */
-      let random = Math.random();
-      /* If the bonus chosen is already in inventory or being used, spawn another one */
-      if (random < 0.25) {
-        if (game.inventory['shield'] > 0 || game.player.shieldActivated) {
-          game.spawnBonus();
-        }
-        else {
-          bonus = new Shield(x, y);
-        }
-      }
-      else if (random < 0.5) {
-        if (game.inventory['trap'] > 0) {
-          game.spawnBonus();
-        }
-        else {
-          bonus = new Trap(x, y);
-        }
-      }
-      else if (random < 0.75) {
-        if (game.inventory['turbo'] > 0 || game.player.turboActivated) {
-          game.spawnBonus();
-        }
-        else {
-          bonus = new Turbo(x, y);
-        }
-      }
-      else {
-        if (game.inventory['super_shoot'] > 0 || game.player.superShootActivated) {
-          game.spawnBonus();
-        }
-        else {
-          bonus = new SuperShoot(x, y);
-        }
-      }
-
-      this.canSpawnBonus = false;
+    if (!this.canSpawnBonus) {
+      return;
     }
-    game.bonusOnMap.push(bonus)
-  }
 
-
-game.manageBonus =
-  function () {
-    /* Ticking only if no bonus is activated */
-    if (game.canSpawnBonus && game.player.bonusActivated == false) {
-      game.bonusSpawnTick++;
-
-      if (game.bonusSpawnTick > game.maxBonusSpawnTick) {
-        game.bonusSpawnTick = 0;
+    /* If no bonus is chosen, pick a random one */
+    let random = Math.random();
+    /* If the bonus chosen is already in inventory or being used, spawn another one */
+    if (random < 0.25) {
+      if (game.inventory["shield"] > 0 || game.player.shieldActivated) {
         game.spawnBonus();
+      } else {
+        bonus = new Shield(x, y);
+      }
+    } else if (random < 0.5) {
+      if (game.inventory["trap"] > 0) {
+        game.spawnBonus();
+      } else {
+        bonus = new Trap(x, y);
+      }
+    } else if (random < 0.75) {
+      if (game.inventory["turbo"] > 0 || game.player.turboActivated) {
+        game.spawnBonus();
+      } else {
+        bonus = new Turbo(x, y);
+      }
+    } else {
+      if (
+        game.inventory["super_shoot"] > 0 ||
+        game.player.superShootActivated
+      ) {
+        game.spawnBonus();
+      } else {
+        bonus = new SuperShoot(x, y);
       }
     }
-    game.checkCollisionBonus();
 
-    /* Move traps if there are some */
-    game.bonusOnMap.forEach(function (bonus) {
-      if (bonus.type == "trap_placed") {
-        console.log("found a trap");
-        bonus.move();
-      }
-    }
-    );
+    this.canSpawnBonus = false;
   }
+  game.bonusOnMap.push(bonus);
+};
 
-game.catchingTimerBonus =
-  function () {
-    /* Timer is increased by 15 seconds */
-    game.timer += 15;
-    if (game.timer > maxGameTimer) {
-      maxGameTimer = game.timer;
+game.manageBonus = function () {
+  /* Ticking only if no bonus is activated */
+  if (game.canSpawnBonus && game.player.bonusActivated == false) {
+    game.bonusSpawnTick++;
+
+    if (game.bonusSpawnTick > game.maxBonusSpawnTick) {
+      game.bonusSpawnTick = 0;
+      game.spawnBonus();
     }
   }
+  game.checkCollisionBonus();
 
-game.checkCollisionBonus =
-  function () {
-    game.bonusOnMap.forEach(async function (bonus) {
-      if (bonus.type == 'trap_placed') {
-        /* If it's a trap, check collision with ennemies */
-        game.ennemies.forEach(async function (ennemy) {
-          if (ennemy.isColliding(bonus)) {
-            /* Kill ennemy, play a sound, trap is used and add score */
-            game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
-            audioEnnemyDown.cloneNode(true).play();
-            bonus.canStillGrabAmount--;
-            game.addScoreEnnemy(ennemy);
-            if (bonus.canStillGrabAmount == 0) {
-              /* Remove the trap from the map */
-              await new Promise(resolve => setTimeout(resolve, 1000));
-              game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-            }
+  /* Move traps if there are some */
+  game.bonusOnMap.forEach(function (bonus) {
+    if (bonus.type == "trap_placed") {
+      bonus.move();
+    }
+  });
+};
+
+game.catchingTimerBonus = function () {
+  /* Timer is increased by 15 seconds */
+  game.timer += 15;
+  if (game.timer > maxGameTimer) {
+    maxGameTimer = game.timer;
+  }
+};
+
+game.checkCollisionBonus = function () {
+  game.bonusOnMap.forEach(async function (bonus) {
+    if (bonus.type == "trap_placed") {
+      /* If it's a trap, check collision with ennemies */
+      game.ennemies.forEach(async function (ennemy) {
+        if (ennemy.isColliding(bonus)) {
+          /* Kill ennemy, play a sound, trap is used and add score */
+          game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
+          audioEnnemyDown.cloneNode(true).play();
+          bonus.canStillGrabAmount--;
+          game.addScoreEnnemy(ennemy);
+          if (bonus.canStillGrabAmount == 0) {
+            /* Remove the trap from the map */
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
           }
         }
-        );
+      });
+    } else if (bonus.type == "timer_bonus") {
+    /* Check collision with player */
+      if (bonus.isColliding(game.player)) {
+        audioBonusPicked.cloneNode(true).play();
+        game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+        game.catchingTimerBonus();
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        game.spawnBonus("timer_bonus");
       }
-      /* Check collision with player */
-      else if (bonus.type == 'timer_bonus') {
-        if (bonus.isColliding(game.player)) {
-          audioBonusPicked.cloneNode(true).play();
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          game.catchingTimerBonus();
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          game.spawnBonus("timer_bonus");
+    } else if (bonus.type == "heart") {
+      if (bonus.isColliding(game.player)) {
+        audioBonusPicked.cloneNode(true).play();
+        game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+        if (game.player.life < game.maxNbLife) {
+          game.player.life++;
         }
       }
-      else if (bonus.type == 'heart') {
-        if (bonus.isColliding(game.player)) {
-          audioBonusPicked.cloneNode(true).play();
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          if (game.player.life < game.maxNbLife) {
-            game.player.life++;
-          }
+    } else {
+      if (bonus.isColliding(game.player)) {
+        audioBonusPicked.cloneNode(true).play();
+        game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
+        game.canSpawnBonus = true;
+        if (game.inventory[bonus.type] != 1) {
+          game.inventory["items_in_bag"]++;
         }
-      }
-      else {
-        if (bonus.isColliding(game.player)) {
-          audioBonusPicked.cloneNode(true).play();
-          game.bonusOnMap.splice(game.bonusOnMap.indexOf(bonus), 1);
-          game.canSpawnBonus = true;
-          if (game.inventory[bonus.type] != 1) {
-            game.inventory['items_in_bag']++;
-          }
-          game.inventory[bonus.type] = 1;
-          showBonus(bonus.type);
-        }
+        game.inventory[bonus.type] = 1;
+        showBonus(bonus.type);
       }
     }
-    );
-  }
+  });
+};
 
 function hideAllBonus() {
   let div_bonus = document.getElementsByClassName("bonus_wrapper");
@@ -699,166 +714,150 @@ function showBonus(bonus) {
   document.getElementById("bar_wrapper_" + bonus).style.display = "none";
 }
 
-
 /* Functions in-game */
 
-game.moveEnnemies =
-  function () {
-    /* move the ennemies */
-    game.ennemies.forEach(function (ennemy) {
-      ennemy.move();
-      /* Check collision with player */
-      if (game.player.shieldTimer != 0) { // if shield is activated
-        if (ennemy.isColliding(game.player)) {
-          game.player.shieldTimer = 1;  // shield is broken at next tick
-          game.addScoreEnnemy(ennemy);
-          audioEnnemyDown.cloneNode(true).play();
-          game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
-        }
+game.moveEnnemies = function () {
+  /* move the ennemies */
+  game.ennemies.forEach(function (ennemy) {
+    ennemy.move();
+    /* Check collision with player */
+    if (game.player.shieldTimer != 0) {
+      // if shield is activated
+      if (ennemy.isColliding(game.player)) {
+        game.player.shieldTimer = 1; // shield is broken at next tick
+        game.addScoreEnnemy(ennemy);
+        audioEnnemyDown.cloneNode(true).play();
+        game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
       }
-      else {
-        if (ennemy.isColliding(game.player)) {
-          game.player.life -= 1;
-          game.addScoreEnnemy(ennemy);
-          audioDamageTaken.cloneNode(true).play();
-          audioEnnemyDown.cloneNode(true).play();
-          game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
-        }
+    } else {
+      if (ennemy.isColliding(game.player)) {
+        game.player.life -= 1;
+        game.addScoreEnnemy(ennemy);
+        audioDamageTaken.cloneNode(true).play();
+        audioEnnemyDown.cloneNode(true).play();
+        game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
       }
     }
-    );
+  });
+};
+
+game.spawnEnnemies = function (wave) {
+  /* Spawn a heart bonus every 2 wave */
+  if ((wave + 1) % 2) {
+    game.spawnBonus("heart");
   }
 
-
-game.spawnEnnemies =
-  function (wave) {
-    /* Spawn a heart bonus every 2 wave */
-    if ((wave + 1) % 2) {
-      game.spawnBonus("heart");
-    }
-
-    /* Choose how many ennemies to spawn */
-    let nbSimpleEnnemy = 1 * wave * 6 * (game.difficulty + 1);
-    let nbTripleMail = 0.8 * wave ** 2 * 3 * (game.difficulty + 1);
-    let nbShooterMail = 1 * wave * 2 * (game.difficulty + 1);
-    /* Spawn Simple Ennemies */
-    for (let i = 0; i < nbSimpleEnnemy; i++) {
-      let x = Math.random() * (sWidth - 59);
-      let y = -Math.random() * (350 * (1 + wave * 0.4));
-      let ennemy = new Ennemy(x, y, 58, 43, imgSimpleMail);
-      game.ennemies.push(ennemy);
-    }
-    /* Spawn Triple Mail */
-    for (let i = 0; i < nbTripleMail; i++) {
-      let x = Math.random() * (sWidth - 59);
-      let y = -Math.random() * (350 * (1 + wave * 0.4));
-      let ennemy = new TripleMail(x, y, 58, 43, imgTripleMail);
-      game.ennemies.push(ennemy);
-    }
-    /* Spawn Shooter Mail */
-    for (let i = 0; i < nbShooterMail; i++) {
-      let x = Math.random() * (sWidth - 59);
-      let y = -Math.random() * (350 * (1 + wave * 0.4));
-      let ennemy = new ShooterMail(x, y, 58, 43, imgShooterMail);
-      game.ennemies.push(ennemy);
-    }
+  /* Choose how many ennemies to spawn */
+  let nbSimpleEnnemy = 1 * wave * 6 * (game.difficulty + 1);
+  let nbTripleMail = 0.8 * wave ** 2 * 3 * (game.difficulty + 1);
+  let nbShooterMail = 1 * wave * 2 * (game.difficulty + 1);
+  /* Spawn Simple Ennemies */
+  for (let i = 0; i < nbSimpleEnnemy; i++) {
+    let x = Math.random() * (sWidth - 59);
+    let y = -Math.random() * (350 * (1 + wave * 0.4));
+    let ennemy = new Ennemy(x, y, 58, 43, imgSimpleMail);
+    game.ennemies.push(ennemy);
   }
-
-game.moveEnnemyLasers =
-  function () {
-    for (let laser of game.ennemyLasers) {
-      laser.move(0, this.speed);
-    }
+  /* Spawn Triple Mail */
+  for (let i = 0; i < nbTripleMail; i++) {
+    let x = Math.random() * (sWidth - 59);
+    let y = -Math.random() * (350 * (1 + wave * 0.4));
+    let ennemy = new TripleMail(x, y, 58, 43, imgTripleMail);
+    game.ennemies.push(ennemy);
   }
+  /* Spawn Shooter Mail */
+  for (let i = 0; i < nbShooterMail; i++) {
+    let x = Math.random() * (sWidth - 59);
+    let y = -Math.random() * (350 * (1 + wave * 0.4));
+    let ennemy = new ShooterMail(x, y, 58, 43, imgShooterMail);
+    game.ennemies.push(ennemy);
+  }
+};
 
-
-
+game.moveEnnemyLasers = function () {
+  for (let laser of game.ennemyLasers) {
+    laser.move(0, this.speed);
+  }
+};
 
 /* State management of the game */
-game.isLvlFinished =
-  function () {
-    /* If there is no ennemy left, spawn new wave */
-    if (game.ennemies.length == 0) {
-      game.spawnEnnemies(game.wave);
-      game.wave++;
-
-    }
+game.isLvlFinished = function () {
+  /* If there is no ennemy left, spawn new wave */
+  if (game.ennemies.length == 0) {
+    game.spawnEnnemies(game.wave);
+    game.wave++;
   }
+};
 
-game.checkGameOver =
-  function () {
-    if (game.player.life <= 0) {
-      game.gameOver("life");
-    }
-    else if (game.timer <= 0) {
-      game.gameOver("timer");
-    }
+game.checkGameOver = function () {
+  if (game.player.life <= 0) {
+    game.gameOver("life");
+  } else if (game.timer <= 0) {
+    game.gameOver("timer");
   }
+};
 
-game.gameOver =
-  function (reason_death) {
-    /* Stop and clear the main loop */
-    clearInterval(game.interval);
-    /* Reset the save_score div */
-    game.savedScore = true;   /* will be changed to false in the next line */
-    switchDivSaveScore();
-    let message;
-    game.changeScreen('game_over_menu');
-    /* Choose the message of death */
-    switch (reason_death) {
-      case "timer":
-        message = "You ran out of time...";
-        break;
-      case "life":
-        message = "You got destroyed...";
-        break
-      case "ennemy_down":
-        message = "An ennemy got into your base.."
-    }
-    /* If it's a new highscore, say it */
-    if (isHighscore(game.score)) {
-      document.getElementById("score_title_game_over").innerHTML = "<h1 id='highscore_title'>Highscore!</h1>";
-      document.getElementById("highscore_title").style.color = "#ff0068";
-    }
-    /* If not, put right properties */
-    else {
-      document.getElementById("score_title_game_over").innerHTML = "<h1>Score</h1>";
-    }
-    document.getElementById("reason_of_death").innerHTML = '<h1>' + message + '</h1>';
+game.gameOver = function (reason_death) {
+  /* Stop and clear the main loop */
+  clearInterval(game.interval);
+  /* Reset the save_score div */
+  game.savedScore = true; /* will be changed to false in the next line */
+  switchDivSaveScore();
+  let message;
+  game.changeScreen("game_over_menu");
+  /* Choose the message of death */
+  switch (reason_death) {
+    case "timer":
+      message = "You ran out of time...";
+      break;
+    case "life":
+      message = "You got destroyed...";
+      break;
+    case "ennemy_down":
+      message = "An ennemy got into your base..";
   }
+  /* If it's a new highscore, say it */
+  if (isHighscore(game.score)) {
+    document.getElementById("score_title_game_over").innerHTML =
+      "<h1 id='highscore_title'>Highscore!</h1>";
+    document.getElementById("highscore_title").style.color = "#ff0068";
+  } else {
+  /* If not, put right properties */
+    document.getElementById("score_title_game_over").innerHTML =
+      "<h1>Score</h1>";
+  }
+  document.getElementById("reason_of_death").innerHTML =
+    "<h1>" + message + "</h1>";
+};
 
 /* Start the game */
-game.initialize =
-  function () {
-    if (game.initialized == false) {
-      hideAllBonus();
-      game.initialized = true;
-      game.canPressPause = true;
-      game.canSpawnBonus = true;
-      game.onPause = false;
-      game.timer = 60;
-      game.bonusSpawnTick = 350;
-      game.score = 0;
-      game.wave = 1;
-      game.ennemies = [];
-      game.ennemyLasers = [];
-      game.bonusOnMap = [];
-      game.player = new Player();
-      game.spawnEnnemies(game.wave);
-      game.player.x = game.canvas.width / 2 - game.player.width / 2;
-      game.player.y = game.canvas.height - game.player.height;
-      game.spawnBonus("timer_bonus");
-      if (game.interval === null) {
-        game.interval = setInterval(updateGame, FPS);
-      }
-      else {
-        clearInterval(game.interval);
-        game.interval = setInterval(updateGame, FPS);
-      }
+game.initialize = function () {
+  if (game.initialized == false) {
+    hideAllBonus();
+    game.initialized = true;
+    game.canPressPause = true;
+    game.canSpawnBonus = true;
+    game.onPause = false;
+    game.timer = 60;
+    game.bonusSpawnTick = 350;
+    game.score = 0;
+    game.wave = 1;
+    game.ennemies = [];
+    game.ennemyLasers = [];
+    game.bonusOnMap = [];
+    game.player = new Player();
+    game.spawnEnnemies(game.wave);
+    game.player.x = game.canvas.width / 2 - game.player.width / 2;
+    game.player.y = game.canvas.height - game.player.height;
+    game.spawnBonus("timer_bonus");
+    if (game.interval === null) {
+      game.interval = setInterval(updateGame, FPS);
+    } else {
+      clearInterval(game.interval);
+      game.interval = setInterval(updateGame, FPS);
     }
   }
-
-
+};
 
 /* Classes */
 
@@ -868,7 +867,7 @@ class PhysicalObject {
     this.y = y;
     this.width = width;
     this.height = height;
-    this.image = image
+    this.image = image;
   }
 
   draw() {
@@ -881,21 +880,28 @@ class PhysicalObject {
     if (this.y + dy + this.height > game.canvas.height) {
     }
     if (this.x + dx + this.width > game.canvas.width) {
-
     }
     if (this.x + dx < 0) {
     }
     if (this.y + dy < 0) {
     }
 
-    return this.x + dx < 0 || this.x + dx + this.width > game.canvas.width ||
-      this.y + dy < 0 || this.y + dy + this.height > game.canvas.height;
+    return (
+      this.x + dx < 0 ||
+      this.x + dx + this.width > game.canvas.width ||
+      this.y + dy < 0 ||
+      this.y + dy + this.height > game.canvas.height
+    );
   }
 
   isColliding(object) {
     /* check if the object is colliding with another object */
-    return this.x < object.x + object.width && this.x + this.width > object.x &&
-      this.y < object.y + object.height && this.y + this.height > object.y;
+    return (
+      this.x < object.x + object.width &&
+      this.x + this.width > object.x &&
+      this.y < object.y + object.height &&
+      this.y + this.height > object.y
+    );
   }
 }
 
@@ -913,31 +919,31 @@ class Heart extends Bonus {
 }
 class TimerBonus extends Bonus {
   constructor(x, y) {
-    super(x, y, 48, 52, imgTimerBonus, 'timer_bonus');
+    super(x, y, 48, 52, imgTimerBonus, "timer_bonus");
   }
 }
 
 class Turbo extends Bonus {
   constructor(x, y) {
-    super(x, y, 48, 52, imgTurbo, 'turbo');
+    super(x, y, 48, 52, imgTurbo, "turbo");
   }
 }
 
 class SuperShoot extends Bonus {
   constructor(x, y) {
-    super(x, y, 48, 52, imgSuperShoot, 'super_shoot');
+    super(x, y, 48, 52, imgSuperShoot, "super_shoot");
   }
 }
 
 class Shield extends Bonus {
   constructor(x, y) {
-    super(x, y, 48, 52, imgShield, 'shield');
+    super(x, y, 48, 52, imgShield, "shield");
   }
 }
 
 class Trap extends Bonus {
   constructor(x, y) {
-    super(x, y, 48, 52, imgTrap, 'trap');
+    super(x, y, 48, 52, imgTrap, "trap");
   }
 }
 
@@ -948,7 +954,12 @@ class TrapPlaced extends Bonus {
     this.dx = 0;
     this.maxDx = 100;
     this.moveRight = true;
-    this.listImg = [imgTrapInGame0, imgTrapInGame1, imgTrapInGame2, imgTrapInGame3];
+    this.listImg = [
+      imgTrapInGame0,
+      imgTrapInGame1,
+      imgTrapInGame2,
+      imgTrapInGame3,
+    ];
   }
 
   move() {
@@ -966,14 +977,13 @@ class TrapPlaced extends Bonus {
       if (this.dx >= this.maxDx) {
         this.moveRight = false;
       }
-    }
-    else {
+    } else {
       /* Check if it will be offscreen */
       if (this.offScreen(0, 0)) {
         this.moveRight = true;
         this.x += 3;
         this.dx += 3;
-        return
+        return;
       }
       this.x -= 3;
       this.dx -= 3;
@@ -984,7 +994,13 @@ class TrapPlaced extends Bonus {
   }
   draw() {
     /* draw the object */
-    game.ctx.drawImage(this.listImg[this.canStillGrabAmount], this.x, this.y, this.width, this.height);
+    game.ctx.drawImage(
+      this.listImg[this.canStillGrabAmount],
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
   }
 }
 
@@ -1037,7 +1053,6 @@ class Shooter extends PhysicalObject {
     this.y += this.speed;
   }
 
-
   shoot() {
     /* shoot a laser */
     let laser = new LaserPlayer(this.x + this.width / 2, this.y, imgMissile);
@@ -1055,8 +1070,7 @@ class Shooter extends PhysicalObject {
     for (let laser of this.lasers) {
       if (this.turboTimer > 0) {
         laser.move(0, +1.5 * laser.speed);
-      }
-      else {
+      } else {
         laser.move(0, +laser.speed);
       }
     }
@@ -1083,71 +1097,85 @@ class Player extends Shooter {
     /* Shoot a laser */
     if (this.superShootActivated) {
       const newLaser = new LaserPlayer(
-        this.x + this.width / 2 - 15, this.y - this.height / 2, imgSuperMissile);
+        this.x + this.width / 2 - 15,
+        this.y - this.height / 2,
+        imgSuperMissile
+      );
       const newLaser2 = new LaserPlayer(
-        this.x + this.width / 2 + 10, this.y - this.height / 2, imgSuperMissile);
+        this.x + this.width / 2 + 10,
+        this.y - this.height / 2,
+        imgSuperMissile
+      );
       this.lasers.push(newLaser);
       this.lasers.push(newLaser2);
-    }
-    else {
+    } else {
       super.shoot();
     }
   }
 
-
-  draw() {    /* draw the player over bonuses */
-    game.ctx.globalCompositeOperation = 'source-over';
+  draw() {
+    /* draw the player over bonuses */
+    game.ctx.globalCompositeOperation = "source-over";
     super.draw();
-    game.ctx.globalCompositeOperation = 'destination-over';
+    game.ctx.globalCompositeOperation = "destination-over";
     /* Draw the shield if needed */
     if (this.shieldTimer > 0 && this.shieldActivated) {
-      game.ctx.drawImage(imgShieldInGame, this.x - this.height / 1.9, this.y - this.height / 3.5, this.height * 1.5, this.height * 1.5);
+      game.ctx.drawImage(
+        imgShieldInGame,
+        this.x - this.height / 1.9,
+        this.y - this.height / 3.5,
+        this.height * 1.5,
+        this.height * 1.5
+      );
       this.shieldTimer--;
-      const barTimer = document.getElementById('bar_wrapper_shield');
-      let countBar = Math.round(this.shieldTimer / maxShieldTimer * 200);
+      const barTimer = document.getElementById("bar_wrapper_shield");
+      let countBar = Math.round((this.shieldTimer / maxShieldTimer) * 200);
       let barWidth = Math.round(countBar * 0.3);
       if (barWidth < 17) {
         barWidth = 17;
       }
-      barTimer.style.width = barWidth + '%';
-      barTimer.innerHTML = countBar / 10 + ' s';
+      barTimer.style.width = barWidth + "%";
+      barTimer.innerHTML = countBar / 10 + " s";
       if (this.shieldTimer == 0) {
         game.player.shieldActivated = false;
         game.player.bonusActivated = false;
-        document.getElementById('bonus_shield_wrapper').style.display = 'none';
+        document.getElementById("bonus_shield_wrapper").style.display = "none";
       }
     }
     if (this.turboTimer > 0 && this.turboActivated) {
       this.turboTimer--;
-      const barTimer = document.getElementById('bar_wrapper_turbo');
-      let countBar = Math.round(this.turboTimer / maxTurboTimer * 100);
+      const barTimer = document.getElementById("bar_wrapper_turbo");
+      let countBar = Math.round((this.turboTimer / maxTurboTimer) * 100);
       let barWidth = Math.round(countBar * 0.6);
       if (barWidth < 17) {
         barWidth = 17;
       }
-      barTimer.style.width = barWidth + '%';
-      barTimer.innerHTML = countBar / 10 + ' s';
+      barTimer.style.width = barWidth + "%";
+      barTimer.innerHTML = countBar / 10 + " s";
       if (this.turboTimer == 0) {
         game.player.turboActivated = false;
         game.player.bonusActivated = false;
-        document.getElementById('bonus_turbo_wrapper').style.display = 'none';
+        document.getElementById("bonus_turbo_wrapper").style.display = "none";
         this.speed = speedPlayer;
       }
     }
     if (this.superShootTimer > 0 && this.superShootActivated) {
       this.superShootTimer--;
-      const barTimer = document.getElementById('bar_wrapper_super_shoot');
-      let countBar = Math.round(this.superShootTimer / maxSuperShootTimer * 100);
+      const barTimer = document.getElementById("bar_wrapper_super_shoot");
+      let countBar = Math.round(
+        (this.superShootTimer / maxSuperShootTimer) * 100
+      );
       let barWidth = Math.round(countBar * 0.6);
       if (barWidth < 17) {
         barWidth = 17;
       }
-      barTimer.style.width = barWidth + '%';
-      barTimer.innerHTML = countBar / 10 + ' s';
+      barTimer.style.width = barWidth + "%";
+      barTimer.innerHTML = countBar / 10 + " s";
       if (this.superShootTimer == 0) {
         game.player.superShootActivated = false;
         game.player.bonusActivated = false;
-        document.getElementById('bonus_super_shoot_wrapper').style.display = 'none';
+        document.getElementById("bonus_super_shoot_wrapper").style.display =
+          "none";
       }
     }
   }
@@ -1196,7 +1224,11 @@ class ShooterMail extends Ennemy {
 
   shoot() {
     /* shoot a laser */
-    let laser = new LaserMail(this.x + this.width / 2 - 20, this.y + this.height, imgMissileShooterMail);
+    let laser = new LaserMail(
+      this.x + this.width / 2 - 20,
+      this.y + this.height,
+      imgMissileShooterMail
+    );
     /* adding laser to array game.ennemyLasers */
     game.ennemyLasers.push(laser);
   }
@@ -1207,7 +1239,6 @@ class ShooterMail extends Ennemy {
       laser.draw();
     }
   }
-
 }
 
 /* Laser classes */
@@ -1238,10 +1269,9 @@ class Laser extends PhysicalObject {
           audioEnnemyDown.cloneNode(true).play();
           game.ennemies.splice(game.ennemies.indexOf(ennemy), 1);
           game.addScoreEnnemy(ennemy);
-        }
-        else {
+        } else {
           /* check if ennemy is a triple mail */
-          if (ennemy.constructor.name === 'TripleMail') {
+          if (ennemy.constructor.name === "TripleMail") {
             ennemy.image = ennemy.listImage[ennemy.life - 1];
           }
         }
@@ -1263,9 +1293,14 @@ class LaserPlayer extends Laser {
   draw() {
     /* draw the laser */
     if (game.player.superShootTimer > 0) {
-      game.ctx.drawImage(imgSuperMissile, this.x, this.y, this.width, this.height);
-    }
-    else {
+      game.ctx.drawImage(
+        imgSuperMissile,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+    } else {
       super.draw();
     }
   }
@@ -1292,13 +1327,11 @@ class LaserMail extends Laser {
     game.bonusOnMap.forEach(function (bonus) {
       /* Check if collide with trap placed */
       if (bonus.type == "trap_placed") {
-        console.log("ITS A TRAP");
         if (bonus.isColliding(this)) {
           this.delete();
         }
       }
     }, this);
-
   }
 
   delete() {
@@ -1306,7 +1339,6 @@ class LaserMail extends Laser {
     game.ennemyLasers.splice(game.ennemyLasers.indexOf(this), 1);
   }
 }
-
 
 /* Main loop of the game */
 function updateGame() {
@@ -1337,9 +1369,6 @@ function updateGame() {
     game.manageBonus();
   }
 }
-
-
-
 
 /* Get all the scores in localStorage and return them in an array sorted */
 function getScoresInArray() {
@@ -1372,7 +1401,7 @@ function setScore(name, score) {
 function writeInLeaderboard() {
   let scores = getScoresInArray();
   /* Write the scores in the leaderboard menu */
-  let n = (scores.length < 5) ? scores.length : 5;
+  let n = scores.length < 5 ? scores.length : 5;
   for (let i = 0; i < n; i++) {
     /* Write in the leaderboard menu */
     let h5 = $("#leaderboard_header_name h5:nth-child(" + (i + 2) + ")");
@@ -1398,15 +1427,14 @@ function switchDivSaveScore() {
   if (game.savedScore) {
     document.getElementById("save_score_button").style.display = "none";
     document.getElementById("saved_score").style.display = "block";
-  }
-  else {
+  } else {
     document.getElementById("save_score_button").style.display = "block";
     document.getElementById("saved_score").style.display = "none";
   }
 }
 
 setSoundClickHover();
-game.changeScreen('start_menu');
+game.changeScreen("start_menu");
 writeInLeaderboard();
 
 /* To reset the leaderboard, clear the local storage */
