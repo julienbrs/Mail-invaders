@@ -64,7 +64,7 @@ A modern web browser (Chrome, Firefox, Safari, Edge)
 Clone the repo:
 
 ```sh
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/space-invaders.git
+git clone https://github.com/julienbrs/Mail-invaders
 ```
 
 Open the index.html file in your web browser to run the game.
