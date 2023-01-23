@@ -1,3 +1,4 @@
 {
-    "codetogether.virtualCursorJoin": "sharedVirtualCursor"
+  "codetogether.virtualCursorJoin": "sharedVirtualCursor",
+  "liveServer.settings.port": 5501
 }
