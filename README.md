@@ -77,6 +77,8 @@ The game is controlled using the arrow keys to move the spaceship, spacebar to f
 
 The player can collect bonuses throughout the game, such as the timer bonus to prevent running out of time and the ability to collect extra lives. There is also a local leaderboard feature to track the player's progress and compare it to other players.
 
+Code restriction: it had to be done in a single JS file.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
